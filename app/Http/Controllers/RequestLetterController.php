@@ -20,6 +20,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RequestLetterController extends Controller
@@ -59,7 +60,9 @@ class RequestLetterController extends Controller
             Notification::send($recipients, new RequestLetterSubmittedNotification($data));
         }
 
-        return redirect()->back()->with('success', 'Request letter uploaded successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Request letter uploaded successfully.']);
+
+        return redirect()->back();
     }
 
     public function show(Incident $incident, RequestLetter $requestLetter): StreamedResponse
@@ -76,7 +79,9 @@ class RequestLetterController extends Controller
         Storage::disk('local')->delete($requestLetter->file_path);
         $requestLetter->delete();
 
-        return redirect()->back()->with('success', 'Request letter deleted successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Request letter deleted successfully.']);
+
+        return redirect()->back();
     }
 
     public function endorse(EndorseRequestLetterRequest $request, Incident $incident, RequestLetter $requestLetter): RedirectResponse
@@ -105,7 +110,9 @@ class RequestLetterController extends Controller
             Notification::send($recipients, new RequestLetterEndorsedNotification($data));
         }
 
-        return redirect()->back()->with('success', 'Request letter endorsed successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Request letter endorsed successfully.']);
+
+        return redirect()->back();
     }
 
     public function approve(ApproveRequestLetterRequest $request, Incident $incident, RequestLetter $requestLetter): RedirectResponse
@@ -134,6 +141,8 @@ class RequestLetterController extends Controller
             Notification::send($recipients, new RequestLetterApprovedNotification($data));
         }
 
-        return redirect()->back()->with('success', 'Request letter approved successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Request letter approved successfully.']);
+
+        return redirect()->back();
     }
 }

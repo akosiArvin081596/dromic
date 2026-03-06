@@ -4,9 +4,11 @@ import { useEcho } from '@laravel/echo-vue';
 import { MessageCircle, Moon, Sun } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import MessengerPanel from '@/components/messenger/MessengerPanel.vue';
+import ToastContainer from '@/components/ToastContainer.vue';
 import { useDarkMode } from '@/composables/useDarkMode';
 import { useMessenger } from '@/composables/useMessenger';
 import { useNotifications } from '@/composables/useNotifications';
+import { useToast } from '@/composables/useToast';
 import type { Auth } from '@/types';
 import type { Incident } from '@/types/incident';
 import type { MessageData } from '@/types/messenger';
@@ -64,42 +66,60 @@ const { addIncomingMessage, unreadCount: messengerUnreadCount, fetchUnreadCount:
 
 const { isDark, toggle: toggleDarkMode } = useDarkMode();
 
+const toast = useToast();
+
 initForUser(user.value.id);
+
+const removeFlashListener = router.on('flash', (event) => {
+    const flashToast = event.detail.flash.toast;
+    if (flashToast) {
+        toast[flashToast.type](flashToast.message);
+    }
+});
 
 useEcho<{ incident: Incident }>(`App.Models.User.${user.value.id}`, 'IncidentCreated', (payload) => {
     addNotification(payload.incident);
+    toast.info(`New incident: ${payload.incident.name}`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportSubmitted', (payload) => {
     addReportNotification(payload.report);
+    toast.info(`Report submitted for ${payload.report.incident_name}`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportValidated', (payload) => {
     addReportNotification(payload.report);
+    toast.success(`Report validated for ${payload.report.incident_name}`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportReturned', (payload) => {
     addReportNotification(payload.report);
+    toast.error(`Report returned for ${payload.report.incident_name}`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterSubmitted', (payload) => {
     addRequestLetterNotification(payload.request_letter);
+    toast.info(`Request letter submitted for ${payload.request_letter.incident_name}`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterEndorsed', (payload) => {
     addRequestLetterNotification(payload.request_letter);
+    toast.info(`Request letter endorsed for ${payload.request_letter.incident_name}`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterApproved', (payload) => {
     addRequestLetterNotification(payload.request_letter);
+    toast.success(`Request letter approved for ${payload.request_letter.incident_name}`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'DeliveryRecorded', (payload) => {
     addRequestLetterNotification(payload.request_letter);
+    toast.success(`Delivery recorded for ${payload.request_letter.incident_name}`);
 });
 
 useEcho<{ message: MessageData }>(`App.Models.User.${user.value.id}`, 'MessageSent', (payload) => {
     addIncomingMessage(payload.message);
+    toast.info(`New message from ${payload.message.sender_name}`);
 });
 
 function toggleNotifications() {
@@ -136,7 +156,10 @@ onMounted(() => {
     document.addEventListener('click', closeDropdowns);
     fetchMessengerUnreadCount();
 });
-onBeforeUnmount(() => document.removeEventListener('click', closeDropdowns));
+onBeforeUnmount(() => {
+    document.removeEventListener('click', closeDropdowns);
+    removeFlashListener();
+});
 
 function roleBadgeClass(role: string): string {
     switch (role) {
@@ -550,5 +573,7 @@ function logout() {
         <main>
             <slot />
         </main>
+
+        <ToastContainer />
     </div>
 </template>

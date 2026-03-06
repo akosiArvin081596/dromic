@@ -8,6 +8,7 @@ use App\Models\Incident;
 use App\Models\RequestLetter;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
 
 class DeliveryPlanController extends Controller
 {
@@ -23,7 +24,9 @@ class DeliveryPlanController extends Controller
             'notes' => $request->validated('notes'),
         ]);
 
-        return redirect()->back()->with('success', 'Delivery plan saved successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Delivery plan saved successfully.']);
+
+        return redirect()->back();
     }
 
     public function destroy(Incident $incident, RequestLetter $requestLetter, DeliveryPlan $deliveryPlan): RedirectResponse
@@ -32,6 +35,8 @@ class DeliveryPlanController extends Controller
 
         $deliveryPlan->delete();
 
-        return redirect()->back()->with('success', 'Delivery plan deleted successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Delivery plan deleted successfully.']);
+
+        return redirect()->back();
     }
 }

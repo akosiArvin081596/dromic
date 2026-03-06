@@ -26,6 +26,9 @@ declare module '@inertiajs/core' {
             unreadNotificationCount: number;
             [key: string]: unknown;
         };
+        flashDataType: {
+            toast?: { type: 'success' | 'error'; message: string };
+        };
     }
 }
 

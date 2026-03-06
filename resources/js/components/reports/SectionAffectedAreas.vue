@@ -47,9 +47,15 @@ function onFamiliesInput(row: AffectedArea) {
                 <thead class="bg-indigo-50">
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">#</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">Barangay <span class="text-rose-500">*</span></th>
-                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">No. of Families <span class="text-rose-500">*</span></th>
-                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">No. of Persons <span class="text-rose-500">*</span></th>
+                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">
+                            Barangay <span class="text-rose-500">*</span>
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">
+                            No. of Families <span class="text-rose-500">*</span>
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">
+                            No. of Persons <span class="text-rose-500">*</span>
+                        </th>
                         <th class="px-4 py-2 text-left text-xs font-medium tracking-wider text-slate-500">Actions</th>
                     </tr>
                 </thead>

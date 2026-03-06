@@ -417,76 +417,84 @@ function openDelivery(letter: RequestLetter): void {
                                     : 'grid-rows-[0fr] opacity-0'
                             "
                         >
-                        <div class="overflow-hidden">
-                        <div class="space-y-4 p-4">
-                            <div
-                                v-for="lgu in group.lgus"
-                                :key="lgu.lguId"
-                                class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
-                            >
-                                <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5">
-                                    <h4 class="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                                        <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                                            />
-                                        </svg>
-                                        {{ lgu.reports[0]?.city_municipality?.name ?? 'Unknown LGU' }}
-                                        <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums">
-                                            {{ lgu.reports.length }} report{{ lgu.reports.length !== 1 ? 's' : '' }}
-                                        </span>
-                                    </h4>
-                                </div>
-                                <div class="divide-y divide-slate-100">
-                                    <Link
-                                        v-for="report in lgu.reports"
-                                        :key="report.id"
-                                        :href="`/incidents/${incident.id}/reports/${report.id}`"
-                                        class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50"
+                            <div class="overflow-hidden">
+                                <div class="space-y-4 p-4">
+                                    <div
+                                        v-for="lgu in group.lgus"
+                                        :key="lgu.lguId"
+                                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
                                     >
-                                        <div class="flex items-center gap-3">
-                                            <span
-                                                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                                :class="reportTypeBadgeClass(report.report_type)"
-                                            >
-                                                {{
-                                                    report.report_type === 'initial'
-                                                        ? 'Initial Report'
-                                                        : report.report_type === 'terminal'
-                                                          ? 'Terminal Report'
-                                                          : `Progress Report No. ${report.sequence_number}`
-                                                }}
-                                            </span>
-                                            <span class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600">
-                                                {{ report.report_number }}
-                                            </span>
-                                            <span
-                                                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                                                :class="statusBadgeClass(report.status)"
-                                            >
-                                                {{ statusLabel(report.status) }}
-                                            </span>
+                                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5">
+                                            <h4 class="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                                                <svg
+                                                    class="h-4 w-4 text-slate-400"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke-width="1.5"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                                                    />
+                                                </svg>
+                                                {{ lgu.reports[0]?.city_municipality?.name ?? 'Unknown LGU' }}
+                                                <span
+                                                    class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums"
+                                                >
+                                                    {{ lgu.reports.length }} report{{ lgu.reports.length !== 1 ? 's' : '' }}
+                                                </span>
+                                            </h4>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-xs text-slate-400">{{ report.report_date }} {{ report.report_time }}</span>
-                                            <svg
-                                                class="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-400"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke-width="1.5"
-                                                stroke="currentColor"
+                                        <div class="divide-y divide-slate-100">
+                                            <Link
+                                                v-for="report in lgu.reports"
+                                                :key="report.id"
+                                                :href="`/incidents/${incident.id}/reports/${report.id}`"
+                                                class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50"
                                             >
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                            </svg>
+                                                <div class="flex items-center gap-3">
+                                                    <span
+                                                        class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                                                        :class="reportTypeBadgeClass(report.report_type)"
+                                                    >
+                                                        {{
+                                                            report.report_type === 'initial'
+                                                                ? 'Initial Report'
+                                                                : report.report_type === 'terminal'
+                                                                  ? 'Terminal Report'
+                                                                  : `Progress Report No. ${report.sequence_number}`
+                                                        }}
+                                                    </span>
+                                                    <span class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600">
+                                                        {{ report.report_number }}
+                                                    </span>
+                                                    <span
+                                                        class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                                                        :class="statusBadgeClass(report.status)"
+                                                    >
+                                                        {{ statusLabel(report.status) }}
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs text-slate-400">{{ report.report_date }} {{ report.report_time }}</span>
+                                                    <svg
+                                                        class="h-4 w-4 text-slate-300 transition-colors group-hover:text-indigo-400"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="1.5"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                                    </svg>
+                                                </div>
+                                            </Link>
                                         </div>
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        </div>
                         </div>
                     </div>
                 </div>

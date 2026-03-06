@@ -220,7 +220,9 @@ class ReportController extends Controller
 
         $this->broadcastIfSubmitted($report, $user->id);
 
-        return redirect()->route('incidents.reports.show', [$incident, $report])->with('success', 'Report created successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Report created successfully.']);
+
+        return redirect()->route('incidents.reports.show', [$incident, $report]);
     }
 
     public function show(Incident $incident, Report $report): Response
@@ -299,7 +301,9 @@ class ReportController extends Controller
             $this->broadcastIfSubmitted($report, $request->user()->id, $previousStatus === 'returned');
         }
 
-        return redirect()->route('incidents.reports.show', [$incident, $report])->with('success', 'Report updated successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Report updated successfully.']);
+
+        return redirect()->route('incidents.reports.show', [$incident, $report]);
     }
 
     public function validateReport(Request $request, Incident $incident, Report $report): RedirectResponse
@@ -324,7 +328,9 @@ class ReportController extends Controller
             Notification::send($recipients, new ReportValidatedNotification($reportData));
         }
 
-        return redirect()->route('incidents.reports.show', [$incident, $report])->with('success', 'Report validated successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Report validated successfully.']);
+
+        return redirect()->route('incidents.reports.show', [$incident, $report]);
     }
 
     public function returnReport(ReturnReportRequest $request, Incident $incident, Report $report): RedirectResponse
@@ -348,7 +354,9 @@ class ReportController extends Controller
             }
         }
 
-        return redirect()->route('incidents.reports.show', [$incident, $report])->with('success', 'Report returned to LGU.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Report returned to LGU.']);
+
+        return redirect()->route('incidents.reports.show', [$incident, $report]);
     }
 
     public function destroy(Incident $incident, Report $report): RedirectResponse
@@ -357,7 +365,9 @@ class ReportController extends Controller
 
         $report->delete();
 
-        return redirect()->route('incidents.reports.index', $incident)->with('success', 'Report deleted successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Report deleted successfully.']);
+
+        return redirect()->route('incidents.reports.index', $incident);
     }
 
     public function barangays(Request $request): JsonResponse

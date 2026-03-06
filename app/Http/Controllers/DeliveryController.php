@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class DeliveryController extends Controller
 {
@@ -49,7 +49,9 @@ class DeliveryController extends Controller
             Notification::send($recipients, new DeliveryRecordedNotification($data));
         }
 
-        return redirect()->back()->with('success', 'Delivery recorded successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Delivery recorded successfully.']);
+
+        return redirect()->back();
     }
 
     public function update(Request $request, Delivery $delivery): RedirectResponse
@@ -75,6 +77,8 @@ class DeliveryController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Delivery updated successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Delivery updated successfully.']);
+
+        return redirect()->back();
     }
 }

@@ -72,7 +72,9 @@ class UserController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User created successfully.']);
+
+        return redirect()->route('users.index');
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
@@ -92,17 +94,23 @@ class UserController extends Controller
             $user->update(['password' => Hash::make($data['password'])]);
         }
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User updated successfully.']);
+
+        return redirect()->route('users.index');
     }
 
     public function destroy(User $user): RedirectResponse
     {
         if ($user->id === auth()->id()) {
-            return redirect()->route('users.index')->with('error', 'You cannot delete yourself.');
+            Inertia::flash('toast', ['type' => 'error', 'message' => 'You cannot delete yourself.']);
+
+            return redirect()->route('users.index');
         }
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'User deleted successfully.']);
+
+        return redirect()->route('users.index');
     }
 }

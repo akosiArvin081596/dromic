@@ -174,7 +174,9 @@ class IncidentController extends Controller
             Notification::send($recipients, new IncidentCreatedNotification($incidentData));
         }
 
-        return redirect()->route('incidents.show', $incident)->with('success', 'Incident created successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Incident created successfully.']);
+
+        return redirect()->route('incidents.show', $incident);
     }
 
     public function show(Request $request, Incident $incident): Response
@@ -300,6 +302,8 @@ class IncidentController extends Controller
 
         $incident->cityMunicipalities()->sync($data['city_municipality_ids'] ?? []);
 
-        return redirect()->route('incidents.show', $incident)->with('success', 'Incident updated successfully.');
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Incident updated successfully.']);
+
+        return redirect()->route('incidents.show', $incident);
     }
 }
