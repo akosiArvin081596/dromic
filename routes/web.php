@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RdDashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RequestLetterController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -67,6 +68,13 @@ Route::middleware('auth')->group(function () {
         ->name('incidents.request-letters.delivery-plan.store');
     Route::delete('/incidents/{incident}/request-letters/{requestLetter}/delivery-plan/{deliveryPlan}', [DeliveryPlanController::class, 'destroy'])
         ->name('incidents.request-letters.delivery-plan.destroy');
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 
     Route::get('/api/barangays', [ReportController::class, 'barangays'])->name('reports.barangays');
 

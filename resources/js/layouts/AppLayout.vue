@@ -193,6 +193,18 @@ function logout() {
                             >
                                 Incidents
                             </Link>
+                            <Link
+                                v-if="user.role === 'admin'"
+                                href="/users"
+                                class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors"
+                                :class="
+                                    $page.url.startsWith('/users')
+                                        ? 'border-white text-white'
+                                        : 'border-transparent text-indigo-200 hover:border-indigo-400 hover:text-white'
+                                "
+                            >
+                                Users
+                            </Link>
                         </div>
                     </div>
                     <div class="hidden items-center space-x-3 sm:flex">
@@ -470,6 +482,14 @@ function logout() {
                         "
                     >
                         Incidents
+                    </Link>
+                    <Link
+                        v-if="user.role === 'admin'"
+                        href="/users"
+                        class="block px-3 py-2 text-base font-medium"
+                        :class="$page.url.startsWith('/users') ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-800 hover:text-white'"
+                    >
+                        Users
                     </Link>
                 </div>
                 <div v-if="user" class="border-t border-indigo-800 px-4 pt-3 pb-3">
