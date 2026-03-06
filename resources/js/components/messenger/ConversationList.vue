@@ -19,8 +19,8 @@ const userId = computed(() => page.props.auth.user.id);
 
 const { fetchUsers, startDm } = useMessenger();
 
-type Tab = 'groups' | 'contacts';
-const activeTab = ref<Tab>('groups');
+type Tab = 'chat' | 'groups' | 'contacts';
+const activeTab = ref<Tab>('chat');
 
 // --- Group Chats ---
 const groupConversations = computed(() => props.conversations.filter((c) => c.type === 'group'));
@@ -32,6 +32,17 @@ const isLoadingContacts = ref(false);
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const dmConversations = computed(() => props.conversations.filter((c) => c.type === 'dm'));
+
+// --- Chat History (DMs sorted by latest message) ---
+const chatHistory = computed(() =>
+    dmConversations.value
+        .filter((c) => c.latest_message)
+        .sort((a, b) => {
+            const aTime = a.latest_message?.created_at ?? a.created_at;
+            const bTime = b.latest_message?.created_at ?? b.created_at;
+            return new Date(bTime).getTime() - new Date(aTime).getTime();
+        }),
+);
 
 async function loadContacts(search?: string): Promise<void> {
     isLoadingContacts.value = true;
@@ -141,10 +152,24 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
         <div class="flex border-b border-slate-200">
             <button
                 class="relative flex-1 py-2.5 text-center text-xs font-semibold transition-colors"
+                :class="activeTab === 'chat' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'"
+                @click="activeTab = 'chat'"
+            >
+                Chat
+                <span
+                    v-if="totalDmUnread > 0"
+                    class="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white"
+                >
+                    {{ totalDmUnread > 9 ? '9+' : totalDmUnread }}
+                </span>
+                <div v-if="activeTab === 'chat'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600"></div>
+            </button>
+            <button
+                class="relative flex-1 py-2.5 text-center text-xs font-semibold transition-colors"
                 :class="activeTab === 'groups' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'"
                 @click="activeTab = 'groups'"
             >
-                Group Chats
+                Groups
                 <span
                     v-if="totalGroupUnread > 0"
                     class="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white"
@@ -159,13 +184,39 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 @click="activeTab = 'contacts'"
             >
                 Contacts
-                <span
-                    v-if="totalDmUnread > 0"
-                    class="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white"
-                >
-                    {{ totalDmUnread > 9 ? '9+' : totalDmUnread }}
-                </span>
                 <div v-if="activeTab === 'contacts'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600"></div>
+            </button>
+        </div>
+
+        <!-- Chat History Tab -->
+        <div v-if="activeTab === 'chat'" class="flex-1 divide-y divide-slate-100 overflow-y-auto">
+            <div v-if="chatHistory.length === 0" class="px-4 py-8 text-center text-sm text-slate-400">No conversations yet</div>
+            <button
+                v-for="conversation in chatHistory"
+                :key="conversation.id"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+                @click="emit('select', conversation)"
+            >
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-400 text-sm font-semibold text-white">
+                    {{ conversationName(conversation).charAt(0).toUpperCase() }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-sm font-medium text-slate-900">{{ conversationName(conversation) }}</span>
+                        <span class="shrink-0 text-[10px] text-slate-400">
+                            {{ timeAgo(conversation.latest_message?.created_at) }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="truncate text-xs text-slate-500">{{ lastMessagePreview(conversation) }}</span>
+                        <span
+                            v-if="conversation.unread_count > 0"
+                            class="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white"
+                        >
+                            {{ conversation.unread_count > 9 ? '9+' : conversation.unread_count }}
+                        </span>
+                    </div>
+                </div>
             </button>
         </div>
 
