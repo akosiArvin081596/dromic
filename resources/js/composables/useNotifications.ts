@@ -28,7 +28,7 @@ type DatabaseNotification = {
 
 const notifications = ref<AppNotification[]>([]);
 const unreadCount = computed(() => notifications.value.filter((n) => !n.read).length);
-let initialized = false;
+let initializedForUserId: number | null = null;
 
 function mapFromDatabase(dbNotification: DatabaseNotification): AppNotification {
     return {
@@ -42,12 +42,12 @@ function mapFromDatabase(dbNotification: DatabaseNotification): AppNotification 
     };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function initForUser(userId: number): Promise<void> {
-    if (initialized) {
+    if (initializedForUserId === userId) {
         return;
     }
-    initialized = true;
+    initializedForUserId = userId;
+    notifications.value = [];
 
     try {
         const response = await axios.get('/notifications');
