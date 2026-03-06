@@ -88,7 +88,9 @@
       "WebFetch(domain:ph.rappler.com)",
       "Bash(npx vue-tsc:*)",
       "WebFetch(domain:psgc.gitlab.io)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx eslint:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

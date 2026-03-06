@@ -67,21 +67,8 @@ const reportTypeTitle = computed(() => {
     return `Progress Report No. ${props.report.sequence_number}`;
 });
 
-const locationText = computed(() => {
-    const cm = props.report.city_municipality;
-    if (!cm) {
-        return '';
-    }
-    const provinceName = cm.province?.name ?? '';
-    const lguProvince = provinceName ? `${cm.name}, ${provinceName}` : cm.name;
-
-    const areas = props.report.affected_areas ?? [];
-    if (areas.length === 1 && areas[0].barangay) {
-        const brgy = areas[0].barangay.startsWith('Brgy.') ? areas[0].barangay : `Brgy. ${areas[0].barangay}`;
-        return `${brgy}, ${lguProvince}`;
-    }
-
-    return lguProvince;
+const incidentTitle = computed(() => {
+    return props.report.incident?.display_name ?? props.report.incident?.name ?? '';
 });
 </script>
 
@@ -119,10 +106,7 @@ const locationText = computed(() => {
                             <div class="main-title">
                                 LGU DROMIC/Situational {{ reportTypeTitle }}
                                 on the
-                                <span class="red-text">{{ report.incident?.display_name ?? report.incident?.name ?? '' }}</span>
-                            </div>
-                            <div class="subtitle">
-                                <span class="red-text">{{ locationText }}</span>
+                                <span class="red-text">{{ incidentTitle }}</span>
                             </div>
                             <div class="date-time">
                                 as of
@@ -959,12 +943,6 @@ const locationText = computed(() => {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
-}
-
-.subtitle {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 5px;
 }
 
 .date-time {

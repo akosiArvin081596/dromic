@@ -47,11 +47,13 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
             <p class="font-medium">Total persons mismatch with Section III-A (Inside ECs):</p>
             <ul class="mt-1 list-inside list-disc">
                 <li v-if="mismatchCum">
-                    CUM: Age Distribution total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    CUM: Age Distribution total is <strong>{{ totalCum.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
                 </li>
                 <li v-if="mismatchNow">
-                    NOW: Age Distribution total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    NOW: Age Distribution total is <strong>{{ totalNow.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
                 </li>
             </ul>

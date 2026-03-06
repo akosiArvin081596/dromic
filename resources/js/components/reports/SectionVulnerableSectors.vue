@@ -50,11 +50,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
             <p class="font-medium">Total persons exceeds Section III-A (Inside ECs):</p>
             <ul class="mt-1 list-inside list-disc">
                 <li v-if="exceedsCum">
-                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
                 </li>
                 <li v-if="exceedsNow">
-                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
                 </li>
             </ul>
@@ -64,11 +66,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
             <p class="font-medium">Total persons mismatch with Section III-A (Inside ECs):</p>
             <ul class="mt-1 list-inside list-disc">
                 <li v-if="mismatchCum">
-                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
                 </li>
                 <li v-if="mismatchNow">
-                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong
+                    >, but Inside ECs total is
                     <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
                 </li>
             </ul>

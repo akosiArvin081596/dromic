@@ -285,13 +285,17 @@ function deliveryBadgeClass(percent: number): string {
                                             <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.inside_ec_families_cum.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-slate-500">{{ pluralize(dashboardData.impact.inside_ec_families_cum, 'family', 'families') }}</div>
+                                            <div class="text-[11px] text-slate-500">
+                                                {{ pluralize(dashboardData.impact.inside_ec_families_cum, 'family', 'families') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.inside_ec_persons_cum.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-slate-500">{{ pluralize(dashboardData.impact.inside_ec_persons_cum, 'person', 'persons') }}</div>
+                                            <div class="text-[11px] text-slate-500">
+                                                {{ pluralize(dashboardData.impact.inside_ec_persons_cum, 'person', 'persons') }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -302,13 +306,17 @@ function deliveryBadgeClass(percent: number): string {
                                             <div class="text-lg font-bold text-sky-900">
                                                 {{ dashboardData.impact.inside_ec_families_now.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-sky-600/70">{{ pluralize(dashboardData.impact.inside_ec_families_now, 'family', 'families') }}</div>
+                                            <div class="text-[11px] text-sky-600/70">
+                                                {{ pluralize(dashboardData.impact.inside_ec_families_now, 'family', 'families') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-lg font-bold text-sky-900">
                                                 {{ dashboardData.impact.inside_ec_persons_now.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-sky-600/70">{{ pluralize(dashboardData.impact.inside_ec_persons_now, 'person', 'persons') }}</div>
+                                            <div class="text-[11px] text-sky-600/70">
+                                                {{ pluralize(dashboardData.impact.inside_ec_persons_now, 'person', 'persons') }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -338,13 +346,17 @@ function deliveryBadgeClass(percent: number): string {
                                             <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_families_cum.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-slate-500">{{ pluralize(dashboardData.impact.outside_ec_families_cum, 'family', 'families') }}</div>
+                                            <div class="text-[11px] text-slate-500">
+                                                {{ pluralize(dashboardData.impact.outside_ec_families_cum, 'family', 'families') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_persons_cum.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-slate-500">{{ pluralize(dashboardData.impact.outside_ec_persons_cum, 'person', 'persons') }}</div>
+                                            <div class="text-[11px] text-slate-500">
+                                                {{ pluralize(dashboardData.impact.outside_ec_persons_cum, 'person', 'persons') }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -355,13 +367,17 @@ function deliveryBadgeClass(percent: number): string {
                                             <div class="text-lg font-bold text-amber-900">
                                                 {{ dashboardData.impact.outside_ec_families_now.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-amber-600/70">{{ pluralize(dashboardData.impact.outside_ec_families_now, 'family', 'families') }}</div>
+                                            <div class="text-[11px] text-amber-600/70">
+                                                {{ pluralize(dashboardData.impact.outside_ec_families_now, 'family', 'families') }}
+                                            </div>
                                         </div>
                                         <div>
                                             <div class="text-lg font-bold text-amber-900">
                                                 {{ dashboardData.impact.outside_ec_persons_now.toLocaleString() }}
                                             </div>
-                                            <div class="text-[11px] text-amber-600/70">{{ pluralize(dashboardData.impact.outside_ec_persons_now, 'person', 'persons') }}</div>
+                                            <div class="text-[11px] text-amber-600/70">
+                                                {{ pluralize(dashboardData.impact.outside_ec_persons_now, 'person', 'persons') }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -77,16 +77,15 @@ class Incident extends Model
         }
 
         $uniqueBarangays = $barangays->unique()->values();
-
-        if ($uniqueBarangays->isEmpty()) {
-            return $this->name;
-        }
-
         $municipalities = $reports->pluck('cityMunicipality')->filter()->unique('id');
         $provinces = $municipalities->pluck('province')->filter()->unique('id');
 
         if ($municipalities->count() === 1) {
-            $municipalityName = $municipalities->first()->name;
+            $municipality = $municipalities->first();
+            $municipalityName = $municipality->name;
+            $provinceName = $municipality->province?->name;
+            $locationParts = array_filter([$municipalityName, $provinceName]);
+            $fullLocation = implode(', ', $locationParts);
 
             if ($uniqueBarangays->count() === 1) {
                 $brgy = $uniqueBarangays->first();
@@ -94,20 +93,37 @@ class Incident extends Model
                     $brgy = "Brgy. {$brgy}";
                 }
 
-                return "{$this->name} at {$brgy}, {$municipalityName}";
+                return "{$this->name} at {$brgy}, {$fullLocation}";
             }
 
-            return "{$this->name} at {$municipalityName}";
+            if ($uniqueBarangays->count() > 1) {
+                return "{$this->name} at {$fullLocation}";
+            }
+
+            return $this->name;
         }
 
         if ($provinces->count() === 1) {
-            return "{$this->name} affecting {$provinces->first()->name}";
+            $province = $provinces->first();
+            $suffix = "the Province of {$province->name}";
+
+            if (str_contains($this->name, $province->name)) {
+                return $this->name;
+            }
+
+            return "{$this->name} affecting {$suffix}";
         }
 
         $regions = $provinces->pluck('region')->filter()->unique('id');
 
-        if ($regions->isNotEmpty()) {
-            return "{$this->name} affecting {$regions->first()->name}";
+        if ($regions->count() === 1) {
+            $regionName = $regions->first()->name;
+
+            if (str_contains($this->name, $regionName)) {
+                return $this->name;
+            }
+
+            return "{$this->name} affecting {$regionName}";
         }
 
         return $this->name;

@@ -42,9 +42,9 @@ function formatCurrency(value: number): string {
 
         <div v-if="exceedsAffectedFamilies" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
             <p class="font-medium">
-                Total damaged houses (<strong>{{ totalDamagedHouses.toLocaleString() }}</strong>) exceeds the total affected families (<strong>{{
-                    totalAffectedFamilies.toLocaleString()
-                }}</strong>) declared in Section II.
+                Total damaged houses (<strong>{{ totalDamagedHouses.toLocaleString() }}</strong
+                >) exceeds the total affected families (<strong>{{ totalAffectedFamilies.toLocaleString() }}</strong
+                >) declared in Section II.
             </p>
         </div>
 
