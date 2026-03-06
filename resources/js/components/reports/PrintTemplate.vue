@@ -2,6 +2,7 @@
 import { computed, toRef } from 'vue';
 import { useReportCalculations } from '@/composables/useReportCalculations';
 import type { AgeDistribution, AgeGenderBreakdown, Report, VulnerableSectors } from '@/types';
+import { pluralize } from '@/utils/pluralize';
 
 const props = defineProps<{
     report: Report;
@@ -117,12 +118,19 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalAffectedFamilies.value.toLocaleString() }}</span>
-                                    <span class="red-text">families</span> or
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalAffectedFamilies.value, 'family', 'families')
+                                    }}</span>
+                                    or
                                     <span class="blank-line">{{ calc.totalAffectedPersons.value.toLocaleString() }}</span>
-                                    <span class="red-text">persons</span>
-                                    are affected in
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalAffectedPersons.value, 'person', 'persons')
+                                    }}</span>
+                                    {{ pluralize(calc.totalAffectedPersons.value, 'is', 'are') }} affected in
                                     <span class="blank-line">{{ report.affected_areas.length }}</span>
-                                    <span class="red-text">Barangays.</span>
+                                    <span class="red-text">{{
+                                        pluralize(report.affected_areas.length, 'Barangay', 'Barangays')
+                                    }}.</span>
                                 </div>
 
                                 <table>
@@ -157,9 +165,16 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalIDPFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">families</span> or
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalIDPFamiliesCum.value, 'family', 'families')
+                                    }}</span>
+                                    or
                                     <span class="blank-line">{{ calc.totalIDPPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">persons</span> are displaced inside and outside ECs, below is the breakdown:
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalIDPPersonsCum.value, 'person', 'persons')
+                                    }}</span>
+                                    {{ pluralize(calc.totalIDPPersonsCum.value, 'is', 'are') }} displaced inside and
+                                    outside ECs, below is the breakdown:
                                 </div>
 
                                 <div class="subsection-title">A. Inside Evacuation Center</div>
@@ -167,11 +182,24 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalInsideECFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">families</span> or
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalInsideECFamiliesCum.value, 'family', 'families')
+                                    }}</span>
+                                    or
                                     <span class="blank-line">{{ calc.totalInsideECPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">persons</span> have evacuated in
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalInsideECPersonsCum.value, 'person', 'persons')
+                                    }}</span>
+                                    {{ pluralize(calc.totalInsideECPersonsCum.value, 'has', 'have') }} evacuated in
                                     <span class="blank-line">{{ report.inside_evacuation_centers.length }}</span>
-                                    <span class="red-text">evacuation centers</span>, to wit:
+                                    <span class="red-text">{{
+                                        pluralize(
+                                            report.inside_evacuation_centers.length,
+                                            'evacuation center',
+                                            'evacuation centers',
+                                        )
+                                    }}</span
+                                    >, to wit:
                                 </div>
 
                                 <table>
@@ -269,11 +297,17 @@ const locationText = computed(() => {
                                 <div class="subsection-title">B. Outside Evacuation Center</div>
 
                                 <div class="description-text">
-                                    There are
+                                    There
+                                    {{ pluralize(calc.totalOutsideECFamiliesCum.value, 'is', 'are') }}
                                     <span class="blank-line">{{ calc.totalOutsideECFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">families</span> or
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalOutsideECFamiliesCum.value, 'family', 'families')
+                                    }}</span>
+                                    or
                                     <span class="blank-line">{{ calc.totalOutsideECPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">persons</span>
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalOutsideECPersonsCum.value, 'person', 'persons')
+                                    }}</span>
                                     temporarily staying with their relatives and/or friends' houses, to wit:
                                 </div>
 
@@ -315,11 +349,17 @@ const locationText = computed(() => {
                                 <div class="subsection-title">C. Non IDPs (Served Outside Evacuation Centers, Not Displaced)</div>
 
                                 <div class="description-text">
-                                    There are
+                                    There
+                                    {{ pluralize(calc.totalNonIdpFamiliesCum.value, 'is', 'are') }}
                                     <span class="blank-line">{{ calc.totalNonIdpFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">families</span> or
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalNonIdpFamiliesCum.value, 'family', 'families')
+                                    }}</span>
+                                    or
                                     <span class="blank-line">{{ calc.totalNonIdpPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">persons</span>
+                                    <span class="red-text">{{
+                                        pluralize(calc.totalNonIdpPersonsCum.value, 'person', 'persons')
+                                    }}</span>
                                     served outside evacuation centers (not displaced), to wit:
                                 </div>
 
@@ -357,13 +397,27 @@ const locationText = computed(() => {
                                     <span class="blank-line">{{
                                         (calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value).toLocaleString()
                                     }}</span>
-                                    <span class="red-text">houses</span> were damaged; of which,
+                                    <span class="red-text">{{
+                                        pluralize(
+                                            calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value,
+                                            'house',
+                                            'houses',
+                                        )
+                                    }}</span>
+                                    {{
+                                        pluralize(
+                                            calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value,
+                                            'was',
+                                            'were',
+                                        )
+                                    }}
+                                    damaged; of which,
                                     <span class="blank-line">{{ calc.totalTotallyDamaged.value.toLocaleString() }}</span>
-                                    are
+                                    {{ pluralize(calc.totalTotallyDamaged.value, 'is', 'are') }}
                                     <span class="red-text">totally damaged</span>
                                     and
                                     <span class="blank-line">{{ calc.totalPartiallyDamaged.value.toLocaleString() }}</span>
-                                    are
+                                    {{ pluralize(calc.totalPartiallyDamaged.value, 'is', 'are') }}
                                     <span class="red-text">partially damaged.</span>
                                 </div>
 

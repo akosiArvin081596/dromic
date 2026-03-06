@@ -10,6 +10,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { Incident } from '@/types/incident';
 import type { Report } from '@/types/report';
 import type { AugmentationTypeOption, EscortUser, RequestLetter } from '@/types/request-letter';
+import { pluralize } from '@/utils/pluralize';
 
 const props = defineProps<{
     incident: Incident;
@@ -709,7 +710,7 @@ function openDelivery(letter: RequestLetter): void {
                             <p v-if="totalAffectedFamilies > 0" class="mb-2 text-xs text-slate-500">
                                 Quantity per item must not exceed
                                 <span class="font-semibold text-slate-700">{{ totalAffectedFamilies.toLocaleString() }}</span>
-                                total affected families.
+                                total affected {{ pluralize(totalAffectedFamilies, 'family', 'families') }}.
                             </p>
                             <div v-for="(item, index) in uploadForm.augmentation_items" :key="index" class="mb-2 flex items-start gap-2">
                                 <div class="flex-1">

@@ -6,6 +6,7 @@ import ConsolidatedPrintTemplate from '@/components/reports/ConsolidatedPrintTem
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { Incident } from '@/types/incident';
 import type { Report } from '@/types/report';
+import { pluralize } from '@/utils/pluralize';
 
 type ConsolidatedTotals = {
     affected_families: number;
@@ -147,41 +148,53 @@ function printReport() {
                         <div class="border border-l-4 border-slate-200 border-l-indigo-500 bg-white p-4">
                             <div class="text-xs font-medium text-slate-500">Affected</div>
                             <div class="mt-1 text-xl font-semibold text-slate-900">
-                                {{ selectedCutoff.totals.affected_families.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.affected_persons.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.affected_families.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.affected_families, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.affected_persons.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.affected_persons, 'person', 'persons') }}
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-sky-500 bg-white p-4">
                             <div class="text-xs font-medium text-slate-500">Inside EC</div>
                             <div class="mt-1 text-sm text-slate-700">
                                 <span class="font-semibold">CUM:</span>
-                                {{ selectedCutoff.totals.inside_ec_families_cum.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.inside_ec_persons_cum.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.inside_ec_families_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.inside_ec_families_cum, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.inside_ec_persons_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.inside_ec_persons_cum, 'person', 'persons') }}
                             </div>
                             <div class="text-sm text-slate-700">
                                 <span class="font-semibold">NOW:</span>
-                                {{ selectedCutoff.totals.inside_ec_families_now.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.inside_ec_persons_now.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.inside_ec_families_now.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.inside_ec_families_now, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.inside_ec_persons_now.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.inside_ec_persons_now, 'person', 'persons') }}
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-sky-500 bg-white p-4">
                             <div class="text-xs font-medium text-slate-500">Outside EC</div>
                             <div class="mt-1 text-sm text-slate-700">
                                 <span class="font-semibold">CUM:</span>
-                                {{ selectedCutoff.totals.outside_ec_families_cum.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.outside_ec_persons_cum.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.outside_ec_families_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.outside_ec_families_cum, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.outside_ec_persons_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.outside_ec_persons_cum, 'person', 'persons') }}
                             </div>
                             <div class="text-sm text-slate-700">
                                 <span class="font-semibold">NOW:</span>
-                                {{ selectedCutoff.totals.outside_ec_families_now.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.outside_ec_persons_now.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.outside_ec_families_now.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.outside_ec_families_now, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.outside_ec_persons_now.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.outside_ec_persons_now, 'person', 'persons') }}
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-amber-500 bg-white p-4">
                             <div class="text-xs font-medium text-slate-500">Non-IDPs</div>
                             <div class="mt-1 text-sm text-slate-700">
-                                {{ selectedCutoff.totals.non_idp_families_cum.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.non_idp_persons_cum.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.non_idp_families_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.non_idp_families_cum, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.non_idp_persons_cum.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.non_idp_persons_cum, 'person', 'persons') }}
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-rose-500 bg-white p-4">
@@ -223,8 +236,10 @@ function printReport() {
                             <div class="text-xs font-medium text-slate-500">Pre-emptive Evac &amp; Stranded</div>
                             <div class="mt-1 text-sm text-slate-700">
                                 <span class="font-semibold">Pre-emptive:</span>
-                                {{ selectedCutoff.totals.preemptive_families.toLocaleString() }} families /
-                                {{ selectedCutoff.totals.preemptive_persons.toLocaleString() }} persons
+                                {{ selectedCutoff.totals.preemptive_families.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.preemptive_families, 'family', 'families') }} /
+                                {{ selectedCutoff.totals.preemptive_persons.toLocaleString() }}
+                                {{ pluralize(selectedCutoff.totals.preemptive_persons, 'person', 'persons') }}
                             </div>
                             <div class="text-sm text-slate-700">
                                 <span class="font-semibold">Stranded Passengers:</span>
