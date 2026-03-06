@@ -47,7 +47,7 @@ class AllUsersSeeder extends Seeder
 
         // Provincial users — one per province
         Province::all()->each(function (Province $province) use ($password) {
-            $slug = Str::lower(Str::replace(' ', '', $province->name));
+            $slug = Str::slug($province->name);
             User::firstOrCreate(['email' => "{$slug}@dswd.gov.ph"], [
                 'name' => $province->name . ' Provincial User',
                 'password' => $password,
