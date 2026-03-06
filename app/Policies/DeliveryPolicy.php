@@ -40,7 +40,7 @@ class DeliveryPolicy
             return $delivery->escort_user_id === $user->id;
         }
 
-        if ($user->isRegional()) {
+        if ($user->isRros()) {
             $requestLetter = $delivery->requestLetter;
 
             return $requestLetter->cityMunicipality?->province?->region_id === $user->region_id;

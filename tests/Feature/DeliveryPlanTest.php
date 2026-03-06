@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\AugmentationType;
+use App\Enums\UserType;
 use App\Models\CityMunicipality;
 use App\Models\DeliveryPlan;
 use App\Models\Incident;
@@ -16,7 +17,7 @@ function setupDeliveryPlanData(): array
     $lgu = CityMunicipality::factory()->create(['province_id' => $province->id]);
 
     $admin = User::factory()->admin()->create();
-    $regional = User::factory()->regional($region)->create();
+    $regional = User::factory()->regional($region)->state(['user_type' => UserType::Rros])->create();
     $provincial = User::factory()->provincial($province)->create();
     $lguUser = User::factory()->lgu($lgu)->create();
     $escort = User::factory()->escort()->create();

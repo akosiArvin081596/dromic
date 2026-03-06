@@ -50,8 +50,17 @@ const page = usePage<{ auth: Auth; name: string; unreadNotificationCount: number
 const appName = computed(() => page.props.name);
 const user = computed(() => page.props.auth.user);
 
+const viewOnlyTypes: Record<string, string[]> = {
+    lgu: ['dswd_lgu', 'ldrrmo'],
+    provincial: ['pdrrmo', 'pswdo'],
+};
 const isRd = computed(() => user.value.role === 'regional_director');
-const dashboardHref = computed(() => (isRd.value ? '/rd-dashboard' : '/dashboard'));
+const isViewOnly = computed(() => {
+    const types = viewOnlyTypes[user.value.role];
+    return types ? types.includes(user.value.user_type ?? '') : false;
+});
+const isLimitedNav = computed(() => isRd.value || isViewOnly.value);
+const dashboardHref = computed(() => (isLimitedNav.value ? '/rd-dashboard' : '/dashboard'));
 
 const mobileMenuOpen = ref(false);
 const notificationOpen = ref(false);
@@ -227,7 +236,7 @@ function logout() {
                                 Dashboard
                             </Link>
                             <Link
-                                v-if="!isRd"
+                                v-if="!isLimitedNav"
                                 href="/incidents"
                                 class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors"
                                 :class="
@@ -557,7 +566,7 @@ function logout() {
                         Dashboard
                     </Link>
                     <Link
-                        v-if="!isRd"
+                        v-if="!isLimitedNav"
                         href="/incidents"
                         class="block px-3 py-2 text-base font-medium"
                         :class="

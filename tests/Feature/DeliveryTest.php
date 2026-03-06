@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\AugmentationType;
+use App\Enums\UserType;
 use App\Models\CityMunicipality;
 use App\Models\Delivery;
 use App\Models\Incident;
@@ -18,7 +19,7 @@ function setupDeliveryData(): array
     $lgu = CityMunicipality::factory()->create(['province_id' => $province->id]);
 
     $admin = User::factory()->admin()->create();
-    $regional = User::factory()->regional($region)->create();
+    $regional = User::factory()->regional($region)->state(['user_type' => UserType::Rros])->create();
     $provincial = User::factory()->provincial($province)->create();
     $lguUser = User::factory()->lgu($lgu)->create();
     $escort = User::factory()->escort()->create();
@@ -233,6 +234,20 @@ test('escort cannot update delivery not assigned to them', function () {
     $this->actingAs($otherEscort)
         ->patch("/deliveries/{$delivery->id}", [
             'notes' => 'Should not work',
+        ])
+        ->assertForbidden();
+});
+
+test('drims regional cannot record a delivery', function () {
+    $data = setupDeliveryData();
+    $drims = User::factory()->regional(Region::find($data['region']->id))->create();
+
+    $this->actingAs($drims)
+        ->post("/incidents/{$data['incident']->id}/request-letters/{$data['letter']->id}/deliveries", [
+            'delivery_items' => [
+                ['type' => AugmentationType::FamilyFoodPacks->value, 'quantity' => 30],
+            ],
+            'delivery_date' => '2026-03-03',
         ])
         ->assertForbidden();
 });

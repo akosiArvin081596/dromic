@@ -108,6 +108,33 @@ class User extends Authenticatable
         return $this->role === UserRole::Lgu;
     }
 
+    public function isRros(): bool
+    {
+        return $this->role === UserRole::Regional && $this->user_type === UserType::Rros;
+    }
+
+    public function isDrims(): bool
+    {
+        return $this->role === UserRole::Regional && $this->user_type === UserType::Drims;
+    }
+
+    /**
+     * View-only users see the summary dashboard (like Regional Director).
+     * They cannot create/edit reports, manage incidents, or perform workflow actions.
+     */
+    public function isViewOnly(): bool
+    {
+        if ($this->role === UserRole::Lgu) {
+            return in_array($this->user_type, [UserType::DswdLgu, UserType::Ldrrmo], true);
+        }
+
+        if ($this->role === UserRole::Provincial) {
+            return in_array($this->user_type, [UserType::Pdrrmo, UserType::Pswdo], true);
+        }
+
+        return false;
+    }
+
     public function isEscort(): bool
     {
         return $this->role === UserRole::Escort;

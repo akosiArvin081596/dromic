@@ -72,7 +72,7 @@ class RequestLetterPolicy
 
     public function approve(User $user, RequestLetter $requestLetter): bool
     {
-        if (! $user->isAdmin() && ! $user->isRegional()) {
+        if (! $user->isAdmin() && ! $user->isRros()) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class RequestLetterPolicy
             return false;
         }
 
-        if ($user->isRegional()) {
+        if ($user->isRros()) {
             return $requestLetter->cityMunicipality?->province?->region_id === $user->region_id;
         }
 
@@ -89,7 +89,7 @@ class RequestLetterPolicy
 
     public function recordDelivery(User $user, RequestLetter $requestLetter): bool
     {
-        if (! $user->isAdmin() && ! $user->isRegional()) {
+        if (! $user->isAdmin() && ! $user->isRros()) {
             return false;
         }
 
@@ -97,7 +97,7 @@ class RequestLetterPolicy
             return false;
         }
 
-        if ($user->isRegional()) {
+        if ($user->isRros()) {
             return $requestLetter->cityMunicipality?->province?->region_id === $user->region_id;
         }
 

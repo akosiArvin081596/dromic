@@ -17,7 +17,7 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        if ($user->isRegionalDirector()) {
+        if ($user->isRegionalDirector() || $user->isViewOnly()) {
             return redirect()->route('rd-dashboard');
         }
 

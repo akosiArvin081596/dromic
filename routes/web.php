@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/rd-dashboard/{incident?}', [RdDashboardController::class, 'index'])
-        ->middleware('role:regional_director')
+        ->middleware('role:regional_director,regional,provincial,lgu')
         ->name('rd-dashboard');
 
     Route::resource('incidents', IncidentController::class)->except(['destroy']);
