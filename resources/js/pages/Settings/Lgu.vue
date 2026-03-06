@@ -77,13 +77,13 @@ function submit() {
 <template>
     <AppLayout>
         <Head title="LGU Settings" />
-        <div class="mx-auto max-w-2xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">LGU Settings</h1>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Configure signatories and logo for your reports</p>
 
-            <form class="mt-8 space-y-6" @submit.prevent="submit">
+            <form class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2" @submit.prevent="submit">
                 <!-- LGU Logo -->
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2 dark:border-slate-700 dark:bg-slate-800">
                     <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">LGU Logo</h2>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Upload your LGU logo for reports. Max 2MB (PNG, JPG, WEBP)</p>
                     <div class="mt-4 flex items-center gap-6">
@@ -109,7 +109,7 @@ function submit() {
                 </div>
 
                 <!-- Signatories -->
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2 dark:border-slate-700 dark:bg-slate-800">
                     <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Report Signatories</h2>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         Configure the 3 signatories that appear at the bottom of your reports
@@ -196,7 +196,7 @@ function submit() {
                     </div>
                 </div>
 
-                <div class="flex justify-end">
+                <div class="flex justify-end lg:col-span-2">
                     <button
                         type="submit"
                         class="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700"

@@ -55,7 +55,7 @@ function submit() {
 <template>
     <AppLayout>
         <Head title="Admin Settings" />
-        <div class="mx-auto max-w-2xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Admin Settings</h1>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Configure system-wide settings</p>
 
