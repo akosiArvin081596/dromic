@@ -2,8 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Enums\IncidentCategory;
 use App\Enums\IncidentStatus;
 use App\Enums\IncidentType;
+use App\Models\Incident;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,19 +17,17 @@ class IncidentFactory extends Factory
     /** @return array<string, mixed> */
     public function definition(): array
     {
-        $incidentNames = [
-            'Typhoon Aghon',
-            'Tropical Storm Betty',
-            'Flooding - Heavy Rainfall',
-            'Earthquake Intensity V',
-            'Landslide - Continuous Rain',
-            'Typhoon Carina',
-            'Tropical Depression Dodong',
-            'Storm Surge Warning',
-        ];
+        $category = fake()->randomElement(IncidentCategory::cases());
+        $identifier = match ($category) {
+            IncidentCategory::TropicalCyclone => fake()->randomElement(['Aghon', 'Betty', 'Carina', 'Dodong']),
+            IncidentCategory::Earthquake => 'Intensity '.fake()->randomElement(['III', 'IV', 'V', 'VI']),
+            default => null,
+        };
 
         return [
-            'name' => fake()->randomElement($incidentNames),
+            'name' => Incident::composeName($category, $identifier),
+            'category' => $category,
+            'identifier' => $identifier,
             'type' => IncidentType::Massive,
             'created_by' => User::factory(),
             'description' => fake()->paragraph(2),
@@ -53,6 +53,15 @@ class IncidentFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => IncidentStatus::Closed,
+        ]);
+    }
+
+    public function category(IncidentCategory $category, ?string $identifier = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'category' => $category,
+            'identifier' => $identifier,
+            'name' => Incident::composeName($category, $identifier),
         ]);
     }
 }

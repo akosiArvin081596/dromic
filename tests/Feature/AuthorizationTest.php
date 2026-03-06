@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ReportType;
 use App\Models\CityMunicipality;
 use App\Models\Incident;
 use App\Models\Province;
@@ -44,7 +43,7 @@ test('provincial user cannot create incidents', function () {
 
     $this->actingAs($data['provincial1'])
         ->post('/incidents', [
-            'name' => 'Unauthorized Incident',
+            'category' => 'flood',
             'type' => 'massive',
             'city_municipality_ids' => [$data['lgu1']->id],
         ])

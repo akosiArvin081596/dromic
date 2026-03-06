@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\IncidentCategory;
 use App\Enums\IncidentStatus;
 use App\Enums\IncidentType;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,8 @@ class Incident extends Model
     protected $fillable = [
         'name',
         'display_name',
+        'category',
+        'identifier',
         'type',
         'created_by',
         'description',
@@ -29,6 +32,7 @@ class Incident extends Model
     protected function casts(): array
     {
         return [
+            'category' => IncidentCategory::class,
             'type' => IncidentType::class,
             'status' => IncidentStatus::class,
         ];
@@ -56,6 +60,17 @@ class Incident extends Model
     public function requestLetters(): HasMany
     {
         return $this->hasMany(RequestLetter::class);
+    }
+
+    public static function composeName(IncidentCategory $category, ?string $identifier): string
+    {
+        $name = $category->label();
+
+        if ($identifier !== null && trim($identifier) !== '') {
+            $name .= ' '.trim($identifier);
+        }
+
+        return $name;
     }
 
     public function computeDisplayName(): string

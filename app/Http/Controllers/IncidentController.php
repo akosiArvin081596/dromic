@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AugmentationType;
+use App\Enums\IncidentCategory;
 use App\Enums\UserRole;
 use App\Events\IncidentCreated;
 use App\Http\Requests\StoreIncidentRequest;
@@ -127,8 +128,14 @@ class IncidentController extends Controller
             $provincesQuery->where('region_id', $user->region_id);
         }
 
+        $categories = collect(IncidentCategory::cases())->map(fn (IncidentCategory $c) => [
+            'value' => $c->value,
+            'label' => $c->label(),
+        ])->all();
+
         return Inertia::render('Incidents/Create', [
             'provinces' => $provincesQuery->get(),
+            'categories' => $categories,
             'userRole' => $user->role->value,
             'userCityMunicipalityId' => $user->city_municipality_id,
         ]);
@@ -141,9 +148,14 @@ class IncidentController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
+        $category = IncidentCategory::from($data['category']);
+        $name = Incident::composeName($category, $data['identifier'] ?? null);
+
         $incident = Incident::query()->create([
-            'name' => $data['name'],
-            'display_name' => $data['name'],
+            'name' => $name,
+            'display_name' => $name,
+            'category' => $data['category'],
+            'identifier' => $data['identifier'] ?? null,
             'type' => $data['type'],
             'description' => $data['description'] ?? null,
             'created_by' => $user->id,
@@ -285,9 +297,15 @@ class IncidentController extends Controller
             $provincesQuery->where('region_id', $user->region_id);
         }
 
+        $categories = collect(IncidentCategory::cases())->map(fn (IncidentCategory $c) => [
+            'value' => $c->value,
+            'label' => $c->label(),
+        ])->all();
+
         return Inertia::render('Incidents/Edit', [
             'incident' => $incident,
             'provinces' => $provincesQuery->get(),
+            'categories' => $categories,
         ]);
     }
 
@@ -297,10 +315,14 @@ class IncidentController extends Controller
 
         $data = $request->validated();
 
-        $nameChanged = $incident->name !== $data['name'];
+        $category = IncidentCategory::from($data['category']);
+        $name = Incident::composeName($category, $data['identifier'] ?? null);
+        $nameChanged = $incident->name !== $name;
 
         $incident->update([
-            'name' => $data['name'],
+            'name' => $name,
+            'category' => $data['category'],
+            'identifier' => $data['identifier'] ?? null,
             'type' => $data['type'],
             'description' => $data['description'] ?? null,
             'status' => $data['status'] ?? $incident->status,

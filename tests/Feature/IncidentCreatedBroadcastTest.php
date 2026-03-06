@@ -32,7 +32,7 @@ test('event is dispatched when admin creates an incident', function () {
 
     $this->actingAs($data['admin'])
         ->post('/incidents', [
-            'name' => 'Test Flood',
+            'category' => 'flood',
             'type' => 'massive',
             'description' => 'A test incident.',
             'city_municipality_ids' => [$data['lgu1']->id],

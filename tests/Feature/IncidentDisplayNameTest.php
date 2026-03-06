@@ -49,7 +49,7 @@ test('display_name shows barangay and municipality for single affected area', fu
 
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 });
 
 test('display_name adds Brgy prefix when not present', function () {
@@ -59,7 +59,7 @@ test('display_name adds Brgy prefix when not present', function () {
 
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 });
 
 test('display_name shows municipality for multiple barangays in same municipality', function () {
@@ -69,7 +69,7 @@ test('display_name shows municipality for multiple barangays in same municipalit
 
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan', 'Brgy. Libertad']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Butuan City, Agusan del Norte');
 });
 
 test('display_name shows province for multiple municipalities in same province', function () {
@@ -83,7 +83,7 @@ test('display_name shows province for multiple municipalities in same province',
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
     createReportForIncident($incident, $municipality2, $user2, ['Brgy. Poblacion']);
 
-    expect($incident->fresh()->display_name)->toBe('Typhoon Aghon affecting Agusan del Norte');
+    expect($incident->fresh()->display_name)->toBe('Typhoon Aghon affecting the Province of Agusan del Norte');
 });
 
 test('display_name shows region for multiple provinces', function () {
@@ -108,7 +108,7 @@ test('observer fires on report create and updates display_name', function () {
 
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 });
 
 test('observer fires on report delete and reverts display_name', function () {
@@ -118,7 +118,7 @@ test('observer fires on report delete and reverts display_name', function () {
 
     $report = createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 
     $report->delete();
 
@@ -132,7 +132,7 @@ test('observer fires on affected_areas update and recomputes display_name', func
 
     $report = createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 
     $report->update([
         'affected_areas' => [
@@ -141,7 +141,7 @@ test('observer fires on affected_areas update and recomputes display_name', func
         ],
     ]);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Butuan City, Agusan del Norte');
 });
 
 test('incident name edit recomputes display_name', function () {
@@ -153,16 +153,16 @@ test('incident name edit recomputes display_name', function () {
 
     createReportForIncident($incident, $geo['municipality'], $geo['user'], ['Brgy. San Juan']);
 
-    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Fire Incident at Brgy. San Juan, Butuan City, Agusan del Norte');
 
     $this->actingAs($admin)->put("/incidents/{$incident->id}", [
-        'name' => 'Flood Incident',
+        'category' => 'flood',
         'type' => 'massive',
         'status' => 'active',
         'city_municipality_ids' => [$geo['municipality']->id],
     ]);
 
-    expect($incident->fresh()->display_name)->toBe('Flood Incident at Brgy. San Juan, Butuan City');
+    expect($incident->fresh()->display_name)->toBe('Flood at Brgy. San Juan, Butuan City, Agusan del Norte');
 });
 
 test('empty barangay strings are ignored', function () {

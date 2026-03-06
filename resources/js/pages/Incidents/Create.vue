@@ -3,9 +3,11 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { CityMunicipality, Province } from '@/types';
+import type { IncidentCategory } from '@/types/incident';
 
 const props = defineProps<{
     provinces: Province[];
+    categories: IncidentCategory[];
     userRole: string;
     userCityMunicipalityId: number | null;
 }>();
@@ -13,7 +15,8 @@ const props = defineProps<{
 const isLgu = props.userRole === 'lgu';
 
 const form = useForm({
-    name: '',
+    category: '',
+    identifier: '',
     type: isLgu ? 'local' : 'massive',
     description: '',
     city_municipality_ids: isLgu && props.userCityMunicipalityId ? [props.userCityMunicipalityId] : ([] as number[]),
@@ -65,14 +68,26 @@ function submit() {
 
             <form class="space-y-6 border border-slate-200 bg-white p-6" @submit.prevent="submit">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Incident Name</label>
+                    <label class="block text-sm font-medium text-slate-700">Category</label>
+                    <select
+                        v-model="form.category"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    >
+                        <option value="" disabled>Select a category</option>
+                        <option v-for="cat in categories" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
+                    </select>
+                    <p v-if="form.errors.category" class="mt-1 text-sm text-rose-600">{{ form.errors.category }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Identifier (optional)</label>
                     <input
-                        v-model="form.name"
+                        v-model="form.identifier"
                         type="text"
                         class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                        placeholder="e.g. Typhoon Aghon"
+                        placeholder="e.g. Basyang, Intensity V"
                     />
-                    <p v-if="form.errors.name" class="mt-1 text-sm text-rose-600">{{ form.errors.name }}</p>
+                    <p v-if="form.errors.identifier" class="mt-1 text-sm text-rose-600">{{ form.errors.identifier }}</p>
                 </div>
 
                 <div>

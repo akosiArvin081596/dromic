@@ -92,7 +92,8 @@ test('creating an incident sends database notifications to recipients', function
 
     $this->actingAs($data['admin'])
         ->post('/incidents', [
-            'name' => 'Notification Typhoon',
+            'category' => 'tropical_cyclone',
+            'identifier' => 'Notification',
             'type' => 'massive',
             'description' => 'Testing notifications.',
             'city_municipality_ids' => [$data['lgu']->id],
@@ -112,7 +113,8 @@ test('incident notification stores correct data structure', function () {
 
     $this->actingAs($data['admin'])
         ->post('/incidents', [
-            'name' => 'Payload Test Typhoon',
+            'category' => 'tropical_cyclone',
+            'identifier' => 'Payload Test',
             'type' => 'local',
             'city_municipality_ids' => [$data['lgu']->id],
         ])
@@ -123,7 +125,7 @@ test('incident notification stores correct data structure', function () {
 
         return $dbData['kind'] === 'incident'
             && isset($dbData['incident']['id'])
-            && $dbData['incident']['name'] === 'Payload Test Typhoon';
+            && $dbData['incident']['name'] === 'Tropical Cyclone Payload Test';
     });
 });
 

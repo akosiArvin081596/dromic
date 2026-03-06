@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\IncidentCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreIncidentRequest extends FormRequest
 {
@@ -11,11 +13,12 @@ class StoreIncidentRequest extends FormRequest
         return true;
     }
 
-    /** @return array<string, array<int, string>> */
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'category' => ['required', new Enum(IncidentCategory::class)],
+            'identifier' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'string', 'in:local,massive'],
             'description' => ['nullable', 'string', 'max:2000'],
             'city_municipality_ids' => ['nullable', 'array'],

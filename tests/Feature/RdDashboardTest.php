@@ -89,7 +89,7 @@ test('regional director cannot create incidents', function () {
 
     $this->actingAs($data['rd'])
         ->post('/incidents', [
-            'name' => 'Unauthorized Incident',
+            'category' => 'flood',
             'type' => 'massive',
             'city_municipality_ids' => [$data['lgu']->id],
         ])

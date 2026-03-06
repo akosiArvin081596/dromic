@@ -833,27 +833,24 @@ const incidentTitle = computed(() => {
                             </div>
 
                             <!-- Signatories -->
-                            <div
-                                v-if="lguSettings?.signatory_1_name || lguSettings?.signatory_2_name || lguSettings?.signatory_3_name"
-                                class="signatories"
-                            >
+                            <div class="signatories">
                                 <div class="signatories-row">
-                                    <div v-if="lguSettings?.signatory_1_name" class="signatory">
+                                    <div class="signatory">
                                         <div class="signatory-label">Prepared by:</div>
-                                        <div class="signatory-name">{{ lguSettings.signatory_1_name }}</div>
-                                        <div class="signatory-designation">{{ lguSettings.signatory_1_designation }}</div>
+                                        <div class="signatory-name">{{ lguSettings?.signatory_1_name || '______________________' }}</div>
+                                        <div class="signatory-designation">{{ lguSettings?.signatory_1_designation || 'CDRRMO' }}</div>
                                     </div>
-                                    <div v-if="lguSettings?.signatory_2_name" class="signatory">
+                                    <div class="signatory">
                                         <div class="signatory-label">Reviewed by:</div>
-                                        <div class="signatory-name">{{ lguSettings.signatory_2_name }}</div>
-                                        <div class="signatory-designation">{{ lguSettings.signatory_2_designation }}</div>
+                                        <div class="signatory-name">{{ lguSettings?.signatory_2_name || '______________________' }}</div>
+                                        <div class="signatory-designation">{{ lguSettings?.signatory_2_designation || 'LDRRMO' }}</div>
                                     </div>
                                 </div>
-                                <div v-if="lguSettings?.signatory_3_name" class="signatories-row signatories-center">
+                                <div class="signatories-row signatories-center">
                                     <div class="signatory">
                                         <div class="signatory-label">Noted by:</div>
-                                        <div class="signatory-name">{{ lguSettings.signatory_3_name }}</div>
-                                        <div class="signatory-designation">{{ lguSettings.signatory_3_designation }}</div>
+                                        <div class="signatory-name">{{ lguSettings?.signatory_3_name || '______________________' }}</div>
+                                        <div class="signatory-designation">{{ lguSettings?.signatory_3_designation || 'Local Chief Executive' }}</div>
                                     </div>
                                 </div>
                             </div>

@@ -84,7 +84,8 @@ test('admin can create a massive incident', function () {
 
     $this->actingAs($data['admin'])
         ->post('/incidents', [
-            'name' => 'Test Typhoon',
+            'category' => 'tropical_cyclone',
+            'identifier' => 'Test',
             'type' => 'massive',
             'description' => 'A test incident',
             'city_municipality_ids' => [$data['lgu1']->id, $data['lgu2']->id],
@@ -92,7 +93,9 @@ test('admin can create a massive incident', function () {
         ->assertRedirect();
 
     $this->assertDatabaseHas('incidents', [
-        'name' => 'Test Typhoon',
+        'name' => 'Tropical Cyclone Test',
+        'category' => 'tropical_cyclone',
+        'identifier' => 'Test',
         'type' => 'massive',
         'created_by' => $data['admin']->id,
     ]);
@@ -104,13 +107,14 @@ test('regional can create a massive incident without assigning lgus', function (
 
     $this->actingAs($regional)
         ->post('/incidents', [
-            'name' => 'Massive Typhoon',
+            'category' => 'tropical_cyclone',
+            'identifier' => 'Massive',
             'type' => 'massive',
             'description' => 'A massive typhoon',
         ])
         ->assertRedirect();
 
-    $newIncident = Incident::where('name', 'Massive Typhoon')->first();
+    $newIncident = Incident::where('name', 'Tropical Cyclone Massive')->first();
     expect($newIncident)->not->toBeNull();
     expect($newIncident->cityMunicipalities)->toHaveCount(0);
 });
@@ -120,13 +124,14 @@ test('admin can create a massive incident without assigning lgus', function () {
 
     $this->actingAs($admin)
         ->post('/incidents', [
-            'name' => 'Massive Earthquake',
+            'category' => 'earthquake',
+            'identifier' => 'Massive',
             'type' => 'massive',
             'description' => 'A massive earthquake',
         ])
         ->assertRedirect();
 
-    $newIncident = Incident::where('name', 'Massive Earthquake')->first();
+    $newIncident = Incident::where('name', 'Earthquake Massive')->first();
     expect($newIncident)->not->toBeNull();
     expect($newIncident->cityMunicipalities)->toHaveCount(0);
 });
@@ -136,14 +141,14 @@ test('lgu can create a local incident with auto-assigned lgu', function () {
 
     $this->actingAs($data['lguUser'])
         ->post('/incidents', [
-            'name' => 'Local Flooding',
+            'category' => 'flood',
             'type' => 'local',
             'description' => 'Localized flooding',
             'city_municipality_ids' => [$data['lgu1']->id],
         ])
         ->assertRedirect();
 
-    $newIncident = Incident::where('name', 'Local Flooding')->first();
+    $newIncident = Incident::where('name', 'Flood')->first();
     expect($newIncident)->not->toBeNull();
 
     // LGU's own city_municipality is auto-attached
@@ -198,7 +203,8 @@ test('admin can update an incident', function () {
 
     $this->actingAs($data['admin'])
         ->put("/incidents/{$data['incident']->id}", [
-            'name' => 'Updated Incident Name',
+            'category' => 'fire',
+            'identifier' => 'Updated',
             'type' => 'massive',
             'description' => 'Updated description',
             'city_municipality_ids' => [$data['lgu1']->id],
@@ -207,7 +213,9 @@ test('admin can update an incident', function () {
 
     $this->assertDatabaseHas('incidents', [
         'id' => $data['incident']->id,
-        'name' => 'Updated Incident Name',
+        'name' => 'Fire Updated',
+        'category' => 'fire',
+        'identifier' => 'Updated',
     ]);
 });
 
@@ -216,7 +224,7 @@ test('lgu cannot update an incident', function () {
 
     $this->actingAs($data['lguUser'])
         ->put("/incidents/{$data['incident']->id}", [
-            'name' => 'Hacked Name',
+            'category' => 'fire',
             'type' => 'massive',
             'city_municipality_ids' => [$data['lgu1']->id],
         ])
@@ -228,7 +236,7 @@ test('store validates required fields', function () {
 
     $this->actingAs($admin)
         ->post('/incidents', [])
-        ->assertSessionHasErrors(['name', 'type']);
+        ->assertSessionHasErrors(['category', 'type']);
 });
 
 test('incidents can be filtered by search', function () {
