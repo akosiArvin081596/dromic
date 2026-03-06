@@ -16,6 +16,9 @@ const totalCum = computed(() => props.totalMaleCum + props.totalFemaleCum);
 const totalNow = computed(() => props.totalMaleNow + props.totalFemaleNow);
 const exceedsCum = computed(() => !disabled.value && totalCum.value > props.insideEcPersonsCum);
 const exceedsNow = computed(() => !disabled.value && totalNow.value > props.insideEcPersonsNow);
+const mismatchCum = computed(() => !disabled.value && totalCum.value !== props.insideEcPersonsCum);
+const mismatchNow = computed(() => !disabled.value && totalNow.value !== props.insideEcPersonsNow);
+const hasMismatchOnly = computed(() => (mismatchCum.value || mismatchNow.value) && !exceedsCum.value && !exceedsNow.value);
 
 const sectors = defineModel<VulnerableSectors>('sectors', { required: true });
 
@@ -43,7 +46,7 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
 
         <p v-if="disabled" class="text-sm text-slate-500">No persons inside evacuation centers. Add entries in Section III-A first.</p>
 
-        <div v-if="exceedsCum || exceedsNow" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
+        <div v-if="exceedsCum || exceedsNow" class="border-l-4 border-rose-500 bg-rose-50 p-4 text-sm text-rose-900">
             <p class="font-medium">Total persons exceeds Section III-A (Inside ECs):</p>
             <ul class="mt-1 list-inside list-disc">
                 <li v-if="exceedsCum">
@@ -51,6 +54,20 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                     <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
                 </li>
                 <li v-if="exceedsNow">
+                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
+                </li>
+            </ul>
+        </div>
+
+        <div v-if="hasMismatchOnly" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
+            <p class="font-medium">Total persons mismatch with Section III-A (Inside ECs):</p>
+            <ul class="mt-1 list-inside list-disc">
+                <li v-if="mismatchCum">
+                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
+                </li>
+                <li v-if="mismatchNow">
                     NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
                     <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
                 </li>
