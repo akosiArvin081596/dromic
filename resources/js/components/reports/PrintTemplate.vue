@@ -72,7 +72,16 @@ const locationText = computed(() => {
     if (!cm) {
         return '';
     }
-    return cm.province ? `${cm.name}, ${cm.province.name}` : cm.name;
+    const provinceName = cm.province?.name ?? '';
+    const lguProvince = provinceName ? `${cm.name}, ${provinceName}` : cm.name;
+
+    const areas = props.report.affected_areas ?? [];
+    if (areas.length === 1 && areas[0].barangay) {
+        const brgy = areas[0].barangay.startsWith('Brgy.') ? areas[0].barangay : `Brgy. ${areas[0].barangay}`;
+        return `${brgy}, ${lguProvince}`;
+    }
+
+    return lguProvince;
 });
 </script>
 
