@@ -5,6 +5,7 @@ export type User = {
     avatar?: string;
     email_verified_at: string | null;
     role: 'admin' | 'regional' | 'provincial' | 'lgu' | 'escort' | 'regional_director';
+    user_type: string | null;
     region_id: number | null;
     province_id: number | null;
     city_municipality_id: number | null;

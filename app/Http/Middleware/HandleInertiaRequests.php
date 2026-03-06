@@ -45,6 +45,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? [
                     ...$user->toArray(),
                     'role' => $user->role?->value ?? 'lgu',
+                    'user_type' => $user->user_type?->value,
+                    'user_type_label' => $user->user_type?->label(),
                     'region_name' => $user->region?->name,
                     'province_name' => $user->province?->name,
                     'city_municipality_name' => $user->cityMunicipality?->name,

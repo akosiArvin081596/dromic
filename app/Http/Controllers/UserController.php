@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
+use App\Enums\UserType;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\CityMunicipality;
@@ -54,6 +55,14 @@ class UserController extends Controller
                 'value' => $role->value,
                 'label' => ucfirst(str_replace('_', ' ', $role->value)),
             ])->values(),
+            'userTypes' => collect(UserRole::cases())
+                ->filter(fn (UserRole $role) => UserType::forRole($role) !== [])
+                ->mapWithKeys(fn (UserRole $role) => [
+                    $role->value => collect(UserType::forRole($role))->map(fn (UserType $type) => [
+                        'value' => $type->value,
+                        'label' => $type->label(),
+                    ])->values(),
+                ]),
         ]);
     }
 
@@ -66,6 +75,7 @@ class UserController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
+            'user_type' => $data['user_type'] ?? null,
             'region_id' => $data['region_id'] ?? null,
             'province_id' => $data['province_id'] ?? null,
             'city_municipality_id' => $data['city_municipality_id'] ?? null,
@@ -85,6 +95,7 @@ class UserController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'role' => $data['role'],
+            'user_type' => $data['user_type'] ?? null,
             'region_id' => $data['region_id'] ?? null,
             'province_id' => $data['province_id'] ?? null,
             'city_municipality_id' => $data['city_municipality_id'] ?? null,

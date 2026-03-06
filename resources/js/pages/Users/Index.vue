@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { User } from '@/types/auth';
 
 type Role = { value: string; label: string };
+type UserTypeOption = { value: string; label: string };
 type Region = { id: number; name: string };
 type Province = { id: number; name: string; region_id: number; region?: Region };
 type CityMunicipality = { id: number; name: string; province_id: number; province?: Province };
@@ -22,6 +23,7 @@ const props = defineProps<{
     provinces: Province[];
     cityMunicipalities: CityMunicipality[];
     roles: Role[];
+    userTypes: Record<string, UserTypeOption[]>;
 }>();
 
 const search = ref(props.filters.search ?? '');
@@ -44,6 +46,7 @@ const createForm = useForm({
     email: '',
     password: '',
     role: 'lgu',
+    user_type: null as string | null,
     region_id: null as number | null,
     province_id: null as number | null,
     city_municipality_id: null as number | null,
@@ -54,12 +57,29 @@ const editForm = useForm({
     email: '',
     password: '',
     role: 'lgu',
+    user_type: null as string | null,
     region_id: null as number | null,
     province_id: null as number | null,
     city_municipality_id: null as number | null,
 });
 
 const editingUser = ref<User | null>(null);
+
+watch(
+    () => createForm.role,
+    (role) => {
+        const types = props.userTypes[role];
+        createForm.user_type = types?.length ? types[0].value : null;
+    },
+);
+
+watch(
+    () => editForm.role,
+    (role) => {
+        const types = props.userTypes[role];
+        editForm.user_type = types?.length ? types[0].value : null;
+    },
+);
 
 function openCreate() {
     createForm.reset();
@@ -82,6 +102,7 @@ function openEdit(user: User & { region?: Region; province?: Province; city_muni
     editForm.email = user.email;
     editForm.password = '';
     editForm.role = user.role;
+    editForm.user_type = user.user_type;
     editForm.region_id = user.region_id;
     editForm.province_id = user.province_id;
     editForm.city_municipality_id = user.city_municipality_id;
@@ -112,6 +133,18 @@ function deleteUser() {
             userToDelete.value = null;
         },
     });
+}
+
+const userTypesForCreate = computed(() => props.userTypes[createForm.role] ?? []);
+const userTypesForEdit = computed(() => props.userTypes[editForm.role] ?? []);
+
+function userTypeLabel(userType: string | null): string {
+    if (!userType) return '-';
+    for (const types of Object.values(props.userTypes)) {
+        const found = types.find((t) => t.value === userType);
+        if (found) return found.label;
+    }
+    return userType;
 }
 
 const filteredProvincesForCreate = computed(() =>
@@ -250,6 +283,7 @@ function locationLabel(user: User & { region?: Region; province?: Province; city
                                 <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Location</th>
                                 <th class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase">Actions</th>
                             </tr>
@@ -266,6 +300,9 @@ function locationLabel(user: User & { region?: Region; province?: Province; city
                                         {{ user.role.replace('_', ' ') }}
                                     </span>
                                 </td>
+                                <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
+                                    {{ userTypeLabel(user.user_type) }}
+                                </td>
                                 <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">{{ locationLabel(user) }}</td>
                                 <td class="px-6 py-4 text-right text-sm whitespace-nowrap">
                                     <button class="text-indigo-600 transition-colors hover:text-indigo-800" @click="openEdit(user)">Edit</button>
@@ -275,7 +312,7 @@ function locationLabel(user: User & { region?: Region; province?: Province; city
                                 </td>
                             </tr>
                             <tr v-if="users.data.length === 0">
-                                <td colspan="5" class="px-6 py-12 text-center text-sm text-slate-400">No users found</td>
+                                <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-400">No users found</td>
                             </tr>
                         </tbody>
                     </table>
@@ -349,6 +386,16 @@ function locationLabel(user: User & { region?: Region; province?: Province; city
                             >
                                 <option v-for="role in roles" :key="role.value" :value="role.value">{{ role.label }}</option>
                             </select>
+                        </div>
+                        <div v-if="userTypesForCreate.length">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">User Type</label>
+                            <select
+                                v-model="createForm.user_type"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+                            >
+                                <option v-for="type in userTypesForCreate" :key="type.value" :value="type.value">{{ type.label }}</option>
+                            </select>
+                            <p v-if="createForm.errors.user_type" class="mt-1 text-xs text-red-600">{{ createForm.errors.user_type }}</p>
                         </div>
                         <div v-if="createForm.role === 'regional' || createForm.role === 'regional_director'">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Region</label>
@@ -454,6 +501,16 @@ function locationLabel(user: User & { region?: Region; province?: Province; city
                             >
                                 <option v-for="role in roles" :key="role.value" :value="role.value">{{ role.label }}</option>
                             </select>
+                        </div>
+                        <div v-if="userTypesForEdit.length">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">User Type</label>
+                            <select
+                                v-model="editForm.user_type"
+                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+                            >
+                                <option v-for="type in userTypesForEdit" :key="type.value" :value="type.value">{{ type.label }}</option>
+                            </select>
+                            <p v-if="editForm.errors.user_type" class="mt-1 text-xs text-red-600">{{ editForm.errors.user_type }}</p>
                         </div>
                         <div v-if="editForm.role === 'regional' || editForm.role === 'regional_director'">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Region</label>

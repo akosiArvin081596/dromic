@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\UserRole;
+use App\Enums\UserType;
 use App\Models\CityMunicipality;
 use App\Models\Province;
 use App\Models\Region;
@@ -34,6 +35,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => UserRole::Lgu,
+            'user_type' => UserType::Cmswdo,
         ];
     }
 
@@ -51,6 +53,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Admin,
+            'user_type' => null,
             'region_id' => null,
             'province_id' => null,
             'city_municipality_id' => null,
@@ -61,6 +64,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Regional,
+            'user_type' => UserType::Drims,
             'region_id' => $region?->id ?? Region::factory(),
             'province_id' => null,
             'city_municipality_id' => null,
@@ -71,6 +75,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Provincial,
+            'user_type' => UserType::ProvincialDswd,
             'province_id' => $province?->id ?? Province::factory(),
             'city_municipality_id' => null,
         ]);
@@ -80,6 +85,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Lgu,
+            'user_type' => UserType::Cmswdo,
             'city_municipality_id' => $cityMunicipality?->id ?? CityMunicipality::factory(),
             'province_id' => null,
         ]);
@@ -89,6 +95,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::Escort,
+            'user_type' => null,
             'region_id' => null,
             'province_id' => null,
             'city_municipality_id' => null,
@@ -99,6 +106,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => UserRole::RegionalDirector,
+            'user_type' => null,
             'region_id' => $region?->id ?? Region::factory(),
             'province_id' => null,
             'city_municipality_id' => null,
