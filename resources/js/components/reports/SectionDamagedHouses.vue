@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { emptyDamagedHouse } from '@/composables/useReportCalculations';
 import type { Barangay, DamagedHouse } from '@/types';
 
 import BarangaySelect from './BarangaySelect.vue';
 
-defineProps<{
+const props = defineProps<{
     barangays: Barangay[];
     totalTotallyDamaged: number;
     totalPartiallyDamaged: number;
     totalEstimatedCost: number;
+    totalAffectedFamilies: number;
 }>();
+
+const totalDamagedHouses = computed(() => props.totalTotallyDamaged + props.totalPartiallyDamaged);
+const exceedsAffectedFamilies = computed(() => totalDamagedHouses.value > props.totalAffectedFamilies);
 
 const rows = defineModel<DamagedHouse[]>('rows', { required: true });
 
@@ -33,6 +38,14 @@ function formatCurrency(value: number): string {
             <button type="button" class="bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700" @click="addRow">
                 + Add Row
             </button>
+        </div>
+
+        <div v-if="exceedsAffectedFamilies" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
+            <p class="font-medium">
+                Total damaged houses (<strong>{{ totalDamagedHouses.toLocaleString() }}</strong>) exceeds the total affected families (<strong>{{
+                    totalAffectedFamilies.toLocaleString()
+                }}</strong>) declared in Section II.
+            </p>
         </div>
 
         <div class="overflow-x-auto">

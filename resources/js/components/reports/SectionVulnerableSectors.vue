@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import type { AgeGenderBreakdown, VulnerableSectors } from '@/types';
 
 const props = defineProps<{
@@ -11,14 +11,23 @@ const props = defineProps<{
     insideEcPersonsNow: number;
 }>();
 
+const disabled = computed(() => props.insideEcPersonsCum === 0 && props.insideEcPersonsNow === 0);
 const totalCum = computed(() => props.totalMaleCum + props.totalFemaleCum);
 const totalNow = computed(() => props.totalMaleNow + props.totalFemaleNow);
-const exceedsCum = computed(() => totalCum.value > props.insideEcPersonsCum);
-const exceedsNow = computed(() => totalNow.value > props.insideEcPersonsNow);
+const exceedsCum = computed(() => !disabled.value && totalCum.value > props.insideEcPersonsCum);
+const exceedsNow = computed(() => !disabled.value && totalNow.value > props.insideEcPersonsNow);
 
 const sectors = defineModel<VulnerableSectors>('sectors', { required: true });
 
 const sectorNames: (keyof VulnerableSectors)[] = ['Pregnant/Lactating', 'Solo Parent', 'PWD', 'Indigenous People', 'Senior Citizen'];
+
+watch(disabled, (isDisabled) => {
+    if (isDisabled) {
+        for (const name of sectorNames) {
+            sectors.value[name] = { male_cum: 0, male_now: 0, female_cum: 0, female_now: 0 };
+        }
+    }
+});
 
 function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
     if (type === 'cum') {
@@ -31,6 +40,8 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
 <template>
     <div class="space-y-4">
         <h3 class="text-lg font-semibold text-slate-900">Vulnerable Sectors (Inside ECs)</h3>
+
+        <p v-if="disabled" class="text-sm text-slate-500">No persons inside evacuation centers. Add entries in Section III-A first.</p>
 
         <div v-if="exceedsCum || exceedsNow" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
             <p class="font-medium">Total persons exceeds Section III-A (Inside ECs):</p>
@@ -73,7 +84,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="sectors[name].male_cum"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -81,7 +98,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="sectors[name].male_now"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -89,7 +112,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="sectors[name].female_cum"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -97,7 +126,13 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="sectors[name].female_now"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2 text-center text-sm font-medium">{{ sectorTotal(sectors[name], 'cum') }}</td>

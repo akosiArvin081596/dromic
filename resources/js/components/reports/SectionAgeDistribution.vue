@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import type { AgeDistribution, AgeGenderBreakdown } from '@/types';
 
 const props = defineProps<{
@@ -13,12 +13,21 @@ const props = defineProps<{
     insideEcPersonsNow: number;
 }>();
 
-const mismatchCum = computed(() => props.totalCum !== props.insideEcPersonsCum);
-const mismatchNow = computed(() => props.totalNow !== props.insideEcPersonsNow);
+const disabled = computed(() => props.insideEcPersonsCum === 0 && props.insideEcPersonsNow === 0);
+const mismatchCum = computed(() => !disabled.value && props.totalCum !== props.insideEcPersonsCum);
+const mismatchNow = computed(() => !disabled.value && props.totalNow !== props.insideEcPersonsNow);
 
 const distribution = defineModel<AgeDistribution>('distribution', { required: true });
 
 const ageGroups: (keyof AgeDistribution)[] = ['0-5', '6-12', '13-17', '18-35', '36-59', '60-69', '70+'];
+
+watch(disabled, (isDisabled) => {
+    if (isDisabled) {
+        for (const group of ageGroups) {
+            distribution.value[group] = { male_cum: 0, male_now: 0, female_cum: 0, female_now: 0 };
+        }
+    }
+});
 
 function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
     if (type === 'cum') {
@@ -31,6 +40,8 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
 <template>
     <div class="space-y-4">
         <h3 class="text-lg font-semibold text-slate-900">Age Distribution of IDPs (Inside ECs)</h3>
+
+        <p v-if="disabled" class="text-sm text-slate-500">No persons inside evacuation centers. Add entries in Section III-A first.</p>
 
         <div v-if="mismatchCum || mismatchNow" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
             <p class="font-medium">Total persons mismatch with Section III-A (Inside ECs):</p>
@@ -73,7 +84,13 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="distribution[group].male_cum"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -81,7 +98,13 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="distribution[group].male_now"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -89,7 +112,13 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="distribution[group].female_cum"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2">
@@ -97,7 +126,13 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
                                 v-model.number="distribution[group].female_now"
                                 type="number"
                                 min="0"
-                                class="block w-20 border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+                                :disabled="disabled"
+                                class="block w-20 sm:text-sm"
+                                :class="
+                                    disabled
+                                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400'
+                                        : 'border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500'
+                                "
                             />
                         </td>
                         <td class="px-4 py-2 text-center text-sm font-medium">{{ groupTotal(distribution[group], 'cum') }}</td>

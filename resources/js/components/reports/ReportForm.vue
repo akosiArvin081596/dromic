@@ -373,6 +373,7 @@ function submit(status: 'draft' | 'for_validation') {
                 :total-totally-damaged="calculations.totalTotallyDamaged.value"
                 :total-partially-damaged="calculations.totalPartiallyDamaged.value"
                 :total-estimated-cost="calculations.totalEstimatedCost.value"
+                :total-affected-families="calculations.totalAffectedFamilies.value"
             />
         </div>
 
