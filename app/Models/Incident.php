@@ -18,6 +18,7 @@ class Incident extends Model
 
     protected $fillable = [
         'name',
+        'display_name',
         'type',
         'created_by',
         'description',
@@ -55,6 +56,66 @@ class Incident extends Model
     public function requestLetters(): HasMany
     {
         return $this->hasMany(RequestLetter::class);
+    }
+
+    public function computeDisplayName(): string
+    {
+        $reports = $this->reports()->with('cityMunicipality.province.region')->get();
+
+        if ($reports->isEmpty()) {
+            return $this->name;
+        }
+
+        $barangays = collect();
+        foreach ($reports as $report) {
+            foreach ($report->affected_areas ?? [] as $area) {
+                $name = trim($area['barangay'] ?? '');
+                if ($name !== '') {
+                    $barangays->push($name);
+                }
+            }
+        }
+
+        $uniqueBarangays = $barangays->unique()->values();
+
+        if ($uniqueBarangays->isEmpty()) {
+            return $this->name;
+        }
+
+        $municipalities = $reports->pluck('cityMunicipality')->filter()->unique('id');
+        $provinces = $municipalities->pluck('province')->filter()->unique('id');
+
+        if ($municipalities->count() === 1) {
+            $municipalityName = $municipalities->first()->name;
+
+            if ($uniqueBarangays->count() === 1) {
+                $brgy = $uniqueBarangays->first();
+                if (! str_starts_with($brgy, 'Brgy.')) {
+                    $brgy = "Brgy. {$brgy}";
+                }
+
+                return "{$this->name} at {$brgy}, {$municipalityName}";
+            }
+
+            return "{$this->name} at {$municipalityName}";
+        }
+
+        if ($provinces->count() === 1) {
+            return "{$this->name} affecting {$provinces->first()->name}";
+        }
+
+        $regions = $provinces->pluck('region')->filter()->unique('id');
+
+        if ($regions->isNotEmpty()) {
+            return "{$this->name} affecting {$regions->first()->name}";
+        }
+
+        return $this->name;
+    }
+
+    public function refreshDisplayName(): void
+    {
+        $this->update(['display_name' => $this->computeDisplayName()]);
     }
 
     /** @param Builder<Incident> $query */

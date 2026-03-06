@@ -52,7 +52,10 @@ class IncidentController extends Controller
         ];
 
         $query->when($request->input('search'), function ($q, $search) {
-            $q->where('name', 'like', "%{$search}%");
+            $q->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('display_name', 'like', "%{$search}%");
+            });
         });
 
         $query->when($request->input('status'), function ($q, $status) {
@@ -64,7 +67,7 @@ class IncidentController extends Controller
         $returnedReports = [];
         if ($user->isLgu()) {
             $returnedReports = Report::query()
-                ->with('incident:id,name')
+                ->with('incident:id,name,display_name')
                 ->where('user_id', $user->id)
                 ->where('status', 'returned')
                 ->latest('updated_at')
@@ -140,6 +143,7 @@ class IncidentController extends Controller
 
         $incident = Incident::query()->create([
             'name' => $data['name'],
+            'display_name' => $data['name'],
             'type' => $data['type'],
             'description' => $data['description'] ?? null,
             'created_by' => $user->id,
@@ -293,6 +297,8 @@ class IncidentController extends Controller
 
         $data = $request->validated();
 
+        $nameChanged = $incident->name !== $data['name'];
+
         $incident->update([
             'name' => $data['name'],
             'type' => $data['type'],
@@ -301,6 +307,10 @@ class IncidentController extends Controller
         ]);
 
         $incident->cityMunicipalities()->sync($data['city_municipality_ids'] ?? []);
+
+        if ($nameChanged) {
+            $incident->refreshDisplayName();
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Incident updated successfully.']);
 

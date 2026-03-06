@@ -79,7 +79,7 @@ const removeFlashListener = router.on('flash', (event) => {
 
 useEcho<{ incident: Incident }>(`App.Models.User.${user.value.id}`, 'IncidentCreated', (payload) => {
     addNotification(payload.incident);
-    toast.info(`New incident: ${payload.incident.name}`);
+    toast.info(`New incident: ${payload.incident.display_name ?? payload.incident.name}`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportSubmitted', (payload) => {
@@ -323,7 +323,7 @@ function logout() {
                                                 <div class="flex items-start justify-between">
                                                     <div class="min-w-0 flex-1">
                                                         <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
-                                                            {{ notification.incident.name }}
+                                                            {{ notification.incident.display_name ?? notification.incident.name }}
                                                         </p>
                                                         <p v-if="notification.incident.message" class="mt-0.5 truncate text-xs text-slate-500">
                                                             {{ notification.incident.message }}

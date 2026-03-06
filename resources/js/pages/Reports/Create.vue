@@ -61,7 +61,7 @@ function reportTypeLabel(type: string, seq: number): string {
 
 <template>
     <AppLayout>
-        <Head :title="`Create Report - ${incident.name}`" />
+        <Head :title="`Create Report - ${incident.display_name ?? incident.name}`" />
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-2 flex items-center space-x-4">
                 <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"
@@ -74,7 +74,7 @@ function reportTypeLabel(type: string, seq: number): string {
                     {{ reportTypeLabel(reportType, sequenceNumber) }}
                 </h1>
                 <p class="mt-1 text-sm text-slate-500">
-                    Incident: <span class="font-medium">{{ incident.name }}</span> &middot; Report #:
+                    Incident: <span class="font-medium">{{ incident.display_name ?? incident.name }}</span> &middot; Report #:
                     <span class="font-medium">{{ reportNumber }}</span>
                 </p>
                 <p v-if="prefillData" class="mt-1 text-sm text-indigo-600">Data pre-filled from previous report. Please review and update.</p>
@@ -86,7 +86,7 @@ function reportTypeLabel(type: string, seq: number): string {
                 :submit-url="`/incidents/${incident.id}/reports`"
                 method="post"
                 :show-terminal-option="reportType === 'progress'"
-                :incident-name="incident.name"
+                :incident-name="incident.display_name ?? incident.name"
                 :report-number="reportNumber"
             />
         </div>

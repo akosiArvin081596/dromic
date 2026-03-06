@@ -128,7 +128,7 @@ function deliveryBadgeClass(percent: number): string {
                         >
                             <option :value="null" class="text-slate-900">-- Select an incident --</option>
                             <option v-for="incident in incidents" :key="incident.id" :value="incident.id" class="text-slate-900">
-                                {{ incident.name }}
+                                {{ incident.display_name ?? incident.name }}
                             </option>
                         </select>
                     </div>

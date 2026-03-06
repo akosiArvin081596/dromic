@@ -74,14 +74,14 @@ function reportTypeBadge(type: string, seq: number): string {
 
 <template>
     <AppLayout>
-        <Head :title="`Reports - ${incident.name}`" />
+        <Head :title="`Reports - ${incident.display_name ?? incident.name}`" />
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"
                         >&larr; Back to Incident</Link
                     >
-                    <h1 class="text-2xl font-bold text-slate-900">Reports: {{ incident.name }}</h1>
+                    <h1 class="text-2xl font-bold text-slate-900">Reports: {{ incident.display_name ?? incident.name }}</h1>
                 </div>
             </div>
 

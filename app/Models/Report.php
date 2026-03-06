@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\ReportType;
+use App\Observers\ReportObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
     /** @use HasFactory<\Database\Factories\ReportFactory> */

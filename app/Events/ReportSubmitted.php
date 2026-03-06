@@ -58,11 +58,11 @@ class ReportSubmitted implements ShouldBroadcast
         $actorName = $actor->getActorDisplayName();
 
         if ($isResubmission) {
-            $message = "{$actorName} has re-submitted their DROMIC report for {$report->incident->name}";
+            $message = "{$actorName} has re-submitted their DROMIC report for {($report->incident->display_name ?? $report->incident->name)}";
         } else {
             $article = $report->report_type->value === 'initial' ? 'an' : 'a';
             $typeName = ucfirst($report->report_type->value);
-            $message = "{$actorName} submitted {$article} {$typeName} Report for {$report->incident->name}";
+            $message = "{$actorName} submitted {$article} {$typeName} Report for {($report->incident->display_name ?? $report->incident->name)}";
         }
 
         return [
@@ -72,7 +72,7 @@ class ReportSubmitted implements ShouldBroadcast
             'sequence_number' => $report->sequence_number,
             'status' => $report->status,
             'incident_id' => $report->incident_id,
-            'incident_name' => $report->incident->name,
+            'incident_name' => ($report->incident->display_name ?? $report->incident->name),
             'city_municipality_name' => $report->cityMunicipality->name,
             'user_name' => $report->user->name,
             'message' => $message,

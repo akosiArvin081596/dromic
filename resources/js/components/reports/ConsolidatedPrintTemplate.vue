@@ -257,7 +257,7 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                             <div class="main-title">
                                 {{ showProvince ? 'Regional' : 'Provincial' }} DROMIC/Situational Consolidated {{ cutoffLabel }}
                                 on the
-                                <span class="red-text">{{ incident.name }}</span>
+                                <span class="red-text">{{ incident.display_name ?? incident.name }}</span>
                             </div>
                             <div class="date-time">
                                 as of

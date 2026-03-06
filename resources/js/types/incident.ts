@@ -3,6 +3,7 @@ import type { CityMunicipality } from './report';
 export type Incident = {
     id: number;
     name: string;
+    display_name: string | null;
     type: 'local' | 'massive';
     created_by: number;
     description: string | null;

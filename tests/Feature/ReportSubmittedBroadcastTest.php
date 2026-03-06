@@ -197,7 +197,7 @@ test('event payload contains report data', function () {
             'report_number' => 'DROMIC-TEST-001',
             'status' => 'for_validation',
             'incident_id' => $data['incident']->id,
-            'incident_name' => $data['incident']->name,
+            'incident_name' => $data['incident']->fresh()->display_name ?? $data['incident']->name,
             'city_municipality_name' => $data['lgu']->name,
             'user_name' => $data['lguUser']->name,
         ])

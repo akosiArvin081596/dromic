@@ -63,7 +63,7 @@ const initialData = {
                 :initial-data="initialData"
                 :submit-url="`/incidents/${incident.id}/reports/${report.id}`"
                 method="put"
-                :incident-name="incident.name"
+                :incident-name="incident.display_name ?? incident.name"
                 :report-number="report.report_number"
             />
         </div>

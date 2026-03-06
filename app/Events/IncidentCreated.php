@@ -55,7 +55,7 @@ class IncidentCreated implements ShouldBroadcast
 
         return [
             'id' => $incident->id,
-            'name' => $incident->name,
+            'name' => $incident->display_name ?? $incident->name,
             'type' => $incident->type->value,
             'status' => $incident->status->value,
             'description' => $incident->description,

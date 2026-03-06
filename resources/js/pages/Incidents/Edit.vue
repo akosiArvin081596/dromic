@@ -55,7 +55,7 @@ function submit() {
 
 <template>
     <AppLayout>
-        <Head :title="`Edit ${incident.name}`" />
+        <Head :title="`Edit ${incident.display_name ?? incident.name}`" />
         <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center space-x-4">
                 <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"

@@ -54,7 +54,7 @@ class RequestLetterApproved implements ShouldBroadcast
         return [
             'id' => $requestLetter->id,
             'incident_id' => $requestLetter->incident_id,
-            'incident_name' => $requestLetter->incident->name,
+            'incident_name' => ($requestLetter->incident->display_name ?? $requestLetter->incident->name),
             'city_municipality_name' => $requestLetter->cityMunicipality->name,
             'user_name' => $actor->name,
             'actor_name' => $actor->getActorDisplayName(),

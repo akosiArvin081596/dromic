@@ -115,7 +115,7 @@ test('ReportValidated payload contains correct report data with validated status
             'report_number' => 'DROMIC-TEST-VALIDATED',
             'status' => 'validated',
             'incident_id' => $data['incident']->id,
-            'incident_name' => $data['incident']->name,
+            'incident_name' => $data['incident']->fresh()->display_name ?? $data['incident']->name,
             'city_municipality_name' => $data['lgu']->name,
             'user_name' => $data['lguUser']->name,
         ])

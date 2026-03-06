@@ -461,7 +461,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-baseline justify-between gap-3">
                                     <span class="truncate text-sm font-medium text-slate-900 group-hover:text-indigo-600">
-                                        {{ incident.name }}
+                                        {{ incident.display_name ?? incident.name }}
                                     </span>
                                     <span class="shrink-0 text-xs text-slate-400">
                                         Date of occurrence:

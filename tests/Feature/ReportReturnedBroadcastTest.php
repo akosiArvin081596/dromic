@@ -94,7 +94,7 @@ test('ReportReturned payload includes return_reason', function () {
             'status' => 'returned',
             'return_reason' => 'Missing evacuation center data.',
             'incident_id' => $data['incident']->id,
-            'incident_name' => $data['incident']->name,
+            'incident_name' => $data['incident']->fresh()->display_name ?? $data['incident']->name,
             'city_municipality_name' => $data['lgu']->name,
             'user_name' => $data['lguUser']->name,
         ])

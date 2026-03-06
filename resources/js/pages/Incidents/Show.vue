@@ -172,7 +172,7 @@ function openDelivery(letter: RequestLetter): void {
 
 <template>
     <AppLayout>
-        <Head :title="incident.name" />
+        <Head :title="incident.display_name ?? incident.name" />
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Breadcrumb & Actions -->
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -184,7 +184,7 @@ function openDelivery(letter: RequestLetter): void {
                         Back to Incidents
                     </Link>
                     <div class="mt-2 flex flex-wrap items-center gap-3">
-                        <h1 class="text-2xl font-bold text-slate-900">{{ incident.name }}</h1>
+                        <h1 class="text-2xl font-bold text-slate-900">{{ incident.display_name ?? incident.name }}</h1>
                         <span
                             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1"
                             :class="

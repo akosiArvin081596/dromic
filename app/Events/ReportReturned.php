@@ -66,7 +66,7 @@ class ReportReturned implements ShouldBroadcast
             'sequence_number' => $report->sequence_number,
             'status' => $report->status,
             'incident_id' => $report->incident_id,
-            'incident_name' => $report->incident->name,
+            'incident_name' => ($report->incident->display_name ?? $report->incident->name),
             'city_municipality_name' => $report->cityMunicipality->name,
             'user_name' => $report->user->name,
             'return_reason' => $report->return_reason,

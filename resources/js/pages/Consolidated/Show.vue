@@ -85,7 +85,7 @@ function printReport() {
 
 <template>
     <AppLayout>
-        <Head :title="`Consolidated - ${incident.name}`" />
+        <Head :title="`Consolidated - ${incident.display_name ?? incident.name}`" />
 
         <!-- Screen controls (hidden on print) -->
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 print:hidden">
@@ -108,7 +108,7 @@ function printReport() {
 
             <!-- Incident Info -->
             <div class="mb-6 border border-slate-200 bg-white p-6">
-                <h2 class="text-lg font-semibold text-slate-900">{{ incident.name }}</h2>
+                <h2 class="text-lg font-semibold text-slate-900">{{ incident.display_name ?? incident.name }}</h2>
                 <p v-if="incident.description" class="mt-1 text-sm text-slate-600">{{ incident.description }}</p>
                 <p class="mt-2 text-sm text-slate-500">
                     <span class="font-medium">{{ cutoffs.length }}</span> cut-off period(s) recorded

@@ -149,7 +149,7 @@ class DashboardController extends Controller
 
             $entry = [
                 'incident_id' => $incident->id,
-                'incident_name' => $incident->name,
+                'incident_name' => $incident->display_name ?? $incident->name,
                 'total_lgus' => $totalLgus,
                 'reporting_lgus' => $reportingLgus,
             ];

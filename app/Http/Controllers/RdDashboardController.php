@@ -29,7 +29,7 @@ class RdDashboardController extends Controller
                 });
             })
             ->latest()
-            ->get(['id', 'name', 'type', 'status', 'created_by']);
+            ->get(['id', 'name', 'display_name', 'type', 'status', 'created_by']);
 
         // Auto-select the latest massive incident when none is specified
         if (! $incident) {

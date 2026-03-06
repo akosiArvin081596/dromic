@@ -12,7 +12,7 @@ type ReturnedReport = {
     report_type: string;
     sequence_number: number;
     return_reason: string | null;
-    incident?: { id: number; name: string };
+    incident?: { id: number; name: string; display_name: string | null };
 };
 
 const props = defineProps<{
@@ -148,7 +148,7 @@ function formatDate(dateString: string): string {
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-medium text-rose-900 group-hover:text-rose-700">
                                 {{ reportTypeLabel(report) }}
-                                <span class="font-normal text-rose-600">&middot; {{ report.incident?.name }}</span>
+                                <span class="font-normal text-rose-600">&middot; {{ report.incident?.display_name ?? report.incident?.name }}</span>
                             </p>
                             <p v-if="report.return_reason" class="mt-0.5 truncate text-xs text-rose-600">
                                 {{ report.return_reason }}
@@ -316,7 +316,7 @@ function formatDate(dateString: string): string {
                         <tr v-for="incident in incidents.data" :key="incident.id" class="transition-colors hover:bg-slate-50/50">
                             <td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
                                 <Link :href="`/incidents/${incident.id}`" class="text-indigo-600 transition-colors hover:text-indigo-800">
-                                    {{ incident.name }}
+                                    {{ incident.display_name ?? incident.name }}
                                 </Link>
                             </td>
                             <td class="px-6 py-4 text-sm whitespace-nowrap">

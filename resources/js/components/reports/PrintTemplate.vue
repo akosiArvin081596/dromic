@@ -88,7 +88,7 @@ const locationText = computed(() => {
                             <div class="main-title">
                                 LGU DROMIC/Situational {{ reportTypeTitle }}
                                 on the
-                                <span class="red-text">{{ report.incident?.name ?? '' }}</span>
+                                <span class="red-text">{{ report.incident?.display_name ?? report.incident?.name ?? '' }}</span>
                             </div>
                             <div class="subtitle">
                                 <span class="red-text">{{ locationText }}</span>
