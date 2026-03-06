@@ -12,6 +12,7 @@ type LguSettings = {
     signatory_3_name: string | null;
     signatory_3_designation: string | null;
     logo_url: string | null;
+    ldrrmc_logo_url: string | null;
 };
 
 const props = defineProps<{
@@ -91,7 +92,10 @@ const locationText = computed(() => {
                                 <img :src="dromicLogoUrl" alt="DROMIC" />
                             </div>
                             <div v-else class="center-logo">DROMIC</div>
-                            <div class="logo-placeholder">Kindly replace with LDRRMC Logo</div>
+                            <div v-if="lguSettings?.ldrrmc_logo_url" class="logo-image">
+                                <img :src="lguSettings.ldrrmc_logo_url" alt="LDRRMC Logo" />
+                            </div>
+                            <div v-else class="logo-placeholder">Kindly replace with LDRRMC Logo</div>
                         </div>
                     </td>
                 </tr>

@@ -22,6 +22,7 @@ class LguSettingsController extends Controller
             'settings' => $settings ? [
                 ...$settings->toArray(),
                 'logo_url' => $settings->logo_path ? Storage::disk('public')->url($settings->logo_path) : null,
+                'ldrrmc_logo_url' => $settings->ldrrmc_logo_path ? Storage::disk('public')->url($settings->ldrrmc_logo_path) : null,
             ] : null,
         ]);
     }
@@ -39,6 +40,8 @@ class LguSettingsController extends Controller
             'signatory_3_designation' => ['nullable', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
             'remove_logo' => ['nullable', 'boolean'],
+            'ldrrmc_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
+            'remove_ldrrmc_logo' => ['nullable', 'boolean'],
         ]);
 
         $settings = LguSetting::query()->firstOrCreate(
@@ -63,6 +66,17 @@ class LguSettingsController extends Controller
             }
             $path = $request->file('logo')->store('lgu-logos', 'public');
             $settings->update(['logo_path' => $path]);
+        }
+
+        if ($request->boolean('remove_ldrrmc_logo') && $settings->ldrrmc_logo_path) {
+            Storage::disk('public')->delete($settings->ldrrmc_logo_path);
+            $settings->update(['ldrrmc_logo_path' => null]);
+        } elseif ($request->hasFile('ldrrmc_logo')) {
+            if ($settings->ldrrmc_logo_path) {
+                Storage::disk('public')->delete($settings->ldrrmc_logo_path);
+            }
+            $path = $request->file('ldrrmc_logo')->store('ldrrmc-logos', 'public');
+            $settings->update(['ldrrmc_logo_path' => $path]);
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'LGU settings updated successfully.']);

@@ -251,6 +251,7 @@ class ReportController extends Controller
                 'signatory_3_name' => $lguSettings->signatory_3_name,
                 'signatory_3_designation' => $lguSettings->signatory_3_designation,
                 'logo_url' => $lguSettings->logo_path ? Storage::disk('public')->url($lguSettings->logo_path) : null,
+                'ldrrmc_logo_url' => $lguSettings->ldrrmc_logo_path ? Storage::disk('public')->url($lguSettings->ldrrmc_logo_path) : null,
             ] : null,
             'dromicLogoUrl' => $dromicLogoPath ? Storage::disk('public')->url($dromicLogoPath) : null,
         ]);

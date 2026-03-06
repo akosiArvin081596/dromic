@@ -14,6 +14,7 @@ type LguSettings = {
     signatory_3_name: string | null;
     signatory_3_designation: string | null;
     logo_url: string | null;
+    ldrrmc_logo_url: string | null;
 };
 
 const props = defineProps<{

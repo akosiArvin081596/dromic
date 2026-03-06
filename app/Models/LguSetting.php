@@ -16,6 +16,7 @@ class LguSetting extends Model
         'signatory_3_name',
         'signatory_3_designation',
         'logo_path',
+        'ldrrmc_logo_path',
     ];
 
     /** @return BelongsTo<CityMunicipality, $this> */
