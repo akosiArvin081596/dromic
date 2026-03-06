@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { AgeDistribution, AgeGenderBreakdown } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     totalMaleCum: number;
     totalMaleNow: number;
     totalFemaleCum: number;
     totalFemaleNow: number;
     totalCum: number;
     totalNow: number;
+    insideEcPersonsCum: number;
+    insideEcPersonsNow: number;
 }>();
+
+const mismatchCum = computed(() => props.totalCum !== props.insideEcPersonsCum);
+const mismatchNow = computed(() => props.totalNow !== props.insideEcPersonsNow);
 
 const distribution = defineModel<AgeDistribution>('distribution', { required: true });
 
@@ -25,6 +31,20 @@ function groupTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
 <template>
     <div class="space-y-4">
         <h3 class="text-lg font-semibold text-slate-900">Age Distribution of IDPs (Inside ECs)</h3>
+
+        <div v-if="mismatchCum || mismatchNow" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
+            <p class="font-medium">Total persons mismatch with Section III-A (Inside ECs):</p>
+            <ul class="mt-1 list-inside list-disc">
+                <li v-if="mismatchCum">
+                    CUM: Age Distribution total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
+                </li>
+                <li v-if="mismatchNow">
+                    NOW: Age Distribution total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
+                </li>
+            </ul>
+        </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 border">

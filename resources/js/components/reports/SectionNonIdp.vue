@@ -15,16 +15,16 @@ const computedRows = computed(() => {
         .filter((a) => a.barangay !== '')
         .map((area) => {
             const insideFamilies = props.insideECs
-                .filter((ec) => ec.barangay === area.barangay)
+                .filter((ec) => ec.origin === area.barangay)
                 .reduce((sum, ec) => sum + Number(ec.families_cum || 0), 0);
             const insidePersons = props.insideECs
-                .filter((ec) => ec.barangay === area.barangay)
+                .filter((ec) => ec.origin === area.barangay)
                 .reduce((sum, ec) => sum + Number(ec.persons_cum || 0), 0);
             const outsideFamilies = props.outsideECs
-                .filter((ec) => ec.barangay === area.barangay)
+                .filter((ec) => ec.origin === area.barangay)
                 .reduce((sum, ec) => sum + Number(ec.families_cum || 0), 0);
             const outsidePersons = props.outsideECs
-                .filter((ec) => ec.barangay === area.barangay)
+                .filter((ec) => ec.origin === area.barangay)
                 .reduce((sum, ec) => sum + Number(ec.persons_cum || 0), 0);
 
             return {

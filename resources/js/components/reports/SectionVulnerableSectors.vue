@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { AgeGenderBreakdown, VulnerableSectors } from '@/types';
 
-defineProps<{
+const props = defineProps<{
     totalMaleCum: number;
     totalMaleNow: number;
     totalFemaleCum: number;
     totalFemaleNow: number;
+    insideEcPersonsCum: number;
+    insideEcPersonsNow: number;
 }>();
+
+const totalCum = computed(() => props.totalMaleCum + props.totalFemaleCum);
+const totalNow = computed(() => props.totalMaleNow + props.totalFemaleNow);
+const exceedsCum = computed(() => totalCum.value > props.insideEcPersonsCum);
+const exceedsNow = computed(() => totalNow.value > props.insideEcPersonsNow);
 
 const sectors = defineModel<VulnerableSectors>('sectors', { required: true });
 
@@ -23,6 +31,20 @@ function sectorTotal(group: AgeGenderBreakdown, type: 'cum' | 'now'): number {
 <template>
     <div class="space-y-4">
         <h3 class="text-lg font-semibold text-slate-900">Vulnerable Sectors (Inside ECs)</h3>
+
+        <div v-if="exceedsCum || exceedsNow" class="border-l-4 border-amber-500 bg-amber-50 p-4 text-sm text-amber-900">
+            <p class="font-medium">Total persons exceeds Section III-A (Inside ECs):</p>
+            <ul class="mt-1 list-inside list-disc">
+                <li v-if="exceedsCum">
+                    CUM: Vulnerable Sectors total is <strong>{{ totalCum.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsCum.toLocaleString() }}</strong>
+                </li>
+                <li v-if="exceedsNow">
+                    NOW: Vulnerable Sectors total is <strong>{{ totalNow.toLocaleString() }}</strong>, but Inside ECs total is
+                    <strong>{{ insideEcPersonsNow.toLocaleString() }}</strong>
+                </li>
+            </ul>
+        </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 border">
