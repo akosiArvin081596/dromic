@@ -14,6 +14,30 @@ class Report extends Model
     /** @use HasFactory<\Database\Factories\ReportFactory> */
     use HasFactory;
 
+    protected $attributes = [
+        'non_idps' => '[]',
+        'related_incidents' => '[]',
+        'casualties_injured' => '[]',
+        'casualties_missing' => '[]',
+        'casualties_dead' => '[]',
+        'infrastructure_damages' => '[]',
+        'agriculture_damages' => '[]',
+        'assistance_provided' => '[]',
+        'class_suspensions' => '[]',
+        'work_suspensions' => '[]',
+        'lifelines_roads_bridges' => '[]',
+        'lifelines_power' => '[]',
+        'lifelines_water' => '[]',
+        'lifelines_communication' => '[]',
+        'seaport_status' => '[]',
+        'airport_status' => '[]',
+        'landport_status' => '[]',
+        'stranded_passengers' => '[]',
+        'calamity_declarations' => '[]',
+        'preemptive_evacuations' => '[]',
+        'gaps_challenges' => '[]',
+    ];
+
     protected $fillable = [
         'user_id',
         'incident_id',

@@ -13,54 +13,54 @@ return new class extends Migration
     {
         Schema::table('reports', function (Blueprint $table) {
             // V. Related Incidents
-            $table->json('related_incidents')->default('[]');
+            $table->json('related_incidents')->nullable();
 
             // VI. Casualties (3 sub-arrays)
-            $table->json('casualties_injured')->default('[]');
-            $table->json('casualties_missing')->default('[]');
-            $table->json('casualties_dead')->default('[]');
+            $table->json('casualties_injured')->nullable();
+            $table->json('casualties_missing')->nullable();
+            $table->json('casualties_dead')->nullable();
 
             // VII. Damages to Infrastructure
-            $table->json('infrastructure_damages')->default('[]');
+            $table->json('infrastructure_damages')->nullable();
 
             // VIII. Damage & Losses to Agriculture
-            $table->json('agriculture_damages')->default('[]');
+            $table->json('agriculture_damages')->nullable();
 
             // IX. Status of Assistance Provided
-            $table->json('assistance_provided')->default('[]');
+            $table->json('assistance_provided')->nullable();
 
             // X. Class Suspension
-            $table->json('class_suspensions')->default('[]');
+            $table->json('class_suspensions')->nullable();
 
             // XI. Work Suspension
-            $table->json('work_suspensions')->default('[]');
+            $table->json('work_suspensions')->nullable();
 
             // XII. Status of Lifelines (4 sub-arrays)
-            $table->json('lifelines_roads_bridges')->default('[]');
-            $table->json('lifelines_power')->default('[]');
-            $table->json('lifelines_water')->default('[]');
-            $table->json('lifelines_communication')->default('[]');
+            $table->json('lifelines_roads_bridges')->nullable();
+            $table->json('lifelines_power')->nullable();
+            $table->json('lifelines_water')->nullable();
+            $table->json('lifelines_communication')->nullable();
 
             // XIII. Status of Seaports
-            $table->json('seaport_status')->default('[]');
+            $table->json('seaport_status')->nullable();
 
             // XIV. Status of Airports
-            $table->json('airport_status')->default('[]');
+            $table->json('airport_status')->nullable();
 
             // XV. Status of Landports
-            $table->json('landport_status')->default('[]');
+            $table->json('landport_status')->nullable();
 
             // XVI. Stranded Passengers/Cargoes
-            $table->json('stranded_passengers')->default('[]');
+            $table->json('stranded_passengers')->nullable();
 
             // XVII. Declaration of State of Calamity
-            $table->json('calamity_declarations')->default('[]');
+            $table->json('calamity_declarations')->nullable();
 
             // XVIII. Pre-emptive Evacuation
-            $table->json('preemptive_evacuations')->default('[]');
+            $table->json('preemptive_evacuations')->nullable();
 
             // XIX. Gaps/Challenges
-            $table->json('gaps_challenges')->default('[]');
+            $table->json('gaps_challenges')->nullable();
 
             // XX. Response Actions
             $table->text('response_actions')->nullable();

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reports', function (Blueprint $table) {
-            $table->json('non_idps')->default('[]')->after('outside_evacuation_centers');
+            $table->json('non_idps')->nullable()->after('outside_evacuation_centers');
         });
     }
 
