@@ -10,7 +10,7 @@ const emit = defineEmits<{
     close: [];
 }>();
 
-const { conversations, fetchConversations, openConversation, closeConversation } = useMessenger();
+const { conversations, fetchConversations, openConversation, closeConversation, fetchUnreadCount } = useMessenger();
 
 type View = 'list' | 'chat';
 const currentView = ref<View>('list');
@@ -27,6 +27,7 @@ function goBack(): void {
     activeConversation.value = null;
     currentView.value = 'list';
     fetchConversations();
+    fetchUnreadCount();
 }
 
 onMounted(fetchConversations);

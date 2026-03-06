@@ -51,7 +51,13 @@ class MessengerService
             })
             ->pluck('id');
 
-        $conversation->participants()->syncWithoutDetaching($memberIds->all());
+        $existingIds = $conversation->participants()->pluck('users.id');
+        $newIds = $memberIds->diff($existingIds);
+
+        if ($newIds->isNotEmpty()) {
+            $pivotData = $newIds->mapWithKeys(fn ($id) => [$id => ['last_read_at' => now()]])->all();
+            $conversation->participants()->attach($pivotData);
+        }
     }
 
     public function getOrCreateDm(User $user1, User $user2): Conversation
