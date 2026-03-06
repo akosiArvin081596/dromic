@@ -11,8 +11,10 @@ use App\Http\Requests\StoreReportRequest;
 use App\Http\Requests\UpdateReportRequest;
 use App\Models\Barangay;
 use App\Models\Incident;
+use App\Models\LguSetting;
 use App\Models\Province;
 use App\Models\Report;
+use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\ReportReturnedNotification;
 use App\Notifications\ReportSubmittedNotification;
@@ -26,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -231,9 +234,25 @@ class ReportController extends Controller
 
         $report->load('cityMunicipality.province', 'user', 'incident');
 
+        $lguSettings = LguSetting::query()
+            ->where('city_municipality_id', $report->city_municipality_id)
+            ->first();
+
+        $dromicLogoPath = Setting::getValue('dromic_logo_path');
+
         return Inertia::render('Reports/Show', [
             'incident' => $incident,
             'report' => $report,
+            'lguSettings' => $lguSettings ? [
+                'signatory_1_name' => $lguSettings->signatory_1_name,
+                'signatory_1_designation' => $lguSettings->signatory_1_designation,
+                'signatory_2_name' => $lguSettings->signatory_2_name,
+                'signatory_2_designation' => $lguSettings->signatory_2_designation,
+                'signatory_3_name' => $lguSettings->signatory_3_name,
+                'signatory_3_designation' => $lguSettings->signatory_3_designation,
+                'logo_url' => $lguSettings->logo_path ? Storage::disk('public')->url($lguSettings->logo_path) : null,
+            ] : null,
+            'dromicLogoUrl' => $dromicLogoPath ? Storage::disk('public')->url($dromicLogoPath) : null,
         ]);
     }
 

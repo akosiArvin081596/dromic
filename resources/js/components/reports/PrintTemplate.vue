@@ -4,8 +4,20 @@ import { useReportCalculations } from '@/composables/useReportCalculations';
 import type { AgeDistribution, AgeGenderBreakdown, Report, VulnerableSectors } from '@/types';
 import { pluralize } from '@/utils/pluralize';
 
+type LguSettings = {
+    signatory_1_name: string | null;
+    signatory_1_designation: string | null;
+    signatory_2_name: string | null;
+    signatory_2_designation: string | null;
+    signatory_3_name: string | null;
+    signatory_3_designation: string | null;
+    logo_url: string | null;
+};
+
 const props = defineProps<{
     report: Report;
+    lguSettings?: LguSettings | null;
+    dromicLogoUrl?: string | null;
 }>();
 
 const reportRef = toRef(() => props.report);
@@ -71,8 +83,14 @@ const locationText = computed(() => {
                 <tr>
                     <td>
                         <div class="header">
-                            <div class="logo-placeholder">Kindly replace with LGU Logo</div>
-                            <div class="center-logo">DROMIC</div>
+                            <div v-if="lguSettings?.logo_url" class="logo-image">
+                                <img :src="lguSettings.logo_url" alt="LGU Logo" />
+                            </div>
+                            <div v-else class="logo-placeholder">Kindly replace with LGU Logo</div>
+                            <div v-if="dromicLogoUrl" class="center-logo">
+                                <img :src="dromicLogoUrl" alt="DROMIC" />
+                            </div>
+                            <div v-else class="center-logo">DROMIC</div>
                             <div class="logo-placeholder">Kindly replace with LDRRMC Logo</div>
                         </div>
                     </td>
@@ -118,19 +136,13 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalAffectedFamilies.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalAffectedFamilies.value, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalAffectedFamilies.value, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ calc.totalAffectedPersons.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalAffectedPersons.value, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalAffectedPersons.value, 'person', 'persons') }}</span>
                                     {{ pluralize(calc.totalAffectedPersons.value, 'is', 'are') }} affected in
                                     <span class="blank-line">{{ report.affected_areas.length }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(report.affected_areas.length, 'Barangay', 'Barangays')
-                                    }}.</span>
+                                    <span class="red-text">{{ pluralize(report.affected_areas.length, 'Barangay', 'Barangays') }}.</span>
                                 </div>
 
                                 <table>
@@ -165,16 +177,12 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalIDPFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalIDPFamiliesCum.value, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalIDPFamiliesCum.value, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ calc.totalIDPPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalIDPPersonsCum.value, 'person', 'persons')
-                                    }}</span>
-                                    {{ pluralize(calc.totalIDPPersonsCum.value, 'is', 'are') }} displaced inside and
-                                    outside ECs, below is the breakdown:
+                                    <span class="red-text">{{ pluralize(calc.totalIDPPersonsCum.value, 'person', 'persons') }}</span>
+                                    {{ pluralize(calc.totalIDPPersonsCum.value, 'is', 'are') }} displaced inside and outside ECs, below is the
+                                    breakdown:
                                 </div>
 
                                 <div class="subsection-title">A. Inside Evacuation Center</div>
@@ -182,22 +190,14 @@ const locationText = computed(() => {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ calc.totalInsideECFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalInsideECFamiliesCum.value, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalInsideECFamiliesCum.value, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ calc.totalInsideECPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalInsideECPersonsCum.value, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalInsideECPersonsCum.value, 'person', 'persons') }}</span>
                                     {{ pluralize(calc.totalInsideECPersonsCum.value, 'has', 'have') }} evacuated in
                                     <span class="blank-line">{{ report.inside_evacuation_centers.length }}</span>
                                     <span class="red-text">{{
-                                        pluralize(
-                                            report.inside_evacuation_centers.length,
-                                            'evacuation center',
-                                            'evacuation centers',
-                                        )
+                                        pluralize(report.inside_evacuation_centers.length, 'evacuation center', 'evacuation centers')
                                     }}</span
                                     >, to wit:
                                 </div>
@@ -300,14 +300,10 @@ const locationText = computed(() => {
                                     There
                                     {{ pluralize(calc.totalOutsideECFamiliesCum.value, 'is', 'are') }}
                                     <span class="blank-line">{{ calc.totalOutsideECFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalOutsideECFamiliesCum.value, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalOutsideECFamiliesCum.value, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ calc.totalOutsideECPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalOutsideECPersonsCum.value, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalOutsideECPersonsCum.value, 'person', 'persons') }}</span>
                                     temporarily staying with their relatives and/or friends' houses, to wit:
                                 </div>
 
@@ -352,14 +348,10 @@ const locationText = computed(() => {
                                     There
                                     {{ pluralize(calc.totalNonIdpFamiliesCum.value, 'is', 'are') }}
                                     <span class="blank-line">{{ calc.totalNonIdpFamiliesCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalNonIdpFamiliesCum.value, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalNonIdpFamiliesCum.value, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ calc.totalNonIdpPersonsCum.value.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(calc.totalNonIdpPersonsCum.value, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(calc.totalNonIdpPersonsCum.value, 'person', 'persons') }}</span>
                                     served outside evacuation centers (not displaced), to wit:
                                 </div>
 
@@ -398,19 +390,9 @@ const locationText = computed(() => {
                                         (calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value).toLocaleString()
                                     }}</span>
                                     <span class="red-text">{{
-                                        pluralize(
-                                            calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value,
-                                            'house',
-                                            'houses',
-                                        )
+                                        pluralize(calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value, 'house', 'houses')
                                     }}</span>
-                                    {{
-                                        pluralize(
-                                            calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value,
-                                            'was',
-                                            'were',
-                                        )
-                                    }}
+                                    {{ pluralize(calc.totalTotallyDamaged.value + calc.totalPartiallyDamaged.value, 'was', 'were') }}
                                     damaged; of which,
                                     <span class="blank-line">{{ calc.totalTotallyDamaged.value.toLocaleString() }}</span>
                                     {{ pluralize(calc.totalTotallyDamaged.value, 'is', 'are') }}
@@ -852,6 +834,32 @@ const locationText = computed(() => {
                                 </div>
                                 <div v-else class="instruction-text">None reported</div>
                             </div>
+
+                            <!-- Signatories -->
+                            <div
+                                v-if="lguSettings?.signatory_1_name || lguSettings?.signatory_2_name || lguSettings?.signatory_3_name"
+                                class="signatories"
+                            >
+                                <div class="signatories-row">
+                                    <div v-if="lguSettings?.signatory_1_name" class="signatory">
+                                        <div class="signatory-label">Prepared by:</div>
+                                        <div class="signatory-name">{{ lguSettings.signatory_1_name }}</div>
+                                        <div class="signatory-designation">{{ lguSettings.signatory_1_designation }}</div>
+                                    </div>
+                                    <div v-if="lguSettings?.signatory_2_name" class="signatory">
+                                        <div class="signatory-label">Reviewed by:</div>
+                                        <div class="signatory-name">{{ lguSettings.signatory_2_name }}</div>
+                                        <div class="signatory-designation">{{ lguSettings.signatory_2_designation }}</div>
+                                    </div>
+                                </div>
+                                <div v-if="lguSettings?.signatory_3_name" class="signatories-row signatories-center">
+                                    <div class="signatory">
+                                        <div class="signatory-label">Noted by:</div>
+                                        <div class="signatory-name">{{ lguSettings.signatory_3_name }}</div>
+                                        <div class="signatory-designation">{{ lguSettings.signatory_3_designation }}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -895,6 +903,20 @@ const locationText = computed(() => {
     padding: 10px;
 }
 
+.logo-image {
+    width: 180px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
 .center-logo {
     width: 300px;
     height: 100px;
@@ -904,6 +926,12 @@ const locationText = computed(() => {
     font-size: 24px;
     font-weight: bold;
     color: #312e81;
+}
+
+.center-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* Title section */
@@ -1038,6 +1066,49 @@ const locationText = computed(() => {
     font-size: 16px;
     text-align: center;
     background: transparent;
+}
+
+/* Signatories */
+.signatories {
+    margin-top: 60px;
+    page-break-inside: avoid;
+}
+
+.signatories-row {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+}
+
+.signatories-center {
+    justify-content: center;
+}
+
+.signatory {
+    text-align: center;
+    min-width: 250px;
+}
+
+.signatory-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.signatory-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.signatory-designation {
+    font-size: 12px;
+    color: #333;
+    margin-top: 4px;
 }
 
 /* Print styles */

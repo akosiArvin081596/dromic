@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Incident;
+use App\Models\Setting;
 use App\Services\ConsolidatedReportService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,9 +26,12 @@ class ConsolidatedReportController extends Controller
 
         $incident->load('cityMunicipalities.province', 'creator');
 
+        $dromicLogoPath = Setting::getValue('dromic_logo_path');
+
         return Inertia::render('Consolidated/Show', [
             'incident' => $incident,
             'cutoffs' => $result['cutoffs'],
+            'dromicLogoUrl' => $dromicLogoPath ? Storage::disk('public')->url($dromicLogoPath) : null,
         ]);
     }
 }

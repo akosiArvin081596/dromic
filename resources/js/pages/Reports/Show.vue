@@ -6,9 +6,21 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { Report } from '@/types';
 import type { Incident } from '@/types/incident';
 
+type LguSettings = {
+    signatory_1_name: string | null;
+    signatory_1_designation: string | null;
+    signatory_2_name: string | null;
+    signatory_2_designation: string | null;
+    signatory_3_name: string | null;
+    signatory_3_designation: string | null;
+    logo_url: string | null;
+};
+
 const props = defineProps<{
     incident: Incident;
     report: Report;
+    lguSettings?: LguSettings | null;
+    dromicLogoUrl?: string | null;
 }>();
 
 const page = usePage();
@@ -136,7 +148,7 @@ function reportTypeLabel(type: string, seq: number): string {
         <!-- Print Template -->
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 print:max-w-none print:p-0">
             <div class="border border-slate-200 bg-white p-8 print:border-none print:shadow-none">
-                <PrintTemplate :report="report" />
+                <PrintTemplate :report="report" :lgu-settings="lguSettings" :dromic-logo-url="dromicLogoUrl" />
             </div>
         </div>
         <!-- Return Modal -->

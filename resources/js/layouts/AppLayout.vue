@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { useEcho } from '@laravel/echo-vue';
-import { MessageCircle, Moon, Sun } from 'lucide-vue-next';
+import { MessageCircle, Moon, Settings, Sun } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import MessengerPanel from '@/components/messenger/MessengerPanel.vue';
 import ToastContainer from '@/components/ToastContainer.vue';
@@ -58,6 +58,8 @@ const notificationOpen = ref(false);
 const notificationPanel = ref<HTMLElement | null>(null);
 const messengerOpen = ref(false);
 const messengerPanel = ref<HTMLElement | null>(null);
+const settingsOpen = ref(false);
+const settingsPanel = ref<HTMLElement | null>(null);
 
 const { notifications, unreadCount, initForUser, addNotification, addReportNotification, addRequestLetterNotification, markAsRead, markAllAsRead } =
     useNotifications();
@@ -127,12 +129,26 @@ useEcho<{ message: MessageData }>(`App.Models.User.${user.value.id}`, 'MessageSe
 
 function toggleNotifications() {
     notificationOpen.value = !notificationOpen.value;
-    if (notificationOpen.value) messengerOpen.value = false;
+    if (notificationOpen.value) {
+        messengerOpen.value = false;
+        settingsOpen.value = false;
+    }
 }
 
 function toggleMessenger() {
     messengerOpen.value = !messengerOpen.value;
-    if (messengerOpen.value) notificationOpen.value = false;
+    if (messengerOpen.value) {
+        notificationOpen.value = false;
+        settingsOpen.value = false;
+    }
+}
+
+function toggleSettings() {
+    settingsOpen.value = !settingsOpen.value;
+    if (settingsOpen.value) {
+        notificationOpen.value = false;
+        messengerOpen.value = false;
+    }
 }
 
 function closeDropdowns(event: MouseEvent) {
@@ -142,6 +158,9 @@ function closeDropdowns(event: MouseEvent) {
     }
     if (messengerPanel.value && !messengerPanel.value.contains(target) && document.contains(target)) {
         messengerOpen.value = false;
+    }
+    if (settingsPanel.value && !settingsPanel.value.contains(target) && document.contains(target)) {
+        settingsOpen.value = false;
     }
 }
 
@@ -260,6 +279,44 @@ function logout() {
                                 <Moon v-if="!isDark" :size="20" />
                                 <Sun v-else :size="20" />
                             </button>
+                            <!-- Settings Dropdown -->
+                            <div ref="settingsPanel" class="relative">
+                                <button
+                                    class="relative p-1 text-indigo-200 transition-colors hover:text-white"
+                                    title="Settings"
+                                    @click.stop="toggleSettings"
+                                >
+                                    <Settings :size="20" />
+                                </button>
+                                <div
+                                    v-show="settingsOpen"
+                                    class="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800"
+                                >
+                                    <Link
+                                        href="/settings/account"
+                                        class="block px-4 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        @click="settingsOpen = false"
+                                    >
+                                        Account Settings
+                                    </Link>
+                                    <Link
+                                        v-if="user.role === 'lgu'"
+                                        href="/settings/lgu"
+                                        class="block px-4 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        @click="settingsOpen = false"
+                                    >
+                                        LGU Settings
+                                    </Link>
+                                    <Link
+                                        v-if="user.role === 'admin'"
+                                        href="/settings/admin"
+                                        class="block px-4 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        @click="settingsOpen = false"
+                                    >
+                                        Admin Settings
+                                    </Link>
+                                </div>
+                            </div>
                             <!-- Messenger Icon -->
                             <div ref="messengerPanel" class="relative">
                                 <button class="relative p-1 text-indigo-200 transition-colors hover:text-white" @click.stop="toggleMessenger">
@@ -562,6 +619,29 @@ function logout() {
                         >
                             {{ unreadCount > 9 ? '9+' : unreadCount }}
                         </span>
+                    </Link>
+                    <Link
+                        href="/settings/account"
+                        class="mt-2 flex items-center px-3 py-2 text-sm text-indigo-200 hover:bg-indigo-800 hover:text-white"
+                    >
+                        <Settings :size="16" class="mr-2" />
+                        Account Settings
+                    </Link>
+                    <Link
+                        v-if="user.role === 'lgu'"
+                        href="/settings/lgu"
+                        class="mt-2 flex items-center px-3 py-2 text-sm text-indigo-200 hover:bg-indigo-800 hover:text-white"
+                    >
+                        <Settings :size="16" class="mr-2" />
+                        LGU Settings
+                    </Link>
+                    <Link
+                        v-if="user.role === 'admin'"
+                        href="/settings/admin"
+                        class="mt-2 flex items-center px-3 py-2 text-sm text-indigo-200 hover:bg-indigo-800 hover:text-white"
+                    >
+                        <Settings :size="16" class="mr-2" />
+                        Admin Settings
                     </Link>
                     <button
                         class="mt-2 block w-full px-3 py-2 text-left text-sm text-indigo-200 hover:bg-indigo-800 hover:text-white"

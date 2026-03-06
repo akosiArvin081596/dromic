@@ -47,6 +47,7 @@ type Cutoff = {
 const props = defineProps<{
     incident: Incident;
     cutoffs: Cutoff[];
+    dromicLogoUrl?: string | null;
 }>();
 
 const page = usePage();
@@ -261,6 +262,7 @@ function printReport() {
                     :cutoff-date="selectedCutoff.date"
                     :cutoff-time="selectedCutoff.time"
                     :show-province="showProvince"
+                    :dromic-logo-url="dromicLogoUrl"
                 />
             </div>
         </div>

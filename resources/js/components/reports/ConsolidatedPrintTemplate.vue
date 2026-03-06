@@ -37,6 +37,7 @@ const props = defineProps<{
     cutoffDate: string;
     cutoffTime: string;
     showProvince: boolean;
+    dromicLogoUrl?: string | null;
 }>();
 
 function lguName(report: Report): string {
@@ -241,7 +242,10 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                     <td>
                         <div class="header">
                             <div class="logo-placeholder">Kindly replace with LGU Logo</div>
-                            <div class="center-logo">DROMIC</div>
+                            <div v-if="dromicLogoUrl" class="center-logo">
+                                <img :src="dromicLogoUrl" alt="DROMIC" />
+                            </div>
+                            <div v-else class="center-logo">DROMIC</div>
                             <div class="logo-placeholder">Kindly replace with LDRRMC Logo</div>
                         </div>
                     </td>
@@ -273,19 +277,13 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ totalAffectedFamilies.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalAffectedFamilies, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalAffectedFamilies, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ totalAffectedPersons.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalAffectedPersons, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalAffectedPersons, 'person', 'persons') }}</span>
                                     {{ pluralize(totalAffectedPersons, 'is', 'are') }} affected in
                                     <span class="blank-line">{{ mergedAffectedAreas.length }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(mergedAffectedAreas.length, 'Barangay', 'Barangays')
-                                    }}.</span>
+                                    <span class="red-text">{{ pluralize(mergedAffectedAreas.length, 'Barangay', 'Barangays') }}.</span>
                                 </div>
 
                                 <table>
@@ -334,16 +332,11 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ totalIDPFamiliesCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalIDPFamiliesCum, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalIDPFamiliesCum, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ totalIDPPersonsCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalIDPPersonsCum, 'person', 'persons')
-                                    }}</span>
-                                    {{ pluralize(totalIDPPersonsCum, 'is', 'are') }} displaced inside and outside ECs,
-                                    below is the breakdown:
+                                    <span class="red-text">{{ pluralize(totalIDPPersonsCum, 'person', 'persons') }}</span>
+                                    {{ pluralize(totalIDPPersonsCum, 'is', 'are') }} displaced inside and outside ECs, below is the breakdown:
                                 </div>
 
                                 <div class="subsection-title">A. Inside Evacuation Center</div>
@@ -351,19 +344,13 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ totalInsideECFamiliesCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalInsideECFamiliesCum, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalInsideECFamiliesCum, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ totalInsideECPersonsCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalInsideECPersonsCum, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalInsideECPersonsCum, 'person', 'persons') }}</span>
                                     {{ pluralize(totalInsideECPersonsCum, 'has', 'have') }} evacuated in
                                     <span class="blank-line">{{ mergedInsideEC.length }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(mergedInsideEC.length, 'evacuation center', 'evacuation centers')
-                                    }}</span
+                                    <span class="red-text">{{ pluralize(mergedInsideEC.length, 'evacuation center', 'evacuation centers') }}</span
                                     >, to wit:
                                 </div>
 
@@ -490,14 +477,10 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     There
                                     {{ pluralize(totalOutsideECFamiliesCum, 'is', 'are') }}
                                     <span class="blank-line">{{ totalOutsideECFamiliesCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalOutsideECFamiliesCum, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalOutsideECFamiliesCum, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ totalOutsideECPersonsCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalOutsideECPersonsCum, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalOutsideECPersonsCum, 'person', 'persons') }}</span>
                                     temporarily staying with their relatives and/or friends' houses, to wit:
                                 </div>
 
@@ -560,14 +543,10 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     There
                                     {{ pluralize(totalNonIdpFamiliesCum, 'is', 'are') }}
                                     <span class="blank-line">{{ totalNonIdpFamiliesCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalNonIdpFamiliesCum, 'family', 'families')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalNonIdpFamiliesCum, 'family', 'families') }}</span>
                                     or
                                     <span class="blank-line">{{ totalNonIdpPersonsCum.toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalNonIdpPersonsCum, 'person', 'persons')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalNonIdpPersonsCum, 'person', 'persons') }}</span>
                                     served outside evacuation centers (not displaced), to wit:
                                 </div>
 
@@ -614,9 +593,7 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                 <div class="description-text">
                                     A total of
                                     <span class="blank-line">{{ (totalTotallyDamaged + totalPartiallyDamaged).toLocaleString() }}</span>
-                                    <span class="red-text">{{
-                                        pluralize(totalTotallyDamaged + totalPartiallyDamaged, 'house', 'houses')
-                                    }}</span>
+                                    <span class="red-text">{{ pluralize(totalTotallyDamaged + totalPartiallyDamaged, 'house', 'houses') }}</span>
                                     {{ pluralize(totalTotallyDamaged + totalPartiallyDamaged, 'was', 'were') }}
                                     damaged; of which,
                                     <span class="blank-line">{{ totalTotallyDamaged.toLocaleString() }}</span>
@@ -1247,6 +1224,12 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
     font-size: 24px;
     font-weight: bold;
     color: #312e81;
+}
+
+.center-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* Title section */

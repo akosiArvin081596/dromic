@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AdminSettingsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ConsolidatedReportController;
 use App\Http\Controllers\ConversationController;
@@ -7,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DeliveryPlanController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\LguSettingsController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessengerPageController;
 use App\Http\Controllers\NotificationController;
@@ -69,7 +72,21 @@ Route::middleware('auth')->group(function () {
     Route::delete('/incidents/{incident}/request-letters/{requestLetter}/delivery-plan/{deliveryPlan}', [DeliveryPlanController::class, 'destroy'])
         ->name('incidents.request-letters.delivery-plan.destroy');
 
+    // Account settings (all authenticated users)
+    Route::get('/settings/account', [AccountController::class, 'edit'])->name('settings.account');
+    Route::put('/settings/account', [AccountController::class, 'update'])->name('settings.account.update');
+
+    // LGU settings (LGU users only)
+    Route::middleware('role:lgu')->group(function () {
+        Route::get('/settings/lgu', [LguSettingsController::class, 'edit'])->name('settings.lgu');
+        Route::post('/settings/lgu', [LguSettingsController::class, 'update'])->name('settings.lgu.update');
+    });
+
+    // Admin settings
     Route::middleware('role:admin')->group(function () {
+        Route::get('/settings/admin', [AdminSettingsController::class, 'edit'])->name('settings.admin');
+        Route::post('/settings/admin', [AdminSettingsController::class, 'update'])->name('settings.admin.update');
+
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
