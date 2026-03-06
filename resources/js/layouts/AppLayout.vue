@@ -119,7 +119,9 @@ useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${us
 
 useEcho<{ message: MessageData }>(`App.Models.User.${user.value.id}`, 'MessageSent', (payload) => {
     addIncomingMessage(payload.message);
-    toast.info(`New message from ${payload.message.sender_name}`);
+    const body = payload.message.body;
+    const preview = body.length > 80 ? body.slice(0, 80) + '...' : body;
+    toast.info(`${payload.message.user_name}: ${preview}`);
 });
 
 function toggleNotifications() {
