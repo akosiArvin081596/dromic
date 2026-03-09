@@ -90,7 +90,10 @@
       "WebFetch(domain:psgc.gitlab.io)",
       "Bash(curl:*)",
       "Bash(npx prettier:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(vendor/bin/pint:*)",
+      "Bash(git:*)",
+      "Bash(cmdkey:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

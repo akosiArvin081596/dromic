@@ -259,6 +259,18 @@ function logout() {
                             >
                                 Users
                             </Link>
+                            <Link
+                                v-if="user.role === 'admin'"
+                                href="/database"
+                                class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition-colors"
+                                :class="
+                                    $page.url.startsWith('/database')
+                                        ? 'border-white text-white'
+                                        : 'border-transparent text-indigo-200 hover:border-indigo-400 hover:text-white'
+                                "
+                            >
+                                Database
+                            </Link>
                         </div>
                     </div>
                     <div class="hidden items-center space-x-3 sm:flex">
@@ -380,7 +392,7 @@ function logout() {
                                                 v-if="notification.kind === 'incident' && notification.incident"
                                                 :href="`/incidents/${notification.incident.id}`"
                                                 class="block border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700"
-                                                :class="!notification.read ? 'bg-indigo-50/50' : ''"
+                                                :class="!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : ''"
                                                 @click="
                                                     markAsRead(notification.id);
                                                     notificationOpen = false;
@@ -391,7 +403,10 @@ function logout() {
                                                         <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
                                                             {{ notification.incident.display_name ?? notification.incident.name }}
                                                         </p>
-                                                        <p v-if="notification.incident.message" class="mt-0.5 truncate text-xs text-slate-500">
+                                                        <p
+                                                            v-if="notification.incident.message"
+                                                            class="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400"
+                                                        >
                                                             {{ notification.incident.message }}
                                                         </p>
                                                         <div class="mt-1 flex items-center space-x-2">
@@ -399,8 +414,8 @@ function logout() {
                                                                 class="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ring-1"
                                                                 :class="
                                                                     notification.incident.type === 'massive'
-                                                                        ? 'bg-rose-50 text-rose-700 ring-rose-600/20'
-                                                                        : 'bg-amber-50 text-amber-700 ring-amber-600/20'
+                                                                        ? 'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-500/20 dark:text-rose-300 dark:ring-rose-500/30'
+                                                                        : 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/20 dark:text-amber-300 dark:ring-amber-500/30'
                                                                 "
                                                             >
                                                                 {{ notification.incident.type }}
@@ -419,7 +434,7 @@ function logout() {
                                                 v-else-if="notification.kind === 'report' && notification.report"
                                                 :href="`/incidents/${notification.report.incident_id}/reports/${notification.report.id}`"
                                                 class="block border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700"
-                                                :class="!notification.read ? 'bg-indigo-50/50' : ''"
+                                                :class="!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : ''"
                                                 @click="
                                                     markAsRead(notification.id);
                                                     notificationOpen = false;
@@ -436,29 +451,32 @@ function logout() {
                                                                       : `Progress Report No. ${notification.report.sequence_number}`
                                                             }}
                                                         </p>
-                                                        <p v-if="notification.report.message" class="mt-0.5 truncate text-xs text-slate-500">
+                                                        <p
+                                                            v-if="notification.report.message"
+                                                            class="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400"
+                                                        >
                                                             {{ notification.report.message }}
                                                         </p>
-                                                        <p v-else class="mt-0.5 truncate text-xs text-slate-500">
+                                                        <p v-else class="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
                                                             {{ notification.report.incident_name }} &middot;
                                                             {{ notification.report.city_municipality_name }}
                                                         </p>
                                                         <div class="mt-1 flex items-center space-x-2">
                                                             <span
                                                                 v-if="notification.report.status === 'for_validation'"
-                                                                class="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-600/20"
+                                                                class="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-500/20 dark:text-amber-300 dark:ring-amber-500/30"
                                                             >
                                                                 for validation
                                                             </span>
                                                             <span
                                                                 v-else-if="notification.report.status === 'validated'"
-                                                                class="inline-flex items-center rounded-full bg-green-50 px-1.5 py-0.5 text-[10px] font-semibold text-green-700 ring-1 ring-green-600/20"
+                                                                class="inline-flex items-center rounded-full bg-green-50 px-1.5 py-0.5 text-[10px] font-semibold text-green-700 ring-1 ring-green-600/20 dark:bg-green-500/20 dark:text-green-300 dark:ring-green-500/30"
                                                             >
                                                                 validated
                                                             </span>
                                                             <span
                                                                 v-else-if="notification.report.status === 'returned'"
-                                                                class="inline-flex items-center rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-700 ring-1 ring-red-600/20"
+                                                                class="inline-flex items-center rounded-full bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-700 ring-1 ring-red-600/20 dark:bg-red-500/20 dark:text-red-300 dark:ring-red-500/30"
                                                             >
                                                                 returned
                                                             </span>
@@ -466,7 +484,7 @@ function logout() {
                                                         </div>
                                                         <p
                                                             v-if="notification.report.status === 'returned' && notification.report.return_reason"
-                                                            class="mt-1 truncate text-xs text-red-600"
+                                                            class="mt-1 truncate text-xs text-red-600 dark:text-red-400"
                                                         >
                                                             {{ notification.report.return_reason }}
                                                         </p>
@@ -482,7 +500,7 @@ function logout() {
                                                 v-else-if="notification.kind === 'request_letter' && notification.request_letter"
                                                 :href="`/incidents/${notification.request_letter.incident_id}`"
                                                 class="block border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700"
-                                                :class="!notification.read ? 'bg-indigo-50/50' : ''"
+                                                :class="!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : ''"
                                                 @click="
                                                     markAsRead(notification.id);
                                                     notificationOpen = false;
@@ -491,7 +509,7 @@ function logout() {
                                                 <div class="flex items-start justify-between">
                                                     <div class="min-w-0 flex-1">
                                                         <p class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">Request Letter</p>
-                                                        <p class="mt-0.5 truncate text-xs text-slate-500">
+                                                        <p class="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
                                                             {{ requestLetterMessage(notification.request_letter) }}
                                                         </p>
                                                         <div class="mt-1 flex items-center space-x-2">
@@ -499,12 +517,12 @@ function logout() {
                                                                 class="inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ring-1"
                                                                 :class="
                                                                     notification.request_letter.action === 'endorsed'
-                                                                        ? 'bg-amber-50 text-amber-700 ring-amber-600/20'
+                                                                        ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/20 dark:text-amber-300 dark:ring-amber-500/30'
                                                                         : notification.request_letter.action === 'approved'
-                                                                          ? 'bg-green-50 text-green-700 ring-green-600/20'
+                                                                          ? 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/20 dark:text-green-300 dark:ring-green-500/30'
                                                                           : notification.request_letter.action === 'delivered'
-                                                                            ? 'bg-sky-50 text-sky-700 ring-sky-600/20'
-                                                                            : 'bg-purple-50 text-purple-700 ring-purple-600/20'
+                                                                            ? 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-500/20 dark:text-sky-300 dark:ring-sky-500/30'
+                                                                            : 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-500/20 dark:text-purple-300 dark:ring-purple-500/30'
                                                                 "
                                                             >
                                                                 {{ notification.request_letter.action }}
@@ -582,6 +600,16 @@ function logout() {
                         :class="$page.url.startsWith('/users') ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-800 hover:text-white'"
                     >
                         Users
+                    </Link>
+                    <Link
+                        v-if="user.role === 'admin'"
+                        href="/database"
+                        class="block px-3 py-2 text-base font-medium"
+                        :class="
+                            $page.url.startsWith('/database') ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-800 hover:text-white'
+                        "
+                    >
+                        Database
                     </Link>
                 </div>
                 <div v-if="user" class="border-t border-indigo-800 px-4 pt-3 pb-3">

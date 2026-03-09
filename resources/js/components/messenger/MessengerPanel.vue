@@ -34,11 +34,16 @@ onMounted(fetchConversations);
 </script>
 
 <template>
-    <div class="flex h-[32rem] w-96 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
+    <div
+        class="flex h-[32rem] w-96 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800"
+    >
         <!-- Top bar (list view only) -->
-        <div v-if="currentView === 'list'" class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-            <h2 class="text-sm font-semibold text-slate-900">Messages</h2>
-            <button class="rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600" @click="emit('close')">
+        <div v-if="currentView === 'list'" class="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
+            <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Messages</h2>
+            <button
+                class="rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                @click="emit('close')"
+            >
                 <X :size="16" />
             </button>
         </div>

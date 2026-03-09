@@ -62,16 +62,20 @@ function submit() {
         <Head title="Create Incident" />
         <div class="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center space-x-4">
-                <Link href="/incidents" class="text-sm text-slate-500 transition-colors hover:text-slate-700">&larr; Back to Incidents</Link>
-                <h1 class="text-2xl font-bold text-slate-900">Create Incident</h1>
+                <Link
+                    href="/incidents"
+                    class="text-sm text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                    >&larr; Back to Incidents</Link
+                >
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Create Incident</h1>
             </div>
 
-            <form class="space-y-6 border border-slate-200 bg-white p-6" @submit.prevent="submit">
+            <form class="space-y-6 border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800" @submit.prevent="submit">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Category</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
                     <select
                         v-model="form.category"
-                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                     >
                         <option value="" disabled>Select a category</option>
                         <option v-for="cat in categories" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
@@ -80,21 +84,21 @@ function submit() {
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Identifier (optional)</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Identifier (optional)</label>
                     <input
                         v-model="form.identifier"
                         type="text"
-                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                         placeholder="e.g. Basyang, Intensity V"
                     />
                     <p v-if="form.errors.identifier" class="mt-1 text-sm text-rose-600">{{ form.errors.identifier }}</p>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Type</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Type</label>
                     <select
                         v-model="form.type"
-                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                         :disabled="isLgu"
                     >
                         <option value="local">Local (Single LGU)</option>
@@ -104,29 +108,29 @@ function submit() {
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-700">Description</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
                     <textarea
                         v-model="form.description"
                         rows="3"
                         maxlength="2000"
-                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                         placeholder="Brief description of the incident..."
                     ></textarea>
                 </div>
 
                 <!-- LGU Assignment (non-LGU users, local type only) -->
                 <div v-if="showLguPicker">
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Assign LGUs</label>
+                    <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">Assign LGUs</label>
                     <div class="mb-3">
                         <select
                             v-model="selectedProvinceId"
-                            class="block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                            class="block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                         >
                             <option :value="null">Select Province to filter</option>
                             <option v-for="province in provinces" :key="province.id" :value="province.id">{{ province.name }}</option>
                         </select>
                     </div>
-                    <div v-if="selectedProvinceId" class="max-h-48 space-y-1 overflow-y-auto border border-slate-200 p-3">
+                    <div v-if="selectedProvinceId" class="max-h-48 space-y-1 overflow-y-auto border border-slate-200 p-3 dark:border-slate-700">
                         <label v-for="cm in cityMunicipalities" :key="cm.id" class="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -134,22 +138,24 @@ function submit() {
                                 class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                                 @change="toggleLgu(cm.id)"
                             />
-                            <span class="text-sm text-slate-700">{{ cm.name }}</span>
+                            <span class="text-sm text-slate-700 dark:text-slate-300">{{ cm.name }}</span>
                         </label>
                     </div>
-                    <p class="mt-1 text-xs text-slate-500">Selected: {{ form.city_municipality_ids.length }} LGU(s)</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Selected: {{ form.city_municipality_ids.length }} LGU(s)</p>
                     <p v-if="form.errors.city_municipality_ids" class="mt-1 text-sm text-rose-600">{{ form.errors.city_municipality_ids }}</p>
                 </div>
 
-                <div v-else-if="isLgu" class="bg-indigo-50 p-3 text-sm text-indigo-700">
+                <div v-else-if="isLgu" class="bg-indigo-50 p-3 text-sm text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
                     Your LGU will be automatically assigned to this incident.
                 </div>
-                <div v-else class="bg-slate-50 p-3 text-sm text-slate-600">LGUs can be assigned later once affected areas are identified.</div>
+                <div v-else class="bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-900/50 dark:text-slate-400">
+                    LGUs can be assigned later once affected areas are identified.
+                </div>
 
                 <div class="flex items-center justify-end space-x-4">
                     <Link
                         href="/incidents"
-                        class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                        class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         Cancel
                     </Link>

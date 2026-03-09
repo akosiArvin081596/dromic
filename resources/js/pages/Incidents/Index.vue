@@ -104,8 +104,8 @@ function formatDate(dateString: string): string {
             <!-- Header -->
             <div class="mb-6 flex items-start justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Incidents</h1>
-                    <p class="mt-1 text-sm text-slate-500">{{ roleLabel }} &middot; {{ locationLabel }}</p>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Incidents</h1>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ roleLabel }} &middot; {{ locationLabel }}</p>
                 </div>
                 <Link
                     v-if="canCreate"
@@ -120,10 +120,16 @@ function formatDate(dateString: string): string {
             </div>
 
             <!-- Returned Reports Banner -->
-            <div v-if="returnedReports.length > 0" class="mb-6 rounded-xl border border-rose-200 bg-rose-50">
+            <div v-if="returnedReports.length > 0" class="mb-6 rounded-xl border border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-950/50">
                 <div class="flex items-center gap-3 px-5 pt-4 pb-3">
-                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-100">
-                        <svg class="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-900/50">
+                        <svg
+                            class="h-5 w-5 text-rose-600 dark:text-rose-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                        >
                             <path
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -132,25 +138,27 @@ function formatDate(dateString: string): string {
                         </svg>
                     </span>
                     <div>
-                        <p class="text-sm font-semibold text-rose-800">
+                        <p class="text-sm font-semibold text-rose-800 dark:text-rose-200">
                             {{ returnedReports.length }} report{{ returnedReports.length !== 1 ? 's' : '' }} returned for revision
                         </p>
-                        <p class="mt-0.5 text-xs text-rose-600">Please review and resubmit your returned reports.</p>
+                        <p class="mt-0.5 text-xs text-rose-600 dark:text-rose-400">Please review and resubmit your returned reports.</p>
                     </div>
                 </div>
-                <div class="divide-y divide-rose-200 border-t border-rose-200">
+                <div class="divide-y divide-rose-200 border-t border-rose-200 dark:divide-rose-800 dark:border-rose-800">
                     <Link
                         v-for="report in returnedReports"
                         :key="report.id"
                         :href="`/incidents/${report.incident_id}/reports/${report.id}`"
-                        class="group flex items-center justify-between px-5 py-3 transition-colors hover:bg-rose-100/50"
+                        class="group flex items-center justify-between px-5 py-3 transition-colors hover:bg-rose-100/50 dark:hover:bg-rose-900/30"
                     >
                         <div class="min-w-0 flex-1">
-                            <p class="truncate text-sm font-medium text-rose-900 group-hover:text-rose-700">
+                            <p class="truncate text-sm font-medium text-rose-900 group-hover:text-rose-700 dark:text-rose-100">
                                 {{ reportTypeLabel(report) }}
-                                <span class="font-normal text-rose-600">&middot; {{ report.incident?.display_name ?? report.incident?.name }}</span>
+                                <span class="font-normal text-rose-600 dark:text-rose-400"
+                                    >&middot; {{ report.incident?.display_name ?? report.incident?.name }}</span
+                                >
                             </p>
-                            <p v-if="report.return_reason" class="mt-0.5 truncate text-xs text-rose-600">
+                            <p v-if="report.return_reason" class="mt-0.5 truncate text-xs text-rose-600 dark:text-rose-400">
                                 {{ report.return_reason }}
                             </p>
                         </div>
@@ -170,10 +178,10 @@ function formatDate(dateString: string): string {
             <!-- Stat Cards -->
             <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <!-- Total Incidents -->
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Total Incidents</span>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/50">
                             <svg class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -184,17 +192,17 @@ function formatDate(dateString: string): string {
                         </span>
                     </div>
                     <div class="mt-3">
-                        <div class="rounded-lg bg-indigo-50 px-3 py-2.5">
-                            <div class="text-2xl font-bold text-indigo-900">{{ incidentCounts.total }}</div>
+                        <div class="rounded-lg bg-indigo-50 px-3 py-2.5 dark:bg-indigo-950/50">
+                            <div class="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{{ incidentCounts.total }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Active -->
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Active</span>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/50">
                             <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -205,34 +213,34 @@ function formatDate(dateString: string): string {
                         </span>
                     </div>
                     <div class="mt-3">
-                        <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
-                            <div class="text-2xl font-bold text-emerald-900">{{ incidentCounts.active }}</div>
+                        <div class="rounded-lg bg-emerald-50 px-3 py-2.5 dark:bg-emerald-950/50">
+                            <div class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ incidentCounts.active }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Closed -->
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Closed</span>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900/50">
                             <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                             </svg>
                         </span>
                     </div>
                     <div class="mt-3">
-                        <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                            <div class="text-2xl font-bold text-slate-900">{{ incidentCounts.closed }}</div>
+                        <div class="rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-slate-900/50">
+                            <div class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ incidentCounts.closed }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Total Reports -->
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Total Reports</span>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/50">
                             <svg class="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -243,19 +251,19 @@ function formatDate(dateString: string): string {
                         </span>
                     </div>
                     <div class="mt-3">
-                        <div class="rounded-lg bg-amber-50 px-3 py-2.5">
-                            <div class="text-2xl font-bold text-amber-900">{{ incidentCounts.total_reports }}</div>
+                        <div class="rounded-lg bg-amber-50 px-3 py-2.5 dark:bg-amber-950/50">
+                            <div class="text-2xl font-bold text-amber-900 dark:text-amber-100">{{ incidentCounts.total_reports }}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Incidents Table Card -->
-            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                 <!-- Card Header with Filters -->
-                <div class="border-b border-slate-200 px-6 py-4">
+                <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase">
+                        <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase dark:text-slate-100">
                             <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -284,12 +292,12 @@ function formatDate(dateString: string): string {
                                     v-model="search"
                                     type="text"
                                     placeholder="Search incidents..."
-                                    class="block w-full rounded-lg border border-slate-300 py-2 pr-3 pl-9 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:w-64"
+                                    class="block w-full rounded-lg border border-slate-300 py-2 pr-3 pl-9 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 sm:w-64 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                                 />
                             </div>
                             <select
                                 v-model="status"
-                                class="block rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                class="block rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                             >
                                 <option value="">All Statuses</option>
                                 <option value="active">Active</option>
@@ -300,22 +308,43 @@ function formatDate(dateString: string): string {
                 </div>
 
                 <!-- Table -->
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead class="bg-slate-50/50">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                    <thead class="bg-slate-50/50 dark:bg-slate-900/50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">LGUs</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Reports</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Created</th>
-                            <th class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Type
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                LGUs
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Reports
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Created
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        <tr v-for="incident in incidents.data" :key="incident.id" class="transition-colors hover:bg-slate-50/50">
-                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
-                                <Link :href="`/incidents/${incident.id}`" class="text-indigo-600 transition-colors hover:text-indigo-800">
+                    <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-700 dark:bg-slate-800">
+                        <tr
+                            v-for="incident in incidents.data"
+                            :key="incident.id"
+                            class="transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50"
+                        >
+                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900 dark:text-slate-100">
+                                <Link
+                                    :href="`/incidents/${incident.id}`"
+                                    class="text-indigo-600 transition-colors hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                >
                                     {{ incident.display_name ?? incident.name }}
                                 </Link>
                             </td>
@@ -327,13 +356,13 @@ function formatDate(dateString: string): string {
                                     {{ incident.type }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
                                 <template v-if="incident.type === 'massive' && !incident.city_municipalities?.length">
                                     {{ incident.reporting_lgus_count ?? 0 }}
                                 </template>
                                 <template v-else>{{ incident.city_municipalities?.length ?? 0 }}</template>
                             </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
                                 {{ incident.reports_count ?? 0 }}
                             </td>
                             <td class="px-6 py-4 text-sm whitespace-nowrap">
@@ -344,13 +373,13 @@ function formatDate(dateString: string): string {
                                     {{ incident.status }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
                                 {{ formatDate(incident.created_at) }}
                             </td>
                             <td class="px-6 py-4 text-right text-sm whitespace-nowrap">
                                 <Link
                                     :href="`/incidents/${incident.id}`"
-                                    class="inline-flex items-center gap-1 text-indigo-600 transition-colors hover:text-indigo-800"
+                                    class="inline-flex items-center gap-1 text-indigo-600 transition-colors hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 >
                                     View
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -368,7 +397,7 @@ function formatDate(dateString: string): string {
                                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
                                     />
                                 </svg>
-                                <p class="mt-3 text-sm font-medium text-slate-500">No incidents found</p>
+                                <p class="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">No incidents found</p>
                                 <p class="mt-1 text-xs text-slate-400">
                                     {{ search || status ? 'Try adjusting your filters.' : 'No incidents have been created yet.' }}
                                 </p>
@@ -378,19 +407,26 @@ function formatDate(dateString: string): string {
                 </table>
 
                 <!-- Pagination -->
-                <div v-if="incidents.last_page > 1" class="flex items-center justify-between border-t border-slate-200 px-6 py-3">
-                    <p class="text-xs text-slate-500">Page {{ incidents.current_page }} of {{ incidents.last_page }}</p>
+                <div
+                    v-if="incidents.last_page > 1"
+                    class="flex items-center justify-between border-t border-slate-200 px-6 py-3 dark:border-slate-700"
+                >
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Page {{ incidents.current_page }} of {{ incidents.last_page }}</p>
                     <div class="flex space-x-1">
                         <template v-for="link in incidents.links" :key="link.label">
                             <Link
                                 v-if="link.url"
                                 :href="link.url"
                                 class="rounded-lg px-3 py-1.5 text-sm transition-colors"
-                                :class="link.active ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100'"
+                                :class="
+                                    link.active
+                                        ? 'bg-indigo-600 text-white shadow-sm'
+                                        : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300'
+                                "
                             >
                                 <span v-html="link.label" />
                             </Link>
-                            <span v-else class="rounded-lg px-3 py-1.5 text-sm text-slate-300">
+                            <span v-else class="rounded-lg px-3 py-1.5 text-sm text-slate-300 dark:text-slate-600">
                                 <span v-html="link.label" />
                             </span>
                         </template>

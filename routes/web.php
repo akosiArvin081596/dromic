@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ConsolidatedReportController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DeliveryPlanController;
 use App\Http\Controllers\IncidentController;
@@ -91,6 +92,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/database', [DatabaseController::class, 'index'])->name('database.index');
+        Route::get('/database/{table}', [DatabaseController::class, 'show'])->name('database.show');
+        Route::delete('/database/{table}/row', [DatabaseController::class, 'destroyRow'])->name('database.destroy-row');
+        Route::delete('/database/{table}/truncate', [DatabaseController::class, 'truncate'])->name('database.truncate');
     });
 
     Route::get('/api/barangays', [ReportController::class, 'barangays'])->name('reports.barangays');

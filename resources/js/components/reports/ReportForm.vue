@@ -321,8 +321,6 @@ function submit(status: 'draft' | 'for_validation') {
                 :total-female-now="calculations.totalAgeFemaleNow.value"
                 :total-cum="calculations.totalAgeCum.value"
                 :total-now="calculations.totalAgeNow.value"
-                :inside-ec-persons-cum="calculations.totalInsideECPersonsCum.value"
-                :inside-ec-persons-now="calculations.totalInsideECPersonsNow.value"
             />
         </div>
 
@@ -334,8 +332,6 @@ function submit(status: 'draft' | 'for_validation') {
                 :total-male-now="calculations.totalVulnerableMaleNow.value"
                 :total-female-cum="calculations.totalVulnerableFemaleCum.value"
                 :total-female-now="calculations.totalVulnerableFemaleNow.value"
-                :inside-ec-persons-cum="calculations.totalInsideECPersonsCum.value"
-                :inside-ec-persons-now="calculations.totalInsideECPersonsNow.value"
             />
         </div>
 

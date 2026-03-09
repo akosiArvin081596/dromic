@@ -24,10 +24,22 @@ type ReportActivityEntry = {
     }[];
 };
 
+type ForValidationReport = {
+    id: number;
+    report_number: string;
+    report_type: string;
+    sequence_number: number;
+    report_date: string | null;
+    incident_id: number;
+    incident_name: string;
+    lgu_name: string;
+};
+
 defineProps<{
     activeIncidents: Incident[];
     reportCounts: ReportCounts;
     reportActivity?: ReportActivityEntry[] | null;
+    forValidationReports?: ForValidationReport[] | null;
 }>();
 
 const page = usePage();
@@ -51,6 +63,7 @@ const roleLabel = computed(() => {
     return 'Administrator';
 });
 
+const showForValidation = ref(false);
 const expandedIncidents = ref<Set<number>>(new Set());
 
 function toggleIncident(id: number) {
@@ -86,17 +99,17 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Welcome Header -->
             <div class="mb-6">
-                <h1 class="text-2xl font-bold text-slate-900">Welcome, {{ user.name }}</h1>
-                <p class="mt-1 text-sm text-slate-500">{{ roleLabel }} &middot; {{ locationLabel }}</p>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Welcome, {{ user.name }}</h1>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ roleLabel }} &middot; {{ locationLabel }}</p>
             </div>
 
             <!-- Action Banner: LGU returned reports -->
             <div
                 v-if="isLgu && reportCounts.returned > 0"
-                class="mb-6 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4"
+                class="mb-6 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 dark:border-rose-800 dark:bg-rose-950/50"
             >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-100">
-                    <svg class="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-900/50">
+                    <svg class="h-5 w-5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
@@ -105,35 +118,35 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                     </svg>
                 </span>
                 <div>
-                    <p class="text-sm font-semibold text-rose-800">
+                    <p class="text-sm font-semibold text-rose-800 dark:text-rose-200">
                         {{ reportCounts.returned }} report{{ reportCounts.returned !== 1 ? 's' : '' }} returned for revision
                     </p>
-                    <p class="mt-0.5 text-xs text-rose-600">Please review and resubmit your returned reports.</p>
+                    <p class="mt-0.5 text-xs text-rose-600 dark:text-rose-400">Please review and resubmit your returned reports.</p>
                 </div>
             </div>
 
             <!-- Action Banner: Provincial awaiting validation -->
             <div
                 v-if="isProvincial && reportCounts.for_validation > 0"
-                class="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4"
+                class="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-800 dark:bg-amber-950/50"
             >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100">
-                    <svg class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/50">
+                    <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                 </span>
                 <div>
-                    <p class="text-sm font-semibold text-amber-800">
+                    <p class="text-sm font-semibold text-amber-800 dark:text-amber-200">
                         {{ reportCounts.for_validation }} report{{ reportCounts.for_validation !== 1 ? 's' : '' }} awaiting your validation
                     </p>
-                    <p class="mt-0.5 text-xs text-amber-600">LGU reports have been submitted and need your review.</p>
+                    <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400">LGU reports have been submitted and need your review.</p>
                 </div>
             </div>
 
             <!-- Stat Cards -->
             <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <!-- Active Incidents (all roles) -->
-                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Active Incidents</span>
                         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
@@ -147,15 +160,15 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                         </span>
                     </div>
                     <div class="mt-3">
-                        <div class="rounded-lg bg-indigo-50 px-3 py-2.5">
-                            <div class="text-2xl font-bold text-indigo-900">{{ activeIncidents.length }}</div>
+                        <div class="rounded-lg bg-indigo-50 px-3 py-2.5 dark:bg-indigo-950/50">
+                            <div class="text-2xl font-bold text-indigo-900 dark:text-indigo-100">{{ activeIncidents.length }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- LGU cards: Drafts | Pending Validation | Validated -->
                 <template v-if="isLgu">
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Drafts</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
@@ -169,13 +182,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-slate-900">{{ reportCounts.draft }}</div>
+                            <div class="rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-slate-900/50">
+                                <div class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ reportCounts.draft }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Pending Validation</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
@@ -185,13 +198,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-amber-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-amber-900">{{ reportCounts.for_validation }}</div>
+                            <div class="rounded-lg bg-amber-50 px-3 py-2.5 dark:bg-amber-950/50">
+                                <div class="text-2xl font-bold text-amber-900 dark:text-amber-100">{{ reportCounts.for_validation }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Validated</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
@@ -201,8 +214,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-emerald-900">{{ reportCounts.validated }}</div>
+                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5 dark:bg-emerald-950/50">
+                                <div class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ reportCounts.validated }}</div>
                             </div>
                         </div>
                     </div>
@@ -210,7 +223,16 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
 
                 <!-- Provincial cards: Awaiting Validation | Validated | Returned -->
                 <template v-if="isProvincial">
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <button
+                        type="button"
+                        class="rounded-xl border p-5 text-left shadow-sm transition-colors"
+                        :class="
+                            showForValidation
+                                ? 'border-amber-400 bg-amber-50/50 ring-1 ring-amber-400 dark:border-amber-600 dark:bg-amber-950/30'
+                                : 'border-slate-200 bg-white hover:border-amber-300 hover:bg-amber-50/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-amber-700'
+                        "
+                        @click="showForValidation = !showForValidation"
+                    >
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Awaiting Validation</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
@@ -220,13 +242,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-amber-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-amber-900">{{ reportCounts.for_validation }}</div>
+                            <div class="rounded-lg bg-amber-50 px-3 py-2.5 dark:bg-amber-950/50">
+                                <div class="text-2xl font-bold text-amber-900 dark:text-amber-100">{{ reportCounts.for_validation }}</div>
                             </div>
                         </div>
-                    </div>
+                    </button>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Validated</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
@@ -236,13 +258,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-emerald-900">{{ reportCounts.validated }}</div>
+                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5 dark:bg-emerald-950/50">
+                                <div class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ reportCounts.validated }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Returned</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50">
@@ -252,8 +274,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-rose-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-rose-900">{{ reportCounts.returned }}</div>
+                            <div class="rounded-lg bg-rose-50 px-3 py-2.5 dark:bg-rose-950/50">
+                                <div class="text-2xl font-bold text-rose-900 dark:text-rose-100">{{ reportCounts.returned }}</div>
                             </div>
                         </div>
                     </div>
@@ -261,7 +283,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
 
                 <!-- Regional card: Validated only -->
                 <template v-if="isRegional">
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Validated</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
@@ -271,8 +293,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-emerald-900">{{ reportCounts.validated }}</div>
+                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5 dark:bg-emerald-950/50">
+                                <div class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ reportCounts.validated }}</div>
                             </div>
                         </div>
                     </div>
@@ -280,7 +302,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
 
                 <!-- Admin cards: Submitted | Validated | Drafts -->
                 <template v-if="isAdmin">
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Submitted</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50">
@@ -294,13 +316,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-amber-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-amber-900">{{ reportCounts.for_validation }}</div>
+                            <div class="rounded-lg bg-amber-50 px-3 py-2.5 dark:bg-amber-950/50">
+                                <div class="text-2xl font-bold text-amber-900 dark:text-amber-100">{{ reportCounts.for_validation }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Validated</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50">
@@ -310,13 +332,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-emerald-900">{{ reportCounts.validated }}</div>
+                            <div class="rounded-lg bg-emerald-50 px-3 py-2.5 dark:bg-emerald-950/50">
+                                <div class="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{{ reportCounts.validated }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Drafts</span>
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100">
@@ -330,13 +352,60 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             </span>
                         </div>
                         <div class="mt-3">
-                            <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                <div class="text-2xl font-bold text-slate-900">{{ reportCounts.draft }}</div>
+                            <div class="rounded-lg bg-slate-50 px-3 py-2.5 dark:bg-slate-900/50">
+                                <div class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ reportCounts.draft }}</div>
                             </div>
                         </div>
                     </div>
                 </template>
             </div>
+
+            <!-- For Validation Reports List (Provincial only) -->
+            <Deferred v-if="isProvincial && showForValidation" data="forValidationReports">
+                <template #fallback>
+                    <div class="mb-8 rounded-xl border border-amber-200 bg-white p-6 shadow-sm dark:border-amber-800 dark:bg-slate-800">
+                        <div class="flex animate-pulse items-center gap-3">
+                            <div class="h-4 w-4 rounded-full bg-amber-200"></div>
+                            <div class="h-4 w-48 rounded bg-amber-100"></div>
+                        </div>
+                    </div>
+                </template>
+
+                <div
+                    v-if="forValidationReports && forValidationReports.length > 0"
+                    class="mb-8 rounded-xl border border-amber-200 bg-white shadow-sm dark:border-amber-800 dark:bg-slate-800"
+                >
+                    <div class="border-b border-amber-100 px-6 py-4 dark:border-amber-900/50">
+                        <h3 class="text-sm font-semibold text-amber-900 dark:text-amber-200">Reports Awaiting Validation</h3>
+                    </div>
+                    <div class="divide-y divide-slate-100 dark:divide-slate-700">
+                        <Link
+                            v-for="report in forValidationReports"
+                            :key="report.id"
+                            :href="`/incidents/${report.incident_id}/reports/${report.id}`"
+                            class="flex items-center justify-between px-6 py-3 transition-colors hover:bg-amber-50/50 dark:hover:bg-amber-950/20"
+                        >
+                            <div>
+                                <p class="text-sm font-medium text-slate-900 dark:text-slate-100">{{ report.report_number }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ report.incident_name }} &middot; {{ report.lgu_name }}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs text-slate-400">{{ report.report_date }}</span>
+                                <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+
+                <div
+                    v-else-if="forValidationReports && forValidationReports.length === 0"
+                    class="mb-8 rounded-xl border border-amber-200 bg-white p-6 shadow-sm dark:border-amber-800 dark:bg-slate-800"
+                >
+                    <p class="text-center text-sm text-slate-500">No reports awaiting validation.</p>
+                </div>
+            </Deferred>
 
             <!-- Reporting Coverage (Provincial/Regional/Admin only, deferred) -->
             <Deferred v-if="!isLgu" data="reportActivity">
@@ -354,8 +423,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                         </h3>
                         <div class="space-y-3">
                             <div v-for="n in 3" :key="n" class="animate-pulse rounded-xl border border-slate-200 bg-white p-5">
-                                <div class="h-4 w-1/3 rounded bg-slate-200"></div>
-                                <div class="mt-3 h-2 w-full rounded-full bg-slate-100"></div>
+                                <div class="h-4 w-1/3 rounded bg-slate-200 dark:bg-slate-700"></div>
+                                <div class="mt-3 h-2 w-full rounded-full bg-slate-100 dark:bg-slate-700"></div>
                             </div>
                         </div>
                     </div>
@@ -374,7 +443,11 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                     </h3>
 
                     <div class="space-y-3">
-                        <div v-for="entry in reportActivity" :key="entry.incident_id" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div
+                            v-for="entry in reportActivity"
+                            :key="entry.incident_id"
+                            class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+                        >
                             <div
                                 class="flex items-center justify-between px-5 py-4"
                                 :class="{ 'cursor-pointer': entry.provinces && entry.provinces.length > 0 }"
@@ -393,10 +466,12 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                                         >
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                                         </svg>
-                                        <span class="truncate text-sm font-semibold text-slate-900">{{ entry.incident_name }}</span>
+                                        <span class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{{
+                                            entry.incident_name
+                                        }}</span>
                                     </div>
                                     <div class="mt-2 flex items-center gap-2.5">
-                                        <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
+                                        <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                                             <div
                                                 class="h-full rounded-full transition-all duration-500"
                                                 :class="coverageBarColor(coveragePercent(entry.reporting_lgus, entry.total_lgus))"
@@ -413,11 +488,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             <!-- Provincial breakdown (Regional/Admin) -->
                             <div
                                 v-if="entry.provinces && entry.provinces.length > 0 && expandedIncidents.has(entry.incident_id)"
-                                class="border-t border-slate-100 px-5 py-3"
+                                class="border-t border-slate-100 px-5 py-3 dark:border-slate-700"
                             >
                                 <div v-for="province in entry.provinces" :key="province.province_name" class="flex items-center gap-3 py-2">
-                                    <span class="w-40 shrink-0 truncate text-sm text-slate-600">{{ province.province_name }}</span>
-                                    <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+                                    <span class="w-40 shrink-0 truncate text-sm text-slate-600 dark:text-slate-400">{{
+                                        province.province_name
+                                    }}</span>
+                                    <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                                         <div
                                             class="h-full rounded-full transition-all duration-500"
                                             :class="coverageBarColor(coveragePercent(province.reporting_lgus, province.total_lgus))"
@@ -437,9 +514,11 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
             <!-- Two-column layout: Incidents + Sidebar widgets -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <!-- Active Incidents List (takes 2 cols) -->
-                <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
-                    <div class="border-b border-slate-200 px-6 py-4">
-                        <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase">
+                <div
+                    class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-2 dark:border-slate-700 dark:bg-slate-800"
+                >
+                    <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+                        <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase dark:text-slate-100">
                             <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -450,17 +529,19 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             Active Incidents
                         </h2>
                     </div>
-                    <div class="divide-y divide-slate-100">
+                    <div class="divide-y divide-slate-100 dark:divide-slate-700">
                         <Link
                             v-for="(incident, index) in activeIncidents"
                             :key="incident.id"
                             :href="`/incidents/${incident.id}`"
-                            class="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-slate-50/50"
-                            :class="index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'"
+                            class="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50"
+                            :class="index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'"
                         >
                             <div class="min-w-0 flex-1">
                                 <div class="flex items-baseline justify-between gap-3">
-                                    <span class="truncate text-sm font-medium text-slate-900 group-hover:text-indigo-600">
+                                    <span
+                                        class="truncate text-sm font-medium text-slate-900 group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-400"
+                                    >
                                         {{ incident.display_name ?? incident.name }}
                                     </span>
                                     <span class="shrink-0 text-xs text-slate-400">
@@ -506,7 +587,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                                     d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
                                 />
                             </svg>
-                            <p class="mt-3 text-sm text-slate-500">No active incidents.</p>
+                            <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">No active incidents.</p>
                         </div>
                     </div>
                 </div>
@@ -514,8 +595,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                 <!-- Sidebar widgets -->
                 <div class="space-y-6">
                     <!-- Quick Actions -->
-                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                        <div class="border-b border-slate-200 px-5 py-3.5">
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div class="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
                             <h3 class="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path
@@ -527,10 +608,10 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                                 Quick Actions
                             </h3>
                         </div>
-                        <div class="divide-y divide-slate-100 px-5">
+                        <div class="divide-y divide-slate-100 px-5 dark:divide-slate-700">
                             <Link
                                 href="/incidents"
-                                class="flex items-center gap-3 py-3 text-sm text-slate-700 transition-colors hover:text-indigo-600"
+                                class="flex items-center gap-3 py-3 text-sm text-slate-700 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
                             >
                                 <span class="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-50">
                                     <svg class="h-3.5 w-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -546,7 +627,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                             <Link
                                 v-if="isAdmin || isRegional || isLgu"
                                 href="/incidents/create"
-                                class="flex items-center gap-3 py-3 text-sm text-slate-700 transition-colors hover:text-indigo-600"
+                                class="flex items-center gap-3 py-3 text-sm text-slate-700 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
                             >
                                 <span class="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-50">
                                     <svg
@@ -565,8 +646,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                     </div>
 
                     <!-- Recent Activity (placeholder) -->
-                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                        <div class="border-b border-slate-200 px-5 py-3.5">
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div class="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
                             <h3 class="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -583,8 +664,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                     </div>
 
                     <!-- Weather Alerts (placeholder) -->
-                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                        <div class="border-b border-slate-200 px-5 py-3.5">
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div class="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
                             <h3 class="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path
@@ -613,8 +694,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
             <!-- Bottom widgets row -->
             <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <!-- Report Submission Trends (placeholder) -->
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                    <div class="border-b border-slate-200 px-5 py-3.5">
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div class="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
                         <h3 class="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
@@ -629,13 +710,13 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                     <div class="flex items-center justify-center px-5 py-14">
                         <div class="text-center">
                             <div class="mx-auto flex items-end justify-center gap-1.5">
-                                <div class="h-8 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-12 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-6 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-16 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-10 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-14 w-5 rounded-t bg-slate-100"></div>
-                                <div class="h-9 w-5 rounded-t bg-slate-100"></div>
+                                <div class="h-8 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-12 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-6 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-16 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-10 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-14 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
+                                <div class="h-9 w-5 rounded-t bg-slate-100 dark:bg-slate-700"></div>
                             </div>
                             <p class="mt-4 text-xs text-slate-400">Daily report submission chart coming soon</p>
                         </div>
@@ -643,8 +724,8 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                 </div>
 
                 <!-- Affected Population Summary (placeholder) -->
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-                    <div class="border-b border-slate-200 px-5 py-3.5">
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div class="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
                         <h3 class="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
@@ -660,7 +741,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                         <div class="text-center">
                             <div class="mx-auto flex items-center justify-center gap-4">
                                 <div class="flex flex-col items-center">
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50">
+                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700">
                                         <svg class="h-6 w-6 text-slate-200" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -672,7 +753,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                                     <span class="mt-1.5 text-[10px] text-slate-300">Families</span>
                                 </div>
                                 <div class="flex flex-col items-center">
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50">
+                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700">
                                         <svg class="h-6 w-6 text-slate-200" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -684,7 +765,7 @@ useEcho(channel, 'ReportReturned', () => router.reload({ only: ['reportCounts'] 
                                     <span class="mt-1.5 text-[10px] text-slate-300">Persons</span>
                                 </div>
                                 <div class="flex flex-col items-center">
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50">
+                                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-700">
                                         <svg class="h-6 w-6 text-slate-200" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"

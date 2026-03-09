@@ -177,14 +177,17 @@ function openDelivery(letter: RequestLetter): void {
             <!-- Breadcrumb & Actions -->
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <Link href="/incidents" class="inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-indigo-600">
+                    <Link
+                        href="/incidents"
+                        class="inline-flex items-center gap-1 text-sm text-slate-400 transition-colors hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+                    >
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
                         Back to Incidents
                     </Link>
                     <div class="mt-2 flex flex-wrap items-center gap-3">
-                        <h1 class="text-2xl font-bold text-slate-900">{{ incident.display_name ?? incident.name }}</h1>
+                        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ incident.display_name ?? incident.name }}</h1>
                         <span
                             class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1"
                             :class="
@@ -211,7 +214,7 @@ function openDelivery(letter: RequestLetter): void {
                     <Link
                         v-if="canViewConsolidated"
                         :href="`/incidents/${incident.id}/consolidated`"
-                        class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                        class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path
@@ -225,7 +228,7 @@ function openDelivery(letter: RequestLetter): void {
                     <Link
                         v-if="user.role === 'admin' || user.role === 'regional'"
                         :href="`/incidents/${incident.id}/edit`"
-                        class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                        class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path
@@ -250,9 +253,9 @@ function openDelivery(letter: RequestLetter): void {
             </div>
 
             <!-- Incident Details Card -->
-            <div class="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                <div class="border-b border-slate-200 px-6 py-4">
-                    <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase">
+            <div class="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+                    <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase dark:text-slate-100">
                         <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path
                                 stroke-linecap="round"
@@ -264,12 +267,14 @@ function openDelivery(letter: RequestLetter): void {
                     </h2>
                 </div>
                 <div class="px-6 py-5">
-                    <p v-if="incident.description" class="mb-5 text-sm leading-relaxed text-slate-600">{{ incident.description }}</p>
+                    <p v-if="incident.description" class="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                        {{ incident.description }}
+                    </p>
 
                     <!-- Metadata grid -->
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div class="flex items-start gap-3">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/50">
                                 <svg class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path
                                         stroke-linecap="round"
@@ -279,12 +284,14 @@ function openDelivery(letter: RequestLetter): void {
                                 </svg>
                             </span>
                             <div>
-                                <p class="text-xs font-medium text-slate-400">Created by</p>
-                                <p class="mt-0.5 text-sm font-semibold text-slate-900">{{ incident.creator?.name ?? 'Unknown' }}</p>
+                                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Created by</p>
+                                <p class="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                    {{ incident.creator?.name ?? 'Unknown' }}
+                                </p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700">
                                 <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path
                                         stroke-linecap="round"
@@ -294,8 +301,8 @@ function openDelivery(letter: RequestLetter): void {
                                 </svg>
                             </span>
                             <div>
-                                <p class="text-xs font-medium text-slate-400">Date created</p>
-                                <p class="mt-0.5 text-sm font-semibold text-slate-900">
+                                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Date created</p>
+                                <p class="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
                                     {{
                                         new Date(incident.created_at).toLocaleDateString('en-PH', {
                                             year: 'numeric',
@@ -307,7 +314,7 @@ function openDelivery(letter: RequestLetter): void {
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/50">
                                 <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     <path
@@ -318,8 +325,8 @@ function openDelivery(letter: RequestLetter): void {
                                 </svg>
                             </span>
                             <div>
-                                <p class="text-xs font-medium text-slate-400">Assigned LGUs</p>
-                                <p class="mt-0.5 text-sm font-semibold text-slate-900">
+                                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Assigned LGUs</p>
+                                <p class="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
                                     {{ incident.city_municipalities?.length ?? 0 }}
                                 </p>
                             </div>
@@ -327,13 +334,16 @@ function openDelivery(letter: RequestLetter): void {
                     </div>
 
                     <!-- Assigned LGUs Tags -->
-                    <div v-if="incident.city_municipalities && incident.city_municipalities.length > 0" class="mt-5 border-t border-slate-100 pt-5">
-                        <p class="mb-2.5 text-xs font-medium tracking-wide text-slate-400 uppercase">Affected Areas</p>
+                    <div
+                        v-if="incident.city_municipalities && incident.city_municipalities.length > 0"
+                        class="mt-5 border-t border-slate-100 pt-5 dark:border-slate-700"
+                    >
+                        <p class="mb-2.5 text-xs font-medium tracking-wide text-slate-400 uppercase dark:text-slate-500">Affected Areas</p>
                         <div class="flex flex-wrap gap-2">
                             <span
                                 v-for="cm in incident.city_municipalities"
                                 :key="cm.id"
-                                class="inline-flex items-center rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200"
+                                class="inline-flex items-center rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:ring-slate-600"
                             >
                                 {{ cm.name }}
                                 <span v-if="cm.province" class="ml-1 text-slate-400">&middot; {{ cm.province.name }}</span>
@@ -358,7 +368,7 @@ function openDelivery(letter: RequestLetter): void {
 
                 <div
                     v-if="Object.keys(reportsByLgu).length === 0"
-                    class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
+                    class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800"
                 >
                     <svg class="mx-auto h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
                         <path
@@ -367,7 +377,7 @@ function openDelivery(letter: RequestLetter): void {
                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                         />
                     </svg>
-                    <p class="mt-3 text-sm font-medium text-slate-500">No reports filed yet</p>
+                    <p class="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">No reports filed yet</p>
                     <p class="mt-1 text-xs text-slate-400">Reports will appear here once LGUs submit them for this incident.</p>
                 </div>
 
@@ -376,11 +386,11 @@ function openDelivery(letter: RequestLetter): void {
                     <div
                         v-for="group in reportsByProvince"
                         :key="group.provinceName"
-                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
                     >
                         <button
                             type="button"
-                            class="flex w-full items-center gap-2 px-5 py-3.5 text-left transition-colors hover:bg-slate-50"
+                            class="flex w-full items-center gap-2 px-5 py-3.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
                             @click="toggleProvince(group.provinceName)"
                         >
                             <svg
@@ -400,11 +410,13 @@ function openDelivery(letter: RequestLetter): void {
                                     d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
                                 />
                             </svg>
-                            <span class="text-sm font-semibold text-slate-700">{{ group.provinceName }}</span>
+                            <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">{{ group.provinceName }}</span>
                             <span class="text-sm font-normal text-slate-400">
                                 &middot; {{ group.lgus.length }} LGU{{ group.lgus.length !== 1 ? 's' : '' }}
                             </span>
-                            <span class="ml-auto rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 tabular-nums">
+                            <span
+                                class="ml-auto rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 tabular-nums dark:bg-slate-700 dark:text-slate-400"
+                            >
                                 {{ group.lgus.reduce((sum, l) => sum + l.reports.length, 0) }} report{{
                                     group.lgus.reduce((sum, l) => sum + l.reports.length, 0) !== 1 ? 's' : ''
                                 }}
@@ -414,7 +426,7 @@ function openDelivery(letter: RequestLetter): void {
                             class="grid transition-all duration-300 ease-in-out"
                             :class="
                                 expandedProvinces.has(group.provinceName)
-                                    ? 'grid-rows-[1fr] border-t border-slate-200 opacity-100'
+                                    ? 'grid-rows-[1fr] border-t border-slate-200 opacity-100 dark:border-slate-700'
                                     : 'grid-rows-[0fr] opacity-0'
                             "
                         >
@@ -423,10 +435,10 @@ function openDelivery(letter: RequestLetter): void {
                                     <div
                                         v-for="lgu in group.lgus"
                                         :key="lgu.lguId"
-                                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
                                     >
-                                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5">
-                                            <h4 class="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5 dark:border-slate-700 dark:bg-slate-900/50">
+                                            <h4 class="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
                                                 <svg
                                                     class="h-4 w-4 text-slate-400"
                                                     fill="none"
@@ -443,18 +455,18 @@ function openDelivery(letter: RequestLetter): void {
                                                 </svg>
                                                 {{ lgu.reports[0]?.city_municipality?.name ?? 'Unknown LGU' }}
                                                 <span
-                                                    class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums"
+                                                    class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums dark:bg-slate-700 dark:text-slate-400"
                                                 >
                                                     {{ lgu.reports.length }} report{{ lgu.reports.length !== 1 ? 's' : '' }}
                                                 </span>
                                             </h4>
                                         </div>
-                                        <div class="divide-y divide-slate-100">
+                                        <div class="divide-y divide-slate-100 dark:divide-slate-700">
                                             <Link
                                                 v-for="report in lgu.reports"
                                                 :key="report.id"
                                                 :href="`/incidents/${incident.id}/reports/${report.id}`"
-                                                class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50"
+                                                class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50"
                                             >
                                                 <div class="flex items-center gap-3">
                                                     <span
@@ -469,7 +481,9 @@ function openDelivery(letter: RequestLetter): void {
                                                                   : `Progress Report No. ${report.sequence_number}`
                                                         }}
                                                     </span>
-                                                    <span class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600">
+                                                    <span
+                                                        class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600 dark:text-slate-300 dark:group-hover:text-indigo-400"
+                                                    >
                                                         {{ report.report_number }}
                                                     </span>
                                                     <span
@@ -505,10 +519,10 @@ function openDelivery(letter: RequestLetter): void {
                     <div
                         v-for="(reports, lguId) in reportsByLgu"
                         :key="lguId"
-                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
                     >
-                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5">
-                            <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5 dark:border-slate-700 dark:bg-slate-900/50">
+                            <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     <path
@@ -521,17 +535,19 @@ function openDelivery(letter: RequestLetter): void {
                                 <span v-if="reports[0]?.city_municipality?.province" class="font-normal text-slate-400">
                                     &middot; {{ reports[0].city_municipality.province.name }}
                                 </span>
-                                <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums">
+                                <span
+                                    class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums dark:bg-slate-700 dark:text-slate-400"
+                                >
                                     {{ reports.length }} report{{ reports.length !== 1 ? 's' : '' }}
                                 </span>
                             </h3>
                         </div>
-                        <div class="divide-y divide-slate-100">
+                        <div class="divide-y divide-slate-100 dark:divide-slate-700">
                             <Link
                                 v-for="report in reports"
                                 :key="report.id"
                                 :href="`/incidents/${incident.id}/reports/${report.id}`"
-                                class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50"
+                                class="group flex items-center justify-between px-6 py-3.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50"
                             >
                                 <div class="flex items-center gap-3">
                                     <span
@@ -546,7 +562,9 @@ function openDelivery(letter: RequestLetter): void {
                                                   : `Progress Report No. ${report.sequence_number}`
                                         }}
                                     </span>
-                                    <span class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600">
+                                    <span
+                                        class="text-sm font-medium text-slate-700 transition-colors group-hover:text-indigo-600 dark:text-slate-300 dark:group-hover:text-indigo-400"
+                                    >
                                         {{ report.report_number }}
                                     </span>
                                     <span
@@ -605,7 +623,7 @@ function openDelivery(letter: RequestLetter): void {
 
                 <div
                     v-if="Object.keys(requestLettersByLgu).length === 0"
-                    class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm"
+                    class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800"
                 >
                     <svg class="mx-auto h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
                         <path
@@ -614,7 +632,7 @@ function openDelivery(letter: RequestLetter): void {
                             d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 0 0 1.183 1.981l6.478 3.488m8.839 0 .001-.068a2.25 2.25 0 0 0-.659-1.591l-4.09-4.09a2.25 2.25 0 0 0-3.182 0l-4.09 4.09a2.25 2.25 0 0 0-.659 1.59v.069M21.75 9l-7.304-4.178a2.25 2.25 0 0 0-2.892 0L4.25 9"
                         />
                     </svg>
-                    <p class="mt-3 text-sm font-medium text-slate-500">No request letters yet</p>
+                    <p class="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">No request letters yet</p>
                     <p class="mt-1 text-xs text-slate-400">
                         {{
                             user.role === 'regional'
@@ -628,10 +646,10 @@ function openDelivery(letter: RequestLetter): void {
                     <div
                         v-for="(letters, lguId) in requestLettersByLgu"
                         :key="lguId"
-                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                        class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
                     >
-                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5">
-                            <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                        <div class="border-b border-slate-200 bg-slate-50/50 px-6 py-3.5 dark:border-slate-700 dark:bg-slate-900/50">
+                            <h3 class="flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-200">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     <path
@@ -644,7 +662,9 @@ function openDelivery(letter: RequestLetter): void {
                                 <span v-if="letters[0]?.city_municipality?.province" class="font-normal text-slate-400">
                                     &middot; {{ letters[0].city_municipality.province.name }}
                                 </span>
-                                <span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums">
+                                <span
+                                    class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 tabular-nums dark:bg-slate-700 dark:text-slate-400"
+                                >
                                     {{ letters.length }} letter{{ letters.length !== 1 ? 's' : '' }}
                                 </span>
                             </h3>
@@ -669,9 +689,9 @@ function openDelivery(letter: RequestLetter): void {
         <!-- Upload Modal -->
         <Teleport to="body">
             <div v-if="showUploadModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="showUploadModal = false">
-                <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+                <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
+                        <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950/50">
                             <svg class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path
                                     stroke-linecap="round"
@@ -681,19 +701,19 @@ function openDelivery(letter: RequestLetter): void {
                             </svg>
                         </span>
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Upload Request Letter</h3>
-                            <p class="text-sm text-slate-500">Attach a PDF with augmentation items and quantities.</p>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Upload Request Letter</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Attach a PDF with augmentation items and quantities.</p>
                         </div>
                     </div>
 
                     <form class="mt-5 space-y-4" @submit.prevent="submitUpload">
                         <!-- File Input -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">PDF File</label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">PDF File</label>
                             <input
                                 type="file"
                                 accept=".pdf"
-                                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+                                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100 dark:text-slate-400 dark:file:bg-indigo-950/50 dark:file:text-indigo-300 dark:hover:file:bg-indigo-900/50"
                                 @change="handleFileChange"
                             />
                             <p v-if="uploadForm.errors.file" class="mt-1 text-xs text-rose-600">{{ uploadForm.errors.file }}</p>
@@ -702,21 +722,21 @@ function openDelivery(letter: RequestLetter): void {
                         <!-- Augmentation Items -->
                         <div>
                             <div class="mb-2 flex items-center justify-between">
-                                <label class="block text-sm font-medium text-slate-700">Augmentation Items</label>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Augmentation Items</label>
                                 <button type="button" class="text-xs font-medium text-indigo-600 hover:text-indigo-800" @click="addAugmentationItem">
                                     + Add Item
                                 </button>
                             </div>
-                            <p v-if="totalAffectedFamilies > 0" class="mb-2 text-xs text-slate-500">
+                            <p v-if="totalAffectedFamilies > 0" class="mb-2 text-xs text-slate-500 dark:text-slate-400">
                                 Quantity per item must not exceed
-                                <span class="font-semibold text-slate-700">{{ totalAffectedFamilies.toLocaleString() }}</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">{{ totalAffectedFamilies.toLocaleString() }}</span>
                                 total affected {{ pluralize(totalAffectedFamilies, 'family', 'families') }}.
                             </p>
                             <div v-for="(item, index) in uploadForm.augmentation_items" :key="index" class="mb-2 flex items-start gap-2">
                                 <div class="flex-1">
                                     <select
                                         v-model="item.type"
-                                        class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                        class="block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                                     >
                                         <option value="" disabled>Select type</option>
                                         <option v-for="t in augmentationTypes" :key="t.value" :value="t.value">{{ t.label }}</option>
@@ -732,11 +752,11 @@ function openDelivery(letter: RequestLetter): void {
                                         min="1"
                                         :max="totalAffectedFamilies || undefined"
                                         placeholder="Qty"
-                                        class="block w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                        class="block w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:bg-slate-700 dark:text-slate-100"
                                         :class="
                                             Number(item.quantity) > totalAffectedFamilies && totalAffectedFamilies > 0
                                                 ? 'border-rose-400 focus:border-rose-500'
-                                                : 'border-slate-300 focus:border-indigo-500'
+                                                : 'border-slate-300 focus:border-indigo-500 dark:border-slate-600'
                                         "
                                     />
                                     <p
@@ -764,10 +784,10 @@ function openDelivery(letter: RequestLetter): void {
                         </div>
 
                         <!-- Actions -->
-                        <div class="flex justify-end gap-3 border-t border-slate-100 pt-4">
+                        <div class="flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-700">
                             <button
                                 type="button"
-                                class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                                class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
                                 @click="showUploadModal = false"
                             >
                                 Cancel

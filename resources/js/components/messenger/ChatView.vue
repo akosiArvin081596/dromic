@@ -41,15 +41,15 @@ const showMembers = ref(false);
 function roleBadgeClass(role: string): string {
     switch (role) {
         case 'admin':
-            return 'bg-violet-100 text-violet-700';
+            return 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300';
         case 'regional':
-            return 'bg-amber-100 text-amber-700';
+            return 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300';
         case 'provincial':
-            return 'bg-sky-100 text-sky-700';
+            return 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300';
         case 'lgu':
-            return 'bg-emerald-100 text-emerald-700';
+            return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300';
         default:
-            return 'bg-slate-100 text-slate-700';
+            return 'bg-slate-100 text-slate-700 dark:bg-slate-600 dark:text-slate-300';
     }
 }
 
@@ -131,15 +131,18 @@ onMounted(loadMessages);
 <template>
     <div class="flex h-full flex-col">
         <!-- Header -->
-        <div class="flex items-center gap-2 border-b border-slate-200 px-3 py-2.5">
-            <button class="rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600" @click="emit('back')">
+        <div class="flex items-center gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-slate-700">
+            <button
+                class="rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+                @click="emit('back')"
+            >
                 <ArrowLeft :size="18" />
             </button>
             <div class="min-w-0 flex-1">
-                <h3 class="truncate text-sm font-semibold text-slate-900">{{ conversationName }}</h3>
+                <h3 class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{{ conversationName }}</h3>
                 <button
                     v-if="isGroup"
-                    class="flex items-center gap-0.5 text-xs text-slate-400 hover:text-slate-600"
+                    class="flex items-center gap-0.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                     @click="showMembers = !showMembers"
                 >
                     {{ conversation.participants.length }} members
@@ -150,7 +153,7 @@ onMounted(loadMessages);
         </div>
 
         <!-- Members List -->
-        <div v-if="isGroup && showMembers" class="border-b border-slate-200 bg-slate-50 px-3 py-2">
+        <div v-if="isGroup && showMembers" class="border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-700/50">
             <div class="max-h-40 space-y-1.5 overflow-y-auto">
                 <div v-for="participant in conversation.participants" :key="participant.id" class="flex items-center gap-2">
                     <div
@@ -159,7 +162,7 @@ onMounted(loadMessages);
                     >
                         {{ participant.name.charAt(0).toUpperCase() }}
                     </div>
-                    <span class="truncate text-xs text-slate-700">
+                    <span class="truncate text-xs text-slate-700 dark:text-slate-300">
                         {{ participant.id === userId ? 'You' : participant.name }}
                         <span v-if="memberLocation(participant)" class="text-slate-400">({{ memberLocation(participant) }})</span>
                     </span>
@@ -180,14 +183,14 @@ onMounted(loadMessages);
         </div>
 
         <!-- Input -->
-        <div class="border-t border-slate-200 px-3 py-2">
+        <div class="border-t border-slate-200 px-3 py-2 dark:border-slate-700">
             <form class="flex items-center gap-2" @submit.prevent="handleSend">
                 <input
                     v-model="messageInput"
                     type="text"
                     placeholder="Type a message..."
                     maxlength="2000"
-                    class="flex-1 rounded-full border border-slate-200 px-4 py-2 text-sm transition-colors focus:border-indigo-300 focus:ring-0 focus:outline-none"
+                    class="flex-1 rounded-full border border-slate-200 px-4 py-2 text-sm transition-colors focus:border-indigo-300 focus:ring-0 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-indigo-500"
                     @keydown.enter.prevent="handleSend"
                 />
                 <button

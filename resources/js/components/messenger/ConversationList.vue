@@ -121,15 +121,15 @@ function timeAgo(dateStr: string | undefined): string {
 function roleBadgeClass(role: string): string {
     switch (role) {
         case 'admin':
-            return 'bg-violet-100 text-violet-700';
+            return 'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300';
         case 'regional':
-            return 'bg-amber-100 text-amber-700';
+            return 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300';
         case 'provincial':
-            return 'bg-sky-100 text-sky-700';
+            return 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300';
         case 'lgu':
-            return 'bg-emerald-100 text-emerald-700';
+            return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300';
         default:
-            return 'bg-slate-100 text-slate-700';
+            return 'bg-slate-100 text-slate-700 dark:bg-slate-600 dark:text-slate-300';
     }
 }
 
@@ -149,10 +149,14 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
 <template>
     <div class="flex h-full flex-col overflow-hidden">
         <!-- Tabs -->
-        <div class="flex border-b border-slate-200">
+        <div class="flex border-b border-slate-200 dark:border-slate-700">
             <button
                 class="relative flex-1 py-2.5 text-center text-xs font-semibold transition-colors"
-                :class="activeTab === 'chat' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'"
+                :class="
+                    activeTab === 'chat'
+                        ? 'text-indigo-600 dark:text-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                "
                 @click="activeTab = 'chat'"
             >
                 Chat
@@ -162,11 +166,15 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 >
                     {{ totalDmUnread > 9 ? '9+' : totalDmUnread }}
                 </span>
-                <div v-if="activeTab === 'chat'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600"></div>
+                <div v-if="activeTab === 'chat'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600 dark:bg-indigo-400"></div>
             </button>
             <button
                 class="relative flex-1 py-2.5 text-center text-xs font-semibold transition-colors"
-                :class="activeTab === 'groups' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'"
+                :class="
+                    activeTab === 'groups'
+                        ? 'text-indigo-600 dark:text-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                "
                 @click="activeTab = 'groups'"
             >
                 Groups
@@ -176,25 +184,29 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 >
                     {{ totalGroupUnread > 9 ? '9+' : totalGroupUnread }}
                 </span>
-                <div v-if="activeTab === 'groups'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600"></div>
+                <div v-if="activeTab === 'groups'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600 dark:bg-indigo-400"></div>
             </button>
             <button
                 class="relative flex-1 py-2.5 text-center text-xs font-semibold transition-colors"
-                :class="activeTab === 'contacts' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'"
+                :class="
+                    activeTab === 'contacts'
+                        ? 'text-indigo-600 dark:text-indigo-400'
+                        : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                "
                 @click="activeTab = 'contacts'"
             >
                 Contacts
-                <div v-if="activeTab === 'contacts'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600"></div>
+                <div v-if="activeTab === 'contacts'" class="absolute inset-x-0 bottom-0 h-0.5 bg-indigo-600 dark:bg-indigo-400"></div>
             </button>
         </div>
 
         <!-- Chat History Tab -->
-        <div v-if="activeTab === 'chat'" class="flex-1 divide-y divide-slate-100 overflow-y-auto">
-            <div v-if="chatHistory.length === 0" class="px-4 py-8 text-center text-sm text-slate-400">No conversations yet</div>
+        <div v-if="activeTab === 'chat'" class="flex-1 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-700">
+            <div v-if="chatHistory.length === 0" class="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500">No conversations yet</div>
             <button
                 v-for="conversation in chatHistory"
                 :key="conversation.id"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
                 @click="emit('select', conversation)"
             >
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-400 text-sm font-semibold text-white">
@@ -202,13 +214,13 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center justify-between">
-                        <span class="truncate text-sm font-medium text-slate-900">{{ conversationName(conversation) }}</span>
+                        <span class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{{ conversationName(conversation) }}</span>
                         <span class="shrink-0 text-[10px] text-slate-400">
                             {{ timeAgo(conversation.latest_message?.created_at) }}
                         </span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="truncate text-xs text-slate-500">{{ lastMessagePreview(conversation) }}</span>
+                        <span class="truncate text-xs text-slate-500 dark:text-slate-400">{{ lastMessagePreview(conversation) }}</span>
                         <span
                             v-if="conversation.unread_count > 0"
                             class="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-bold text-white"
@@ -221,24 +233,26 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
         </div>
 
         <!-- Group Chats Tab -->
-        <div v-if="activeTab === 'groups'" class="flex-1 divide-y divide-slate-100 overflow-y-auto">
-            <div v-if="groupConversations.length === 0" class="px-4 py-8 text-center text-sm text-slate-400">No group chats yet</div>
+        <div v-if="activeTab === 'groups'" class="flex-1 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-700">
+            <div v-if="groupConversations.length === 0" class="px-4 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
+                No group chats yet
+            </div>
             <button
                 v-for="conversation in groupConversations"
                 :key="conversation.id"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
                 @click="emit('select', conversation)"
             >
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-sm font-semibold text-white">G</div>
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center justify-between">
-                        <span class="truncate text-sm font-medium text-slate-900">{{ conversationName(conversation) }}</span>
+                        <span class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{{ conversationName(conversation) }}</span>
                         <span class="shrink-0 text-[10px] text-slate-400">
                             {{ timeAgo(conversation.latest_message?.created_at) }}
                         </span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="truncate text-xs text-slate-500">
+                        <span class="truncate text-xs text-slate-500 dark:text-slate-400">
                             {{ conversation.latest_message ? lastMessagePreview(conversation) : conversationSubtitle(conversation) }}
                         </span>
                         <span
@@ -255,26 +269,26 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
         <!-- Contacts Tab -->
         <template v-if="activeTab === 'contacts'">
             <!-- Search -->
-            <div class="border-b border-slate-200 px-3 py-2">
+            <div class="border-b border-slate-200 px-3 py-2 dark:border-slate-700">
                 <div class="relative">
                     <Search :size="14" class="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400" />
                     <input
                         v-model="searchQuery"
                         type="text"
                         placeholder="Search users..."
-                        class="w-full rounded-full border border-slate-200 py-1.5 pr-3 pl-8 text-sm focus:border-indigo-300 focus:ring-0 focus:outline-none"
+                        class="w-full rounded-full border border-slate-200 py-1.5 pr-3 pl-8 text-sm focus:border-indigo-300 focus:ring-0 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-indigo-500"
                     />
                 </div>
             </div>
 
             <!-- User List -->
-            <div class="flex-1 divide-y divide-slate-100 overflow-y-auto">
-                <div v-if="isLoadingContacts" class="py-8 text-center text-sm text-slate-400">Loading...</div>
-                <div v-else-if="contacts.length === 0" class="py-8 text-center text-sm text-slate-400">No users found</div>
+            <div class="flex-1 divide-y divide-slate-100 overflow-y-auto dark:divide-slate-700">
+                <div v-if="isLoadingContacts" class="py-8 text-center text-sm text-slate-400 dark:text-slate-500">Loading...</div>
+                <div v-else-if="contacts.length === 0" class="py-8 text-center text-sm text-slate-400 dark:text-slate-500">No users found</div>
                 <button
                     v-for="user in contacts"
                     :key="user.id"
-                    class="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-slate-50"
+                    class="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
                     @click="selectContact(user)"
                 >
                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-400 text-xs font-semibold text-white">
@@ -282,7 +296,7 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="truncate text-sm font-medium text-slate-900">{{ user.name }}</span>
+                            <span class="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{{ user.name }}</span>
                             <span class="shrink-0 rounded px-1 py-0.5 text-[10px] font-semibold" :class="roleBadgeClass(user.role)">
                                 {{ user.role }}
                             </span>

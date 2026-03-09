@@ -7,8 +7,9 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     server: {
         host: '0.0.0.0',
+        cors: true,
         hmr: {
-            host: '10.237.17.234',
+            host: '192.168.1.27',
         },
     },
     plugins: [

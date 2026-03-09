@@ -83,6 +83,9 @@ class DashboardController extends Controller
             'activeIncidents' => $activeIncidents,
             'reportCounts' => $reportCounts,
             'reportActivity' => Inertia::defer(fn () => $this->getReportActivity($user)),
+            'forValidationReports' => $user->isProvincial()
+                ? Inertia::defer(fn () => $this->getForValidationReports($user))
+                : null,
         ]);
     }
 
@@ -179,5 +182,29 @@ class DashboardController extends Controller
 
             return $entry;
         })->all();
+    }
+
+    /**
+     * @return list<array{id: int, report_number: string, report_type: string, sequence_number: int, report_date: string|null, incident_id: int, incident_name: string, lgu_name: string}>
+     */
+    private function getForValidationReports(User $user): array
+    {
+        return Report::query()
+            ->with(['incident:id,name,display_name', 'cityMunicipality:id,name'])
+            ->whereHas('cityMunicipality', fn ($q) => $q->where('province_id', $user->province_id))
+            ->where('status', 'for_validation')
+            ->latest('updated_at')
+            ->get(['id', 'incident_id', 'city_municipality_id', 'report_number', 'report_type', 'sequence_number', 'report_date'])
+            ->map(fn (Report $r) => [
+                'id' => $r->id,
+                'report_number' => $r->report_number,
+                'report_type' => $r->report_type,
+                'sequence_number' => $r->sequence_number,
+                'report_date' => $r->report_date,
+                'incident_id' => $r->incident_id,
+                'incident_name' => $r->incident?->display_name ?? $r->incident?->name ?? '',
+                'lgu_name' => $r->cityMunicipality?->name ?? '',
+            ])
+            ->all();
     }
 }
