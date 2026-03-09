@@ -37,8 +37,8 @@ class UpdateReportRequest extends FormRequest
             'inside_evacuation_centers.*.origin' => ['required', 'string'],
             'inside_evacuation_centers.*.remarks' => ['nullable', 'string'],
 
-            'age_distribution' => ['required', 'array'],
-            'vulnerable_sectors' => ['required', 'array'],
+            'age_distribution' => ['present', 'array'],
+            'vulnerable_sectors' => ['present', 'array'],
 
             'outside_evacuation_centers' => ['present', 'array'],
             'outside_evacuation_centers.*.barangay' => ['required', 'string'],
