@@ -26,6 +26,19 @@ type ProvinceAugmentation = {
     lgus: LguAugmentation[];
 };
 
+type EvacuationCenter = {
+    ec_name: string;
+    barangay: string;
+    city_municipality: string;
+    province: string;
+    families_cum: number;
+    families_now: number;
+    persons_cum: number;
+    persons_now: number;
+    status: 'active' | 'closed';
+    remarks: string;
+};
+
 type ImpactSummary = {
     affected_families: number;
     affected_persons: number;
@@ -43,7 +56,8 @@ type ImpactSummary = {
     total_evacuation_centers: number;
     closed_evacuation_centers: number;
     closed_ec_percent: number;
-    [key: string]: number;
+    evacuation_centers: EvacuationCenter[];
+    [key: string]: number | EvacuationCenter[];
 };
 
 type DashboardData = {
@@ -67,6 +81,19 @@ useEcho(channel, 'DeliveryRecorded', () => router.reload({ only: ['dashboardData
 
 const selectedId = ref(props.selectedIncidentId);
 const expandedProvinces = ref<Set<number>>(new Set());
+const showEcModal = ref(false);
+const ecModalFilter = ref<'active' | 'closed' | 'all'>('active');
+
+const filteredEvacuationCenters = computed(() => {
+    const ecs = props.dashboardData?.impact.evacuation_centers ?? [];
+    if (ecModalFilter.value === 'all') return ecs;
+    return ecs.filter((ec) => ec.status === ecModalFilter.value);
+});
+
+function openEcModal(filter: 'active' | 'closed' | 'all') {
+    ecModalFilter.value = filter;
+    showEcModal.value = true;
+}
 
 const selectedIncident = computed(() => props.incidents.find((i) => i.id === selectedId.value) ?? null);
 
@@ -227,24 +254,33 @@ function deliveryBadgeClass(percent: number): string {
                                 </span>
                             </div>
                             <div class="mt-3 grid grid-cols-3 gap-3">
-                                <div class="rounded-lg bg-emerald-50 px-3 py-2.5">
+                                <button
+                                    class="cursor-pointer rounded-lg bg-emerald-50 px-3 py-2.5 text-left transition-colors hover:bg-emerald-100"
+                                    @click="openEcModal('active')"
+                                >
                                     <div class="text-[10px] font-semibold tracking-wide text-emerald-500 uppercase">Active</div>
                                     <div class="mt-1 text-2xl font-bold text-emerald-900">
                                         {{ dashboardData.impact.active_evacuation_centers.toLocaleString() }}
                                     </div>
-                                </div>
-                                <div class="rounded-lg bg-teal-50 px-3 py-2.5">
+                                </button>
+                                <button
+                                    class="cursor-pointer rounded-lg bg-teal-50 px-3 py-2.5 text-left transition-colors hover:bg-teal-100"
+                                    @click="openEcModal('closed')"
+                                >
                                     <div class="text-[10px] font-semibold tracking-wide text-teal-500 uppercase">Closed</div>
                                     <div class="mt-1 text-2xl font-bold text-teal-900">
                                         {{ dashboardData.impact.closed_evacuation_centers.toLocaleString() }}
                                     </div>
-                                </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
+                                </button>
+                                <button
+                                    class="cursor-pointer rounded-lg bg-slate-50 px-3 py-2.5 text-left transition-colors hover:bg-slate-100"
+                                    @click="openEcModal('all')"
+                                >
                                     <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Total</div>
                                     <div class="mt-1 text-2xl font-bold text-slate-900">
                                         {{ dashboardData.impact.total_evacuation_centers.toLocaleString() }}
                                     </div>
-                                </div>
+                                </button>
                             </div>
                             <div class="mt-3">
                                 <div class="text-[11px] text-slate-500">
@@ -537,5 +573,163 @@ function deliveryBadgeClass(percent: number): string {
                 </div>
             </template>
         </div>
+        <!-- Evacuation Centers Modal -->
+        <Teleport to="body">
+            <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0"
+                enter-to-class="opacity-100"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+            >
+                <div
+                    v-if="showEcModal"
+                    class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-16"
+                    @click.self="showEcModal = false"
+                >
+                    <Transition
+                        enter-active-class="transition duration-200 ease-out"
+                        enter-from-class="scale-95 opacity-0"
+                        enter-to-class="scale-100 opacity-100"
+                        leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="scale-100 opacity-100"
+                        leave-to-class="scale-95 opacity-0"
+                    >
+                        <div v-if="showEcModal" class="w-full max-w-5xl rounded-xl bg-white shadow-2xl">
+                            <!-- Modal Header -->
+                            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-slate-900">Evacuation Centers</h2>
+                                    <p class="mt-0.5 text-sm text-slate-500">
+                                        {{ filteredEvacuationCenters.length }} {{ pluralize(filteredEvacuationCenters.length, 'center', 'centers') }}
+                                    </p>
+                                </div>
+                                <button
+                                    class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                                    @click="showEcModal = false"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Filter Tabs -->
+                            <div class="flex gap-1 border-b border-slate-200 px-6 pt-3 pb-0">
+                                <button
+                                    class="rounded-t-lg px-3 py-2 text-xs font-semibold transition-colors"
+                                    :class="
+                                        ecModalFilter === 'active'
+                                            ? 'border-b-2 border-emerald-500 text-emerald-700'
+                                            : 'text-slate-500 hover:text-slate-700'
+                                    "
+                                    @click="ecModalFilter = 'active'"
+                                >
+                                    Active ({{ dashboardData?.impact.active_evacuation_centers ?? 0 }})
+                                </button>
+                                <button
+                                    class="rounded-t-lg px-3 py-2 text-xs font-semibold transition-colors"
+                                    :class="
+                                        ecModalFilter === 'closed'
+                                            ? 'border-b-2 border-teal-500 text-teal-700'
+                                            : 'text-slate-500 hover:text-slate-700'
+                                    "
+                                    @click="ecModalFilter = 'closed'"
+                                >
+                                    Closed ({{ dashboardData?.impact.closed_evacuation_centers ?? 0 }})
+                                </button>
+                                <button
+                                    class="rounded-t-lg px-3 py-2 text-xs font-semibold transition-colors"
+                                    :class="
+                                        ecModalFilter === 'all' ? 'border-b-2 border-slate-500 text-slate-700' : 'text-slate-500 hover:text-slate-700'
+                                    "
+                                    @click="ecModalFilter = 'all'"
+                                >
+                                    All ({{ dashboardData?.impact.total_evacuation_centers ?? 0 }})
+                                </button>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="max-h-[60vh] overflow-auto">
+                                <table class="min-w-full divide-y divide-slate-200">
+                                    <thead class="sticky top-0 bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">EC Name</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Barangay
+                                            </th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">LGU</th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Families (Cum)
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Families (Now)
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Persons (Cum)
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Persons (Now)
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr v-for="(ec, index) in filteredEvacuationCenters" :key="index" class="transition-colors hover:bg-slate-50">
+                                            <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ ec.ec_name || '—' }}</td>
+                                            <td class="px-4 py-3 text-sm text-slate-600">{{ ec.barangay || '—' }}</td>
+                                            <td class="px-4 py-3 text-sm text-slate-600">
+                                                <div>{{ ec.city_municipality }}</div>
+                                                <div class="text-xs text-slate-400">{{ ec.province }}</div>
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-slate-700 tabular-nums">
+                                                {{ ec.families_cum.toLocaleString() }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-slate-700 tabular-nums">
+                                                {{ ec.families_now.toLocaleString() }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-slate-700 tabular-nums">
+                                                {{ ec.persons_cum.toLocaleString() }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center text-sm text-slate-700 tabular-nums">
+                                                {{ ec.persons_now.toLocaleString() }}
+                                            </td>
+                                            <td class="px-4 py-3 text-center">
+                                                <span
+                                                    class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1"
+                                                    :class="
+                                                        ec.status === 'active'
+                                                            ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                                                            : 'bg-teal-50 text-teal-700 ring-teal-600/20'
+                                                    "
+                                                >
+                                                    {{ ec.status === 'active' ? 'Active' : 'Closed' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="filteredEvacuationCenters.length === 0">
+                                            <td colspan="8" class="px-4 py-8 text-center text-sm text-slate-400">No evacuation centers found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="border-t border-slate-200 px-6 py-3 text-right">
+                                <button
+                                    class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                                    @click="showEcModal = false"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+            </Transition>
+        </Teleport>
     </AppLayout>
 </template>

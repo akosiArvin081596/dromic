@@ -23,13 +23,30 @@ class RdDashboardService
 
         $activeEcCount = 0;
         $totalEcCount = 0;
+        $evacuationCenters = [];
         foreach ($consolidated['reports'] as $report) {
+            $lguName = $report->cityMunicipality?->name ?? '';
+            $provinceName = $report->cityMunicipality?->province?->name ?? '';
+
             foreach ($report->inside_evacuation_centers ?? [] as $ec) {
                 if (($ec['families_cum'] ?? 0) > 0 || ($ec['families_now'] ?? 0) > 0) {
                     $totalEcCount++;
-                    if (($ec['families_now'] ?? 0) > 0) {
+                    $isActive = ($ec['families_now'] ?? 0) > 0;
+                    if ($isActive) {
                         $activeEcCount++;
                     }
+                    $evacuationCenters[] = [
+                        'ec_name' => $ec['ec_name'] ?? '',
+                        'barangay' => $ec['barangay'] ?? '',
+                        'city_municipality' => $lguName,
+                        'province' => $provinceName,
+                        'families_cum' => $ec['families_cum'] ?? 0,
+                        'families_now' => $ec['families_now'] ?? 0,
+                        'persons_cum' => $ec['persons_cum'] ?? 0,
+                        'persons_now' => $ec['persons_now'] ?? 0,
+                        'status' => $isActive ? 'active' : 'closed',
+                        'remarks' => $ec['remarks'] ?? '',
+                    ];
                 }
             }
         }
@@ -45,6 +62,7 @@ class RdDashboardService
             'total_evacuation_centers' => $totalEcCount,
             'closed_evacuation_centers' => $closedEcCount,
             'closed_ec_percent' => $closedEcPercent,
+            'evacuation_centers' => $evacuationCenters,
         ];
     }
 
