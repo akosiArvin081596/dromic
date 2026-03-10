@@ -60,7 +60,7 @@ class ConsolidatedReportService
                 [$dateB, $timeB] = explode('|', $b);
                 $cmp = $dateA <=> $dateB;
 
-                return $cmp !== 0 ? $cmp : ($timeA === '12:00 PM' ? -1 : 1);
+                return $cmp !== 0 ? $cmp : ($timeA === '12:00 AM' ? -1 : 1);
             })
             ->values();
 
