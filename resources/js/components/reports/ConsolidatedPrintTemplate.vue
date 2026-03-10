@@ -160,28 +160,44 @@ const groupedCalamityDeclarations = computed(() => groupByProvince<CalamityDecla
 const groupedPreemptiveEvacuations = computed(() => groupByProvince<PreemptiveEvacuation>('preemptive_evacuations'));
 const groupedGapsChallenges = computed(() => groupByProvince<GapChallenge>('gaps_challenges'));
 
-// --- Province-level summaries for summary mode ---
-type ProvinceSummaryAffected = { province: string; lgu_count: number; families: number; persons: number };
-type ProvinceSummaryEC = { province: string; families_cum: number; families_now: number; persons_cum: number; persons_now: number; ec_count: number };
-type ProvinceSummaryNonIdp = { province: string; families_cum: number; persons_cum: number };
-type ProvinceSummaryDamaged = { province: string; totally_damaged: number; partially_damaged: number; estimated_cost: number };
+// --- LGU-level summaries for summary mode (aggregates barangays per LGU) ---
+type LguSummary = { province: string; lgu: string };
+type LguSummaryAffected = LguSummary & { families: number; persons: number };
+type LguSummaryDamaged = LguSummary & { totally_damaged: number; partially_damaged: number; estimated_cost: number };
 
-const provinceSummaryAffectedAreas = computed<ProvinceSummaryAffected[]>(() => {
-    return groupedAffectedAreas.value.map((g) => ({
-        province: g.province,
-        lgu_count: new Set(g.rows.map((r) => r.lgu)).size,
-        families: sumNum(g.rows, 'families'),
-        persons: sumNum(g.rows, 'persons'),
-    }));
+function groupByLgu<T extends { province: string; lgu: string }>(rows: T[], sumFields: string[]): Record<string, Record<string, number>> & { _order: { province: string; lgu: string }[] } {
+    const map = new Map<string, { province: string; lgu: string; sums: Record<string, number> }>();
+    const order: { province: string; lgu: string }[] = [];
+    for (const row of rows) {
+        const key = `${row.province}||${row.lgu}`;
+        if (!map.has(key)) {
+            const sums: Record<string, number> = {};
+            for (const f of sumFields) sums[f] = 0;
+            map.set(key, { province: row.province, lgu: row.lgu, sums });
+            order.push({ province: row.province, lgu: row.lgu });
+        }
+        const entry = map.get(key)!;
+        for (const f of sumFields) entry.sums[f] += Number((row as Record<string, unknown>)[f] || 0);
+    }
+    return { _order: order, ...Object.fromEntries([...map.entries()].map(([k, v]) => [k, v.sums])) };
+}
+
+const lguSummaryAffectedAreas = computed<LguSummaryAffected[]>(() => {
+    const rows = mergedAffectedAreas.value;
+    const grouped = groupByLgu(rows, ['families', 'persons']);
+    return grouped._order.map((o) => {
+        const sums = grouped[`${o.province}||${o.lgu}`];
+        return { province: o.province, lgu: o.lgu, families: sums.families, persons: sums.persons };
+    });
 });
 
-const provinceSummaryDamagedHouses = computed<ProvinceSummaryDamaged[]>(() => {
-    return groupedDamagedHouses.value.map((g) => ({
-        province: g.province,
-        totally_damaged: sumNum(g.rows, 'totally_damaged'),
-        partially_damaged: sumNum(g.rows, 'partially_damaged'),
-        estimated_cost: sumNum(g.rows, 'estimated_cost'),
-    }));
+const lguSummaryDamagedHouses = computed<LguSummaryDamaged[]>(() => {
+    const rows = mergedDamagedHouses.value;
+    const grouped = groupByLgu(rows, ['totally_damaged', 'partially_damaged', 'estimated_cost']);
+    return grouped._order.map((o) => {
+        const sums = grouped[`${o.province}||${o.lgu}`];
+        return { province: o.province, lgu: o.lgu, totally_damaged: sums.totally_damaged, partially_damaged: sums.partially_damaged, estimated_cost: sums.estimated_cost };
+    });
 });
 
 const provinceSummaryInsideEC = computed<ProvinceSummaryEC[]>(() => {
@@ -341,12 +357,12 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     <span class="red-text">{{ pluralize(mergedAffectedAreas.length, 'Barangay', 'Barangays') }}.</span>
                                 </div>
 
-                                <!-- Summary mode: province-level Affected Areas table -->
+                                <!-- Summary mode: LGU-level Affected Areas table (no barangay) -->
                                 <table v-if="isSummary">
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Province</th>
-                                            <th rowspan="2">No. of LGUs</th>
+                                            <th rowspan="2">City/Municipality</th>
                                             <th colspan="2">Number of Affected</th>
                                         </tr>
                                         <tr>
@@ -355,16 +371,16 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if="!mergedAffectedAreas.length">
+                                        <tr v-if="!lguSummaryAffectedAreas.length">
                                             <td colspan="4"><i>None reported</i></td>
                                         </tr>
-                                        <tr v-for="(row, idx) in provinceSummaryAffectedAreas" :key="idx">
-                                            <td>{{ row.province }}</td>
-                                            <td>{{ row.lgu_count }}</td>
+                                        <tr v-for="(row, idx) in lguSummaryAffectedAreas" :key="idx">
+                                            <td>{{ idx === 0 || lguSummaryAffectedAreas[idx - 1].province !== row.province ? row.province : '' }}</td>
+                                            <td>{{ row.lgu }}</td>
                                             <td>{{ row.families.toLocaleString() }}</td>
                                             <td>{{ row.persons.toLocaleString() }}</td>
                                         </tr>
-                                        <tr v-if="mergedAffectedAreas.length" class="total-row">
+                                        <tr v-if="lguSummaryAffectedAreas.length" class="total-row">
                                             <td colspan="2">TOTAL</td>
                                             <td>{{ totalAffectedFamilies.toLocaleString() }}</td>
                                             <td>{{ totalAffectedPersons.toLocaleString() }}</td>
@@ -803,11 +819,12 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     <span class="red-text">partially damaged.</span>
                                 </div>
 
-                                <!-- Summary mode: province-level Damaged Houses table -->
+                                <!-- Summary mode: LGU-level Damaged Houses table (no barangay) -->
                                 <table v-if="isSummary">
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Province</th>
+                                            <th rowspan="2">City/Municipality</th>
                                             <th colspan="3">No. of Damaged Houses</th>
                                             <th rowspan="2">Estimated Cost of Damage</th>
                                         </tr>
@@ -818,18 +835,19 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if="!mergedDamagedHouses.length">
-                                            <td colspan="5"><i>None reported</i></td>
+                                        <tr v-if="!lguSummaryDamagedHouses.length">
+                                            <td colspan="6"><i>None reported</i></td>
                                         </tr>
-                                        <tr v-for="(row, idx) in provinceSummaryDamagedHouses" :key="idx">
-                                            <td>{{ row.province }}</td>
+                                        <tr v-for="(row, idx) in lguSummaryDamagedHouses" :key="idx">
+                                            <td>{{ idx === 0 || lguSummaryDamagedHouses[idx - 1].province !== row.province ? row.province : '' }}</td>
+                                            <td>{{ row.lgu }}</td>
                                             <td>{{ row.totally_damaged.toLocaleString() }}</td>
                                             <td>{{ row.partially_damaged.toLocaleString() }}</td>
                                             <td>{{ (row.totally_damaged + row.partially_damaged).toLocaleString() }}</td>
                                             <td>{{ formatCurrency(row.estimated_cost) }}</td>
                                         </tr>
-                                        <tr v-if="mergedDamagedHouses.length" class="total-row">
-                                            <td>TOTAL</td>
+                                        <tr v-if="lguSummaryDamagedHouses.length" class="total-row">
+                                            <td colspan="2">TOTAL</td>
                                             <td>{{ totalTotallyDamaged }}</td>
                                             <td>{{ totalPartiallyDamaged }}</td>
                                             <td>{{ totalTotallyDamaged + totalPartiallyDamaged }}</td>
