@@ -200,34 +200,31 @@ const lguSummaryDamagedHouses = computed<LguSummaryDamaged[]>(() => {
     });
 });
 
-const provinceSummaryInsideEC = computed<ProvinceSummaryEC[]>(() => {
-    return groupedInsideEC.value.map((g) => ({
-        province: g.province,
-        families_cum: sumNum(g.rows, 'families_cum'),
-        families_now: sumNum(g.rows, 'families_now'),
-        persons_cum: sumNum(g.rows, 'persons_cum'),
-        persons_now: sumNum(g.rows, 'persons_now'),
-        ec_count: g.rows.length,
-    }));
+type LguSummaryEC = LguSummary & { families_cum: number; families_now: number; persons_cum: number; persons_now: number };
+type LguSummaryNonIdp = LguSummary & { families_cum: number; persons_cum: number };
+
+const lguSummaryInsideEC = computed<LguSummaryEC[]>(() => {
+    const grouped = groupByLgu(mergedInsideEC.value, ['families_cum', 'families_now', 'persons_cum', 'persons_now']);
+    return grouped._order.map((o) => {
+        const s = grouped[`${o.province}||${o.lgu}`];
+        return { province: o.province, lgu: o.lgu, families_cum: s.families_cum, families_now: s.families_now, persons_cum: s.persons_cum, persons_now: s.persons_now };
+    });
 });
 
-const provinceSummaryOutsideEC = computed<ProvinceSummaryEC[]>(() => {
-    return groupedOutsideEC.value.map((g) => ({
-        province: g.province,
-        families_cum: sumNum(g.rows, 'families_cum'),
-        families_now: sumNum(g.rows, 'families_now'),
-        persons_cum: sumNum(g.rows, 'persons_cum'),
-        persons_now: sumNum(g.rows, 'persons_now'),
-        ec_count: g.rows.length,
-    }));
+const lguSummaryOutsideEC = computed<LguSummaryEC[]>(() => {
+    const grouped = groupByLgu(mergedOutsideEC.value, ['families_cum', 'families_now', 'persons_cum', 'persons_now']);
+    return grouped._order.map((o) => {
+        const s = grouped[`${o.province}||${o.lgu}`];
+        return { province: o.province, lgu: o.lgu, families_cum: s.families_cum, families_now: s.families_now, persons_cum: s.persons_cum, persons_now: s.persons_now };
+    });
 });
 
-const provinceSummaryNonIdps = computed<ProvinceSummaryNonIdp[]>(() => {
-    return groupedNonIdps.value.map((g) => ({
-        province: g.province,
-        families_cum: sumNum(g.rows, 'families_cum'),
-        persons_cum: sumNum(g.rows, 'persons_cum'),
-    }));
+const lguSummaryNonIdps = computed<LguSummaryNonIdp[]>(() => {
+    const grouped = groupByLgu(mergedNonIdps.value, ['families_cum', 'persons_cum']);
+    return grouped._order.map((o) => {
+        const s = grouped[`${o.province}||${o.lgu}`];
+        return { province: o.province, lgu: o.lgu, families_cum: s.families_cum, persons_cum: s.persons_cum };
+    });
 });
 
 // --- Totals ---
@@ -457,12 +454,12 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     >, to wit:
                                 </div>
 
-                                <!-- Summary mode: province-level Inside EC table -->
+                                <!-- Summary mode: LGU-level Inside EC table (no barangay/EC name) -->
                                 <table v-if="isSummary">
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Province</th>
-                                            <th rowspan="2">No. of ECs</th>
+                                            <th rowspan="2">City/Municipality</th>
                                             <th colspan="2">Families</th>
                                             <th colspan="2">Persons</th>
                                         </tr>
@@ -474,18 +471,18 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if="!mergedInsideEC.length">
+                                        <tr v-if="!lguSummaryInsideEC.length">
                                             <td colspan="6"><i>None reported</i></td>
                                         </tr>
-                                        <tr v-for="(row, idx) in provinceSummaryInsideEC" :key="idx">
-                                            <td>{{ row.province }}</td>
-                                            <td>{{ row.ec_count }}</td>
+                                        <tr v-for="(row, idx) in lguSummaryInsideEC" :key="idx">
+                                            <td>{{ idx === 0 || lguSummaryInsideEC[idx - 1].province !== row.province ? row.province : '' }}</td>
+                                            <td>{{ row.lgu }}</td>
                                             <td>{{ row.families_cum.toLocaleString() }}</td>
                                             <td>{{ row.families_now.toLocaleString() }}</td>
                                             <td>{{ row.persons_cum.toLocaleString() }}</td>
                                             <td>{{ row.persons_now.toLocaleString() }}</td>
                                         </tr>
-                                        <tr v-if="mergedInsideEC.length" class="total-row">
+                                        <tr v-if="lguSummaryInsideEC.length" class="total-row">
                                             <td colspan="2">TOTAL</td>
                                             <td>{{ totalInsideECFamiliesCum }}</td>
                                             <td>{{ totalInsideECFamiliesNow }}</td>
@@ -634,11 +631,12 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     temporarily staying with their relatives and/or friends' houses, to wit:
                                 </div>
 
-                                <!-- Summary mode: province-level Outside EC table -->
+                                <!-- Summary mode: LGU-level Outside EC table (no barangay) -->
                                 <table v-if="isSummary">
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Province</th>
+                                            <th rowspan="2">City/Municipality</th>
                                             <th colspan="2">Families</th>
                                             <th colspan="2">Persons</th>
                                         </tr>
@@ -650,18 +648,19 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if="!mergedOutsideEC.length">
-                                            <td colspan="5"><i>None reported</i></td>
+                                        <tr v-if="!lguSummaryOutsideEC.length">
+                                            <td colspan="6"><i>None reported</i></td>
                                         </tr>
-                                        <tr v-for="(row, idx) in provinceSummaryOutsideEC" :key="idx">
-                                            <td>{{ row.province }}</td>
+                                        <tr v-for="(row, idx) in lguSummaryOutsideEC" :key="idx">
+                                            <td>{{ idx === 0 || lguSummaryOutsideEC[idx - 1].province !== row.province ? row.province : '' }}</td>
+                                            <td>{{ row.lgu }}</td>
                                             <td>{{ row.families_cum.toLocaleString() }}</td>
                                             <td>{{ row.families_now.toLocaleString() }}</td>
                                             <td>{{ row.persons_cum.toLocaleString() }}</td>
                                             <td>{{ row.persons_now.toLocaleString() }}</td>
                                         </tr>
-                                        <tr v-if="mergedOutsideEC.length" class="total-row">
-                                            <td>TOTAL</td>
+                                        <tr v-if="lguSummaryOutsideEC.length" class="total-row">
+                                            <td colspan="2">TOTAL</td>
                                             <td>{{ totalOutsideECFamiliesCum }}</td>
                                             <td>{{ totalOutsideECFamiliesNow }}</td>
                                             <td>{{ totalOutsideECPersonsCum }}</td>
@@ -737,26 +736,28 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     served outside evacuation centers (not displaced), to wit:
                                 </div>
 
-                                <!-- Summary mode: province-level Non-IDPs table -->
+                                <!-- Summary mode: LGU-level Non-IDPs table (no barangay) -->
                                 <table v-if="isSummary">
                                     <thead>
                                         <tr>
                                             <th>Province</th>
+                                            <th>City/Municipality</th>
                                             <th>Families</th>
                                             <th>Persons</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-if="!mergedNonIdps.length">
-                                            <td colspan="3"><i>None reported</i></td>
+                                        <tr v-if="!lguSummaryNonIdps.length">
+                                            <td colspan="4"><i>None reported</i></td>
                                         </tr>
-                                        <tr v-for="(row, idx) in provinceSummaryNonIdps" :key="idx">
-                                            <td>{{ row.province }}</td>
+                                        <tr v-for="(row, idx) in lguSummaryNonIdps" :key="idx">
+                                            <td>{{ idx === 0 || lguSummaryNonIdps[idx - 1].province !== row.province ? row.province : '' }}</td>
+                                            <td>{{ row.lgu }}</td>
                                             <td>{{ row.families_cum.toLocaleString() }}</td>
                                             <td>{{ row.persons_cum.toLocaleString() }}</td>
                                         </tr>
-                                        <tr v-if="mergedNonIdps.length" class="total-row">
-                                            <td>TOTAL</td>
+                                        <tr v-if="lguSummaryNonIdps.length" class="total-row">
+                                            <td colspan="2">TOTAL</td>
                                             <td>{{ totalNonIdpFamiliesCum }}</td>
                                             <td>{{ totalNonIdpPersonsCum }}</td>
                                         </tr>
