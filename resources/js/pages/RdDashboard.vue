@@ -660,6 +660,9 @@ function deliveryBadgeClass(percent: number): string {
                                                 Barangay
                                             </th>
                                             <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">LGU</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">
+                                                Province
+                                            </th>
                                             <th class="px-4 py-3 text-center text-xs font-semibold tracking-wider text-slate-500 uppercase">
                                                 Families (Cum)
                                             </th>
@@ -681,10 +684,8 @@ function deliveryBadgeClass(percent: number): string {
                                         <tr v-for="(ec, index) in filteredEvacuationCenters" :key="index" class="transition-colors hover:bg-slate-50">
                                             <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ ec.ec_name || '—' }}</td>
                                             <td class="px-4 py-3 text-sm text-slate-600">{{ ec.barangay || '—' }}</td>
-                                            <td class="px-4 py-3 text-sm text-slate-600">
-                                                <div>{{ ec.city_municipality }}</div>
-                                                <div class="text-xs text-slate-400">{{ ec.province }}</div>
-                                            </td>
+                                            <td class="px-4 py-3 text-sm text-slate-600">{{ ec.city_municipality }}</td>
+                                            <td class="px-4 py-3 text-sm text-slate-600">{{ ec.province }}</td>
                                             <td class="px-4 py-3 text-center text-sm text-slate-700 tabular-nums">
                                                 {{ ec.families_cum.toLocaleString() }}
                                             </td>
@@ -711,7 +712,7 @@ function deliveryBadgeClass(percent: number): string {
                                             </td>
                                         </tr>
                                         <tr v-if="filteredEvacuationCenters.length === 0">
-                                            <td colspan="8" class="px-4 py-8 text-center text-sm text-slate-400">No evacuation centers found.</td>
+                                            <td colspan="9" class="px-4 py-8 text-center text-sm text-slate-400">No evacuation centers found.</td>
                                         </tr>
                                     </tbody>
                                 </table>
