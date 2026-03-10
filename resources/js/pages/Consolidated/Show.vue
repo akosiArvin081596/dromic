@@ -174,7 +174,7 @@ function printReport() {
                                         </svg>
                                     </span>
                                 </div>
-                                <div class="mt-3 grid grid-cols-2 gap-3">
+                                <div class="mt-3 grid grid-cols-3 gap-3">
                                     <div class="rounded-lg bg-indigo-50 px-3 py-2.5 text-center dark:bg-indigo-900/20">
                                         <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
                                             Families
@@ -189,6 +189,14 @@ function printReport() {
                                         </div>
                                         <div class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
                                             {{ selectedCutoff.totals.affected_persons.toLocaleString() }}
+                                        </div>
+                                    </div>
+                                    <div class="rounded-lg bg-indigo-50 px-3 py-2.5 text-center dark:bg-indigo-900/20">
+                                        <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
+                                            LGUs
+                                        </div>
+                                        <div class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
+                                            {{ selectedCutoff.reports.length }}
                                         </div>
                                     </div>
                                 </div>

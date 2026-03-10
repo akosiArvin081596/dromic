@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DeliveryPlanController;
+use App\Http\Controllers\DisplayBoardController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\LguSettingsController;
 use App\Http\Controllers\MessageController;
@@ -47,6 +48,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/incidents/{incident}/reports/{report}/return', [ReportController::class, 'returnReport'])
         ->name('incidents.reports.return');
+
+    Route::get('/display-board/{incident?}', DisplayBoardController::class)
+        ->middleware('role:admin,regional,provincial')
+        ->name('display-board');
 
     Route::get('/incidents/{incident}/consolidated', [ConsolidatedReportController::class, 'show'])
         ->middleware('role:admin,regional,provincial')
