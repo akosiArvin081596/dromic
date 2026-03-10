@@ -161,8 +161,28 @@ const groupedPreemptiveEvacuations = computed(() => groupByProvince<PreemptiveEv
 const groupedGapsChallenges = computed(() => groupByProvince<GapChallenge>('gaps_challenges'));
 
 // --- Province-level summaries for summary mode ---
+type ProvinceSummaryAffected = { province: string; barangay_count: number; families: number; persons: number };
 type ProvinceSummaryEC = { province: string; families_cum: number; families_now: number; persons_cum: number; persons_now: number; ec_count: number };
 type ProvinceSummaryNonIdp = { province: string; families_cum: number; persons_cum: number };
+type ProvinceSummaryDamaged = { province: string; totally_damaged: number; partially_damaged: number; estimated_cost: number };
+
+const provinceSummaryAffectedAreas = computed<ProvinceSummaryAffected[]>(() => {
+    return groupedAffectedAreas.value.map((g) => ({
+        province: g.province,
+        barangay_count: g.rows.length,
+        families: sumNum(g.rows, 'families'),
+        persons: sumNum(g.rows, 'persons'),
+    }));
+});
+
+const provinceSummaryDamagedHouses = computed<ProvinceSummaryDamaged[]>(() => {
+    return groupedDamagedHouses.value.map((g) => ({
+        province: g.province,
+        totally_damaged: sumNum(g.rows, 'totally_damaged'),
+        partially_damaged: sumNum(g.rows, 'partially_damaged'),
+        estimated_cost: sumNum(g.rows, 'estimated_cost'),
+    }));
+});
 
 const provinceSummaryInsideEC = computed<ProvinceSummaryEC[]>(() => {
     return groupedInsideEC.value.map((g) => ({
@@ -321,7 +341,39 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     <span class="red-text">{{ pluralize(mergedAffectedAreas.length, 'Barangay', 'Barangays') }}.</span>
                                 </div>
 
-                                <table>
+                                <!-- Summary mode: province-level Affected Areas table -->
+                                <table v-if="isSummary">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Province</th>
+                                            <th rowspan="2">No. of Barangays</th>
+                                            <th colspan="2">Number of Affected</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Families</th>
+                                            <th>Persons</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!mergedAffectedAreas.length">
+                                            <td colspan="4"><i>None reported</i></td>
+                                        </tr>
+                                        <tr v-for="(row, idx) in provinceSummaryAffectedAreas" :key="idx">
+                                            <td>{{ row.province }}</td>
+                                            <td>{{ row.barangay_count }}</td>
+                                            <td>{{ row.families.toLocaleString() }}</td>
+                                            <td>{{ row.persons.toLocaleString() }}</td>
+                                        </tr>
+                                        <tr v-if="mergedAffectedAreas.length" class="total-row">
+                                            <td colspan="2">TOTAL</td>
+                                            <td>{{ totalAffectedFamilies.toLocaleString() }}</td>
+                                            <td>{{ totalAffectedPersons.toLocaleString() }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Full mode: detailed Affected Areas table -->
+                                <table v-else>
                                     <thead>
                                         <tr>
                                             <th v-if="showProvince" rowspan="2">Province</th>
@@ -751,7 +803,43 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     <span class="red-text">partially damaged.</span>
                                 </div>
 
-                                <table>
+                                <!-- Summary mode: province-level Damaged Houses table -->
+                                <table v-if="isSummary">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Province</th>
+                                            <th colspan="3">No. of Damaged Houses</th>
+                                            <th rowspan="2">Estimated Cost of Damage</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Totally</th>
+                                            <th>Partially</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!mergedDamagedHouses.length">
+                                            <td colspan="5"><i>None reported</i></td>
+                                        </tr>
+                                        <tr v-for="(row, idx) in provinceSummaryDamagedHouses" :key="idx">
+                                            <td>{{ row.province }}</td>
+                                            <td>{{ row.totally_damaged.toLocaleString() }}</td>
+                                            <td>{{ row.partially_damaged.toLocaleString() }}</td>
+                                            <td>{{ (row.totally_damaged + row.partially_damaged).toLocaleString() }}</td>
+                                            <td>{{ formatCurrency(row.estimated_cost) }}</td>
+                                        </tr>
+                                        <tr v-if="mergedDamagedHouses.length" class="total-row">
+                                            <td>TOTAL</td>
+                                            <td>{{ totalTotallyDamaged }}</td>
+                                            <td>{{ totalPartiallyDamaged }}</td>
+                                            <td>{{ totalTotallyDamaged + totalPartiallyDamaged }}</td>
+                                            <td>{{ formatCurrency(totalEstimatedCost) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Full mode: detailed Damaged Houses table -->
+                                <table v-else>
                                     <thead>
                                         <tr>
                                             <th v-if="showProvince" rowspan="2">Province</th>
