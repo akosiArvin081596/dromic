@@ -38,7 +38,10 @@ const props = defineProps<{
     cutoffTime: string;
     showProvince: boolean;
     dromicLogoUrl?: string | null;
+    mode?: 'full' | 'summary';
 }>();
+
+const isSummary = computed(() => props.mode === 'summary');
 
 function lguName(report: Report): string {
     return report.city_municipality?.name ?? 'Unknown';
@@ -157,6 +160,40 @@ const groupedCalamityDeclarations = computed(() => groupByProvince<CalamityDecla
 const groupedPreemptiveEvacuations = computed(() => groupByProvince<PreemptiveEvacuation>('preemptive_evacuations'));
 const groupedGapsChallenges = computed(() => groupByProvince<GapChallenge>('gaps_challenges'));
 
+// --- Province-level summaries for summary mode ---
+type ProvinceSummaryEC = { province: string; families_cum: number; families_now: number; persons_cum: number; persons_now: number; ec_count: number };
+type ProvinceSummaryNonIdp = { province: string; families_cum: number; persons_cum: number };
+
+const provinceSummaryInsideEC = computed<ProvinceSummaryEC[]>(() => {
+    return groupedInsideEC.value.map((g) => ({
+        province: g.province,
+        families_cum: sumNum(g.rows, 'families_cum'),
+        families_now: sumNum(g.rows, 'families_now'),
+        persons_cum: sumNum(g.rows, 'persons_cum'),
+        persons_now: sumNum(g.rows, 'persons_now'),
+        ec_count: g.rows.length,
+    }));
+});
+
+const provinceSummaryOutsideEC = computed<ProvinceSummaryEC[]>(() => {
+    return groupedOutsideEC.value.map((g) => ({
+        province: g.province,
+        families_cum: sumNum(g.rows, 'families_cum'),
+        families_now: sumNum(g.rows, 'families_now'),
+        persons_cum: sumNum(g.rows, 'persons_cum'),
+        persons_now: sumNum(g.rows, 'persons_now'),
+        ec_count: g.rows.length,
+    }));
+});
+
+const provinceSummaryNonIdps = computed<ProvinceSummaryNonIdp[]>(() => {
+    return groupedNonIdps.value.map((g) => ({
+        province: g.province,
+        families_cum: sumNum(g.rows, 'families_cum'),
+        persons_cum: sumNum(g.rows, 'persons_cum'),
+    }));
+});
+
 // --- Totals ---
 const totalAffectedFamilies = computed(() => sumNum(mergedAffectedAreas.value, 'families'));
 const totalAffectedPersons = computed(() => sumNum(mergedAffectedAreas.value, 'persons'));
@@ -241,12 +278,10 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                 <tr>
                     <td>
                         <div class="header">
-                            <div class="logo-placeholder">Kindly replace with LGU Logo</div>
                             <div v-if="dromicLogoUrl" class="center-logo">
                                 <img :src="dromicLogoUrl" alt="DROMIC" />
                             </div>
                             <div v-else class="center-logo">DROMIC</div>
-                            <div class="logo-placeholder">Kindly replace with LDRRMC Logo</div>
                         </div>
                     </td>
                 </tr>
@@ -354,17 +389,14 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     >, to wit:
                                 </div>
 
-                                <table>
+                                <!-- Summary mode: province-level Inside EC table -->
+                                <table v-if="isSummary">
                                     <thead>
                                         <tr>
-                                            <th v-if="showProvince" rowspan="2">Province</th>
-                                            <th rowspan="2">City/Municipality</th>
-                                            <th rowspan="2">Barangay</th>
-                                            <th rowspan="2">Name of Evacuation<br />Center</th>
+                                            <th rowspan="2">Province</th>
+                                            <th rowspan="2">No. of ECs</th>
                                             <th colspan="2">Families</th>
                                             <th colspan="2">Persons</th>
-                                            <th rowspan="2">Origin/<br />Barangay</th>
-                                            <th rowspan="2">Remarks*<br />(No. of classrooms used)</th>
                                         </tr>
                                         <tr>
                                             <th>Cum</th>
@@ -375,100 +407,150 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     </thead>
                                     <tbody>
                                         <tr v-if="!mergedInsideEC.length">
-                                            <td :colspan="showProvince ? 10 : 9"><i>None reported</i></td>
+                                            <td colspan="6"><i>None reported</i></td>
                                         </tr>
-                                        <template v-for="(group, gIdx) in groupedInsideEC" :key="gIdx">
-                                            <tr v-for="(ec, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? ec.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? ec.lgu : '' }}</td>
-                                                <td>{{ ec.barangay }}</td>
-                                                <td>{{ ec.ec_name }}</td>
-                                                <td>{{ ec.families_cum }}</td>
-                                                <td>{{ ec.families_now }}</td>
-                                                <td>{{ ec.persons_cum }}</td>
-                                                <td>{{ ec.persons_now }}</td>
-                                                <td>{{ ec.origin }}</td>
-                                                <td>{{ ec.remarks }}</td>
-                                            </tr>
-                                            <tr v-if="showProvince && groupedInsideEC.length > 1" class="subtotal-row">
-                                                <td :colspan="showProvince ? 4 : 3">Subtotal</td>
-                                                <td>{{ sumNum(group.rows, 'families_cum') }}</td>
-                                                <td>{{ sumNum(group.rows, 'families_now') }}</td>
-                                                <td>{{ sumNum(group.rows, 'persons_cum') }}</td>
-                                                <td>{{ sumNum(group.rows, 'persons_now') }}</td>
-                                                <td colspan="2"></td>
-                                            </tr>
-                                        </template>
+                                        <tr v-for="(row, idx) in provinceSummaryInsideEC" :key="idx">
+                                            <td>{{ row.province }}</td>
+                                            <td>{{ row.ec_count }}</td>
+                                            <td>{{ row.families_cum.toLocaleString() }}</td>
+                                            <td>{{ row.families_now.toLocaleString() }}</td>
+                                            <td>{{ row.persons_cum.toLocaleString() }}</td>
+                                            <td>{{ row.persons_now.toLocaleString() }}</td>
+                                        </tr>
                                         <tr v-if="mergedInsideEC.length" class="total-row">
-                                            <td :colspan="showProvince ? 4 : 3">TOTAL</td>
+                                            <td colspan="2">TOTAL</td>
                                             <td>{{ totalInsideECFamiliesCum }}</td>
                                             <td>{{ totalInsideECFamiliesNow }}</td>
                                             <td>{{ totalInsideECPersonsCum }}</td>
                                             <td>{{ totalInsideECPersonsNow }}</td>
-                                            <td colspan="2"></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                                <div class="description-text"><i>*Only for Schools used as ECs</i></div>
+                                <!-- Full mode: detailed Inside EC table -->
+                                <template v-else>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince" rowspan="2">Province</th>
+                                                <th rowspan="2">City/Municipality</th>
+                                                <th rowspan="2">Barangay</th>
+                                                <th rowspan="2">Name of Evacuation<br />Center</th>
+                                                <th colspan="2">Families</th>
+                                                <th colspan="2">Persons</th>
+                                                <th rowspan="2">Origin/<br />Barangay</th>
+                                                <th rowspan="2">Remarks*<br />(No. of classrooms used)</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Cum</th>
+                                                <th>Now</th>
+                                                <th>Cum</th>
+                                                <th>Now</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedInsideEC.length">
+                                                <td :colspan="showProvince ? 10 : 9"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedInsideEC" :key="gIdx">
+                                                <tr v-for="(ec, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? ec.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? ec.lgu : '' }}</td>
+                                                    <td>{{ ec.barangay }}</td>
+                                                    <td>{{ ec.ec_name }}</td>
+                                                    <td>{{ ec.families_cum }}</td>
+                                                    <td>{{ ec.families_now }}</td>
+                                                    <td>{{ ec.persons_cum }}</td>
+                                                    <td>{{ ec.persons_now }}</td>
+                                                    <td>{{ ec.origin }}</td>
+                                                    <td>{{ ec.remarks }}</td>
+                                                </tr>
+                                                <tr v-if="showProvince && groupedInsideEC.length > 1" class="subtotal-row">
+                                                    <td :colspan="showProvince ? 4 : 3">Subtotal</td>
+                                                    <td>{{ sumNum(group.rows, 'families_cum') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'families_now') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'persons_cum') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'persons_now') }}</td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                            </template>
+                                            <tr v-if="mergedInsideEC.length" class="total-row">
+                                                <td :colspan="showProvince ? 4 : 3">TOTAL</td>
+                                                <td>{{ totalInsideECFamiliesCum }}</td>
+                                                <td>{{ totalInsideECFamiliesNow }}</td>
+                                                <td>{{ totalInsideECPersonsCum }}</td>
+                                                <td>{{ totalInsideECPersonsNow }}</td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
 
-                                <div class="description-text">
-                                    Following is the breakdown of the individuals inside evacuation centers according to age distribution:
-                                </div>
+                                    <div class="description-text"><i>*Only for Schools used as ECs</i></div>
+                                </template>
 
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Age Range/Distribution</th>
-                                            <th>Male</th>
-                                            <th>Female</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="ag in ageGroupLabels" :key="ag.key">
-                                            <td>{{ ag.label }}</td>
-                                            <td>{{ sumAgeGroupField(ag.key, 'male_cum') }}</td>
-                                            <td>{{ sumAgeGroupField(ag.key, 'female_cum') }}</td>
-                                            <td>{{ sumAgeGroupField(ag.key, 'male_cum') + sumAgeGroupField(ag.key, 'female_cum') }}</td>
-                                        </tr>
-                                        <tr class="total-row">
-                                            <td>TOTAL</td>
-                                            <td>{{ sumAllAgeField('male_cum') }}</td>
-                                            <td>{{ sumAllAgeField('female_cum') }}</td>
-                                            <td>{{ sumAllAgeField('male_cum') + sumAllAgeField('female_cum') }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <!-- Age Distribution (full mode only) -->
+                                <template v-if="!isSummary">
+                                    <div class="description-text">
+                                        Following is the breakdown of the individuals inside evacuation centers according to age distribution:
+                                    </div>
 
-                                <div class="description-text">
-                                    Further, below is the breakdown of individuals inside ECs according to their sector:
-                                </div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Age Range/Distribution</th>
+                                                <th>Male</th>
+                                                <th>Female</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="ag in ageGroupLabels" :key="ag.key">
+                                                <td>{{ ag.label }}</td>
+                                                <td>{{ sumAgeGroupField(ag.key, 'male_cum') }}</td>
+                                                <td>{{ sumAgeGroupField(ag.key, 'female_cum') }}</td>
+                                                <td>{{ sumAgeGroupField(ag.key, 'male_cum') + sumAgeGroupField(ag.key, 'female_cum') }}</td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td>TOTAL</td>
+                                                <td>{{ sumAllAgeField('male_cum') }}</td>
+                                                <td>{{ sumAllAgeField('female_cum') }}</td>
+                                                <td>{{ sumAllAgeField('male_cum') + sumAllAgeField('female_cum') }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </template>
 
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Sector</th>
-                                            <th>Male</th>
-                                            <th>Female</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="s in sectorLabels" :key="s.key">
-                                            <td>{{ s.label }}</td>
-                                            <td>{{ sumSectorField(s.key, 'male_cum') }}</td>
-                                            <td>{{ sumSectorField(s.key, 'female_cum') }}</td>
-                                            <td>{{ sumSectorField(s.key, 'male_cum') + sumSectorField(s.key, 'female_cum') }}</td>
-                                        </tr>
-                                        <tr class="total-row">
-                                            <td>TOTAL</td>
-                                            <td>{{ sumAllSectorField('male_cum') }}</td>
-                                            <td>{{ sumAllSectorField('female_cum') }}</td>
-                                            <td>{{ sumAllSectorField('male_cum') + sumAllSectorField('female_cum') }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <!-- Vulnerable Sectors (full mode only) -->
+                                <template v-if="!isSummary">
+                                    <div class="description-text">
+                                        Further, below is the breakdown of individuals inside ECs according to their sector:
+                                    </div>
+
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sector</th>
+                                                <th>Male</th>
+                                                <th>Female</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="s in sectorLabels" :key="s.key">
+                                                <td>{{ s.label }}</td>
+                                                <td>{{ sumSectorField(s.key, 'male_cum') }}</td>
+                                                <td>{{ sumSectorField(s.key, 'female_cum') }}</td>
+                                                <td>{{ sumSectorField(s.key, 'male_cum') + sumSectorField(s.key, 'female_cum') }}</td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td>TOTAL</td>
+                                                <td>{{ sumAllSectorField('male_cum') }}</td>
+                                                <td>{{ sumAllSectorField('female_cum') }}</td>
+                                                <td>{{ sumAllSectorField('male_cum') + sumAllSectorField('female_cum') }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </template>
 
                                 <!-- Section III.B: Outside Evacuation Center -->
                                 <div class="subsection-title">B. Outside Evacuation Center</div>
@@ -484,7 +566,44 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     temporarily staying with their relatives and/or friends' houses, to wit:
                                 </div>
 
-                                <table>
+                                <!-- Summary mode: province-level Outside EC table -->
+                                <table v-if="isSummary">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Province</th>
+                                            <th colspan="2">Families</th>
+                                            <th colspan="2">Persons</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Cum</th>
+                                            <th>Now</th>
+                                            <th>Cum</th>
+                                            <th>Now</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!mergedOutsideEC.length">
+                                            <td colspan="5"><i>None reported</i></td>
+                                        </tr>
+                                        <tr v-for="(row, idx) in provinceSummaryOutsideEC" :key="idx">
+                                            <td>{{ row.province }}</td>
+                                            <td>{{ row.families_cum.toLocaleString() }}</td>
+                                            <td>{{ row.families_now.toLocaleString() }}</td>
+                                            <td>{{ row.persons_cum.toLocaleString() }}</td>
+                                            <td>{{ row.persons_now.toLocaleString() }}</td>
+                                        </tr>
+                                        <tr v-if="mergedOutsideEC.length" class="total-row">
+                                            <td>TOTAL</td>
+                                            <td>{{ totalOutsideECFamiliesCum }}</td>
+                                            <td>{{ totalOutsideECFamiliesNow }}</td>
+                                            <td>{{ totalOutsideECPersonsCum }}</td>
+                                            <td>{{ totalOutsideECPersonsNow }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Full mode: detailed Outside EC table -->
+                                <table v-else>
                                     <thead>
                                         <tr>
                                             <th v-if="showProvince" rowspan="2">Province</th>
@@ -550,7 +669,34 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     served outside evacuation centers (not displaced), to wit:
                                 </div>
 
-                                <table>
+                                <!-- Summary mode: province-level Non-IDPs table -->
+                                <table v-if="isSummary">
+                                    <thead>
+                                        <tr>
+                                            <th>Province</th>
+                                            <th>Families</th>
+                                            <th>Persons</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="!mergedNonIdps.length">
+                                            <td colspan="3"><i>None reported</i></td>
+                                        </tr>
+                                        <tr v-for="(row, idx) in provinceSummaryNonIdps" :key="idx">
+                                            <td>{{ row.province }}</td>
+                                            <td>{{ row.families_cum.toLocaleString() }}</td>
+                                            <td>{{ row.persons_cum.toLocaleString() }}</td>
+                                        </tr>
+                                        <tr v-if="mergedNonIdps.length" class="total-row">
+                                            <td>TOTAL</td>
+                                            <td>{{ totalNonIdpFamiliesCum }}</td>
+                                            <td>{{ totalNonIdpPersonsCum }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- Full mode: detailed Non-IDPs table -->
+                                <table v-else>
                                     <thead>
                                         <tr>
                                             <th v-if="showProvince">Province</th>
@@ -653,48 +799,268 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                 </table>
                             </div>
 
-                            <!-- Section V: Related Incidents -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">V.</span>Related Incidents</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Incident Type</th>
-                                            <th>Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedRelatedIncidents.length">
-                                            <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedRelatedIncidents" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.incident_type }}</td>
-                                                <td>{{ row.description }}</td>
+                            <!-- Sections V-XIX: Full mode only -->
+                            <template v-if="!isSummary">
+                                <!-- Section V: Related Incidents -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">V.</span>Related Incidents</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Barangay</th>
+                                                <th>Incident Type</th>
+                                                <th>Description</th>
                                             </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedRelatedIncidents.length">
+                                                <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedRelatedIncidents" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.barangay }}</td>
+                                                    <td>{{ row.incident_type }}</td>
+                                                    <td>{{ row.description }}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                            <!-- Section VI: Casualties -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">VI.</span>Casualties</div>
-                                <template
-                                    v-for="(sub, sIdx) in [
-                                        { label: 'A. Injured', data: mergedCasualtiesInjured, groups: groupedCasualtiesInjured },
-                                        { label: 'B. Missing', data: mergedCasualtiesMissing, groups: groupedCasualtiesMissing },
-                                        { label: 'C. Dead', data: mergedCasualtiesDead, groups: groupedCasualtiesDead },
-                                    ]"
-                                    :key="sIdx"
-                                >
-                                    <div class="subsection-title">{{ sub.label }} ({{ sub.data?.length ?? 0 }})</div>
+                                <!-- Section VI: Casualties -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">VI.</span>Casualties</div>
+                                    <template
+                                        v-for="(sub, sIdx) in [
+                                            { label: 'A. Injured', data: mergedCasualtiesInjured, groups: groupedCasualtiesInjured },
+                                            { label: 'B. Missing', data: mergedCasualtiesMissing, groups: groupedCasualtiesMissing },
+                                            { label: 'C. Dead', data: mergedCasualtiesDead, groups: groupedCasualtiesDead },
+                                        ]"
+                                        :key="sIdx"
+                                    >
+                                        <div class="subsection-title">{{ sub.label }} ({{ sub.data?.length ?? 0 }})</div>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th v-if="showProvince">Province</th>
+                                                    <th>City/Municipality</th>
+                                                    <th>Barangay</th>
+                                                    <th>Name</th>
+                                                    <th>Age</th>
+                                                    <th>Sex</th>
+                                                    <th>Cause</th>
+                                                    <th>Remarks</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="!sub.data?.length">
+                                                    <td :colspan="showProvince ? 8 : 7"><i>None reported</i></td>
+                                                </tr>
+                                                <template v-for="(group, gIdx) in sub.groups" :key="gIdx">
+                                                    <tr v-for="(c, cIdx) in group.rows" :key="cIdx">
+                                                        <td v-if="showProvince">{{ isFirstProvince(group.rows, cIdx) ? c.province : '' }}</td>
+                                                        <td>{{ isFirstLgu(group.rows, cIdx) ? c.lgu : '' }}</td>
+                                                        <td>{{ c.barangay }}</td>
+                                                        <td>{{ c.name }}</td>
+                                                        <td>{{ c.age }}</td>
+                                                        <td>{{ c.sex }}</td>
+                                                        <td>{{ c.cause }}</td>
+                                                        <td>{{ c.remarks }}</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                </div>
+
+                                <!-- Section VII: Damages to Infrastructure -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">VII.</span>Damages to Infrastructure</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Barangay</th>
+                                                <th>Facility Type</th>
+                                                <th>Description</th>
+                                                <th>Estimated Cost</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedInfrastructureDamages.length">
+                                                <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedInfrastructureDamages" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.barangay }}</td>
+                                                    <td>{{ row.facility_type }}</td>
+                                                    <td>{{ row.description }}</td>
+                                                    <td>{{ formatCurrency(row.estimated_cost) }}</td>
+                                                </tr>
+                                                <tr v-if="showProvince && groupedInfrastructureDamages.length > 1" class="subtotal-row">
+                                                    <td :colspan="showProvince ? 5 : 4">Subtotal</td>
+                                                    <td>{{ formatCurrency(sumNum(group.rows, 'estimated_cost')) }}</td>
+                                                </tr>
+                                            </template>
+                                            <tr v-if="mergedInfrastructureDamages.length" class="total-row">
+                                                <td :colspan="showProvince ? 5 : 4">TOTAL</td>
+                                                <td>{{ formatCurrency(totalInfraCost) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section VIII: Agriculture Damages -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">VIII.</span>Damage &amp; Losses to Agriculture</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Commodity</th>
+                                                <th>No. of Farmers</th>
+                                                <th>Area (ha)</th>
+                                                <th>Volume (MT)</th>
+                                                <th>Estimated Cost</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedAgricultureDamages.length">
+                                                <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedAgricultureDamages" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.commodity }}</td>
+                                                    <td>{{ row.no_of_farmers }}</td>
+                                                    <td>{{ row.area_affected_ha }}</td>
+                                                    <td>{{ row.volume_mt }}</td>
+                                                    <td>{{ formatCurrency(row.estimated_cost) }}</td>
+                                                </tr>
+                                                <tr v-if="showProvince && groupedAgricultureDamages.length > 1" class="subtotal-row">
+                                                    <td :colspan="showProvince ? 3 : 2">Subtotal</td>
+                                                    <td>{{ sumNum(group.rows, 'no_of_farmers') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'area_affected_ha') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'volume_mt') }}</td>
+                                                    <td>{{ formatCurrency(sumNum(group.rows, 'estimated_cost')) }}</td>
+                                                </tr>
+                                            </template>
+                                            <tr v-if="mergedAgricultureDamages.length" class="total-row">
+                                                <td :colspan="showProvince ? 6 : 5">TOTAL</td>
+                                                <td>{{ formatCurrency(totalAgriCost) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section IX: Assistance Provided -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">IX.</span>Status of Assistance Provided</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Source</th>
+                                                <th>Type</th>
+                                                <th>Quantity</th>
+                                                <th>Beneficiaries</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedAssistanceProvided.length">
+                                                <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedAssistanceProvided" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.source }}</td>
+                                                    <td>{{ row.type }}</td>
+                                                    <td>{{ row.quantity }}</td>
+                                                    <td>{{ row.beneficiaries }}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section X: Class Suspension -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">X.</span>Class Suspension</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Barangay</th>
+                                                <th>Level</th>
+                                                <th>Date</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedClassSuspensions.length">
+                                                <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedClassSuspensions" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.barangay }}</td>
+                                                    <td>{{ row.level }}</td>
+                                                    <td>{{ row.date }}</td>
+                                                    <td>{{ row.remarks }}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section XI: Work Suspension -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XI.</span>Work Suspension</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Office/Agency</th>
+                                                <th>Date</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedWorkSuspensions.length">
+                                                <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedWorkSuspensions" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.office }}</td>
+                                                    <td>{{ row.date }}</td>
+                                                    <td>{{ row.remarks }}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section XII: Status of Lifelines -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XII.</span>Status of Lifelines</div>
+
+                                    <div class="subsection-title">A. Roads &amp; Bridges</div>
                                     <table>
                                         <thead>
                                             <tr>
@@ -702,476 +1068,259 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                                 <th>City/Municipality</th>
                                                 <th>Barangay</th>
                                                 <th>Name</th>
-                                                <th>Age</th>
-                                                <th>Sex</th>
-                                                <th>Cause</th>
-                                                <th>Remarks</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-if="!sub.data?.length">
-                                                <td :colspan="showProvince ? 8 : 7"><i>None reported</i></td>
-                                            </tr>
-                                            <template v-for="(group, gIdx) in sub.groups" :key="gIdx">
-                                                <tr v-for="(c, cIdx) in group.rows" :key="cIdx">
-                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, cIdx) ? c.province : '' }}</td>
-                                                    <td>{{ isFirstLgu(group.rows, cIdx) ? c.lgu : '' }}</td>
-                                                    <td>{{ c.barangay }}</td>
-                                                    <td>{{ c.name }}</td>
-                                                    <td>{{ c.age }}</td>
-                                                    <td>{{ c.sex }}</td>
-                                                    <td>{{ c.cause }}</td>
-                                                    <td>{{ c.remarks }}</td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
-                                </template>
-                            </div>
-
-                            <!-- Section VII: Damages to Infrastructure -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">VII.</span>Damages to Infrastructure</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Facility Type</th>
-                                            <th>Description</th>
-                                            <th>Estimated Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedInfrastructureDamages.length">
-                                            <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedInfrastructureDamages" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.facility_type }}</td>
-                                                <td>{{ row.description }}</td>
-                                                <td>{{ formatCurrency(row.estimated_cost) }}</td>
-                                            </tr>
-                                            <tr v-if="showProvince && groupedInfrastructureDamages.length > 1" class="subtotal-row">
-                                                <td :colspan="showProvince ? 5 : 4">Subtotal</td>
-                                                <td>{{ formatCurrency(sumNum(group.rows, 'estimated_cost')) }}</td>
-                                            </tr>
-                                        </template>
-                                        <tr v-if="mergedInfrastructureDamages.length" class="total-row">
-                                            <td :colspan="showProvince ? 5 : 4">TOTAL</td>
-                                            <td>{{ formatCurrency(totalInfraCost) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section VIII: Agriculture Damages -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">VIII.</span>Damage &amp; Losses to Agriculture</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Commodity</th>
-                                            <th>No. of Farmers</th>
-                                            <th>Area (ha)</th>
-                                            <th>Volume (MT)</th>
-                                            <th>Estimated Cost</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedAgricultureDamages.length">
-                                            <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedAgricultureDamages" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.commodity }}</td>
-                                                <td>{{ row.no_of_farmers }}</td>
-                                                <td>{{ row.area_affected_ha }}</td>
-                                                <td>{{ row.volume_mt }}</td>
-                                                <td>{{ formatCurrency(row.estimated_cost) }}</td>
-                                            </tr>
-                                            <tr v-if="showProvince && groupedAgricultureDamages.length > 1" class="subtotal-row">
-                                                <td :colspan="showProvince ? 3 : 2">Subtotal</td>
-                                                <td>{{ sumNum(group.rows, 'no_of_farmers') }}</td>
-                                                <td>{{ sumNum(group.rows, 'area_affected_ha') }}</td>
-                                                <td>{{ sumNum(group.rows, 'volume_mt') }}</td>
-                                                <td>{{ formatCurrency(sumNum(group.rows, 'estimated_cost')) }}</td>
-                                            </tr>
-                                        </template>
-                                        <tr v-if="mergedAgricultureDamages.length" class="total-row">
-                                            <td :colspan="showProvince ? 6 : 5">TOTAL</td>
-                                            <td>{{ formatCurrency(totalAgriCost) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section IX: Assistance Provided -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">IX.</span>Status of Assistance Provided</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Source</th>
-                                            <th>Type</th>
-                                            <th>Quantity</th>
-                                            <th>Beneficiaries</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedAssistanceProvided.length">
-                                            <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedAssistanceProvided" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.source }}</td>
-                                                <td>{{ row.type }}</td>
-                                                <td>{{ row.quantity }}</td>
-                                                <td>{{ row.beneficiaries }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section X: Class Suspension -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">X.</span>Class Suspension</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Level</th>
-                                            <th>Date</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedClassSuspensions.length">
-                                            <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedClassSuspensions" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.level }}</td>
-                                                <td>{{ row.date }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section XI: Work Suspension -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XI.</span>Work Suspension</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Office/Agency</th>
-                                            <th>Date</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedWorkSuspensions.length">
-                                            <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedWorkSuspensions" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.office }}</td>
-                                                <td>{{ row.date }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section XII: Status of Lifelines -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XII.</span>Status of Lifelines</div>
-
-                                <div class="subsection-title">A. Roads &amp; Bridges</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th>Status</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedLifelineRoads.length">
-                                            <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedLifelineRoads" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.name }}</td>
-                                                <td>{{ row.type }}</td>
-                                                <td>{{ row.status }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-
-                                <template
-                                    v-for="(sub, sIdx) in [
-                                        { label: 'B. Power', data: mergedLifelinePower, groups: groupedLifelinePower },
-                                        { label: 'C. Water', data: mergedLifelineWater, groups: groupedLifelineWater },
-                                        { label: 'D. Communication', data: mergedLifelineComm, groups: groupedLifelineComm },
-                                    ]"
-                                    :key="sIdx"
-                                >
-                                    <div class="subsection-title">{{ sub.label }}</div>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th v-if="showProvince">Province</th>
-                                                <th>City/Municipality</th>
-                                                <th>Barangay</th>
-                                                <th>Provider</th>
+                                                <th>Type</th>
                                                 <th>Status</th>
                                                 <th>Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-if="!sub.data?.length">
-                                                <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                            <tr v-if="!mergedLifelineRoads.length">
+                                                <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
                                             </tr>
-                                            <template v-for="(group, gIdx) in sub.groups" :key="gIdx">
+                                            <template v-for="(group, gIdx) in groupedLifelineRoads" :key="gIdx">
                                                 <tr v-for="(row, idx) in group.rows" :key="idx">
                                                     <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
                                                     <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
                                                     <td>{{ row.barangay }}</td>
-                                                    <td>{{ row.provider }}</td>
+                                                    <td>{{ row.name }}</td>
+                                                    <td>{{ row.type }}</td>
                                                     <td>{{ row.status }}</td>
                                                     <td>{{ row.remarks }}</td>
                                                 </tr>
                                             </template>
                                         </tbody>
                                     </table>
-                                </template>
-                            </div>
 
-                            <!-- Sections XIII-XV: Ports -->
-                            <template
-                                v-for="(port, pIdx) in [
-                                    { num: 'XIII', title: 'Status of Seaports', data: mergedSeaports, groups: groupedSeaports },
-                                    { num: 'XIV', title: 'Status of Airports', data: mergedAirports, groups: groupedAirports },
-                                    { num: 'XV', title: 'Status of Landports', data: mergedLandports, groups: groupedLandports },
-                                ]"
-                                :key="pIdx"
-                            >
-                                <div class="section">
-                                    <div class="section-title">
-                                        <span class="section-number">{{ port.num }}.</span>{{ port.title }}
+                                    <template
+                                        v-for="(sub, sIdx) in [
+                                            { label: 'B. Power', data: mergedLifelinePower, groups: groupedLifelinePower },
+                                            { label: 'C. Water', data: mergedLifelineWater, groups: groupedLifelineWater },
+                                            { label: 'D. Communication', data: mergedLifelineComm, groups: groupedLifelineComm },
+                                        ]"
+                                        :key="sIdx"
+                                    >
+                                        <div class="subsection-title">{{ sub.label }}</div>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th v-if="showProvince">Province</th>
+                                                    <th>City/Municipality</th>
+                                                    <th>Barangay</th>
+                                                    <th>Provider</th>
+                                                    <th>Status</th>
+                                                    <th>Remarks</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="!sub.data?.length">
+                                                    <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                                </tr>
+                                                <template v-for="(group, gIdx) in sub.groups" :key="gIdx">
+                                                    <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                        <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                        <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                        <td>{{ row.barangay }}</td>
+                                                        <td>{{ row.provider }}</td>
+                                                        <td>{{ row.status }}</td>
+                                                        <td>{{ row.remarks }}</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                </div>
+
+                                <!-- Sections XIII-XV: Ports -->
+                                <template
+                                    v-for="(port, pIdx) in [
+                                        { num: 'XIII', title: 'Status of Seaports', data: mergedSeaports, groups: groupedSeaports },
+                                        { num: 'XIV', title: 'Status of Airports', data: mergedAirports, groups: groupedAirports },
+                                        { num: 'XV', title: 'Status of Landports', data: mergedLandports, groups: groupedLandports },
+                                    ]"
+                                    :key="pIdx"
+                                >
+                                    <div class="section">
+                                        <div class="section-title">
+                                            <span class="section-number">{{ port.num }}.</span>{{ port.title }}
+                                        </div>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th v-if="showProvince">Province</th>
+                                                    <th>City/Municipality</th>
+                                                    <th>Port Name</th>
+                                                    <th>Status</th>
+                                                    <th>Remarks</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-if="!port.data?.length">
+                                                    <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
+                                                </tr>
+                                                <template v-for="(group, gIdx) in port.groups" :key="gIdx">
+                                                    <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                        <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                        <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                        <td>{{ row.port_name }}</td>
+                                                        <td>{{ row.status }}</td>
+                                                        <td>{{ row.remarks }}</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
                                     </div>
+                                </template>
+
+                                <!-- Section XVI: Stranded Passengers -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XVI.</span>Stranded Passengers/Cargoes</div>
                                     <table>
                                         <thead>
                                             <tr>
                                                 <th v-if="showProvince">Province</th>
                                                 <th>City/Municipality</th>
                                                 <th>Port Name</th>
-                                                <th>Status</th>
+                                                <th>Passengers</th>
+                                                <th>Rolling Cargoes</th>
+                                                <th>Vessels</th>
                                                 <th>Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-if="!port.data?.length">
-                                                <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
+                                            <tr v-if="!mergedStrandedPassengers.length">
+                                                <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
                                             </tr>
-                                            <template v-for="(group, gIdx) in port.groups" :key="gIdx">
+                                            <template v-for="(group, gIdx) in groupedStrandedPassengers" :key="gIdx">
                                                 <tr v-for="(row, idx) in group.rows" :key="idx">
                                                     <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
                                                     <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
                                                     <td>{{ row.port_name }}</td>
-                                                    <td>{{ row.status }}</td>
+                                                    <td>{{ row.passengers }}</td>
+                                                    <td>{{ row.rolling_cargoes }}</td>
+                                                    <td>{{ row.vessels }}</td>
+                                                    <td>{{ row.remarks }}</td>
+                                                </tr>
+                                                <tr v-if="showProvince && groupedStrandedPassengers.length > 1" class="subtotal-row">
+                                                    <td :colspan="showProvince ? 3 : 2">Subtotal</td>
+                                                    <td>{{ sumNum(group.rows, 'passengers') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'rolling_cargoes') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'vessels') }}</td>
+                                                    <td></td>
+                                                </tr>
+                                            </template>
+                                            <tr v-if="mergedStrandedPassengers.length" class="total-row">
+                                                <td :colspan="showProvince ? 3 : 2">TOTAL</td>
+                                                <td>{{ totalStrandedPassengers }}</td>
+                                                <td>{{ totalStrandedCargoes }}</td>
+                                                <td>{{ totalStrandedVessels }}</td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section XVII: Declaration of State of Calamity -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XVII.</span>Declaration of State of Calamity</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Barangay</th>
+                                                <th>Date Declared</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedCalamityDeclarations.length">
+                                                <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedCalamityDeclarations" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.barangay }}</td>
+                                                    <td>{{ row.date_declared }}</td>
                                                     <td>{{ row.remarks }}</td>
                                                 </tr>
                                             </template>
                                         </tbody>
                                     </table>
                                 </div>
+
+                                <!-- Section XVIII: Pre-emptive Evacuation -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XVIII.</span>Pre-emptive Evacuation</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Barangay</th>
+                                                <th>Families</th>
+                                                <th>Persons</th>
+                                                <th>Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedPreemptiveEvacuations.length">
+                                                <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedPreemptiveEvacuations" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.barangay }}</td>
+                                                    <td>{{ row.families }}</td>
+                                                    <td>{{ row.persons }}</td>
+                                                    <td>{{ row.remarks }}</td>
+                                                </tr>
+                                                <tr v-if="showProvince && groupedPreemptiveEvacuations.length > 1" class="subtotal-row">
+                                                    <td :colspan="showProvince ? 3 : 2">Subtotal</td>
+                                                    <td>{{ sumNum(group.rows, 'families') }}</td>
+                                                    <td>{{ sumNum(group.rows, 'persons') }}</td>
+                                                    <td></td>
+                                                </tr>
+                                            </template>
+                                            <tr v-if="mergedPreemptiveEvacuations.length" class="total-row">
+                                                <td :colspan="showProvince ? 3 : 2">TOTAL</td>
+                                                <td>{{ totalPreemptiveFamilies }}</td>
+                                                <td>{{ totalPreemptivePersons }}</td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Section XIX: Gaps/Challenges -->
+                                <div class="section">
+                                    <div class="section-title"><span class="section-number">XIX.</span>Gaps/Challenges</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th v-if="showProvince">Province</th>
+                                                <th>City/Municipality</th>
+                                                <th>Description</th>
+                                                <th>Recommendation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="!mergedGapsChallenges.length">
+                                                <td :colspan="showProvince ? 4 : 3"><i>None reported</i></td>
+                                            </tr>
+                                            <template v-for="(group, gIdx) in groupedGapsChallenges" :key="gIdx">
+                                                <tr v-for="(row, idx) in group.rows" :key="idx">
+                                                    <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
+                                                    <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
+                                                    <td>{{ row.description }}</td>
+                                                    <td>{{ row.recommendation }}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </template>
-
-                            <!-- Section XVI: Stranded Passengers -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XVI.</span>Stranded Passengers/Cargoes</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Port Name</th>
-                                            <th>Passengers</th>
-                                            <th>Rolling Cargoes</th>
-                                            <th>Vessels</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedStrandedPassengers.length">
-                                            <td :colspan="showProvince ? 7 : 6"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedStrandedPassengers" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.port_name }}</td>
-                                                <td>{{ row.passengers }}</td>
-                                                <td>{{ row.rolling_cargoes }}</td>
-                                                <td>{{ row.vessels }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                            <tr v-if="showProvince && groupedStrandedPassengers.length > 1" class="subtotal-row">
-                                                <td :colspan="showProvince ? 3 : 2">Subtotal</td>
-                                                <td>{{ sumNum(group.rows, 'passengers') }}</td>
-                                                <td>{{ sumNum(group.rows, 'rolling_cargoes') }}</td>
-                                                <td>{{ sumNum(group.rows, 'vessels') }}</td>
-                                                <td></td>
-                                            </tr>
-                                        </template>
-                                        <tr v-if="mergedStrandedPassengers.length" class="total-row">
-                                            <td :colspan="showProvince ? 3 : 2">TOTAL</td>
-                                            <td>{{ totalStrandedPassengers }}</td>
-                                            <td>{{ totalStrandedCargoes }}</td>
-                                            <td>{{ totalStrandedVessels }}</td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section XVII: Declaration of State of Calamity -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XVII.</span>Declaration of State of Calamity</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Date Declared</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedCalamityDeclarations.length">
-                                            <td :colspan="showProvince ? 5 : 4"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedCalamityDeclarations" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.date_declared }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section XVIII: Pre-emptive Evacuation -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XVIII.</span>Pre-emptive Evacuation</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Barangay</th>
-                                            <th>Families</th>
-                                            <th>Persons</th>
-                                            <th>Remarks</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedPreemptiveEvacuations.length">
-                                            <td :colspan="showProvince ? 6 : 5"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedPreemptiveEvacuations" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.barangay }}</td>
-                                                <td>{{ row.families }}</td>
-                                                <td>{{ row.persons }}</td>
-                                                <td>{{ row.remarks }}</td>
-                                            </tr>
-                                            <tr v-if="showProvince && groupedPreemptiveEvacuations.length > 1" class="subtotal-row">
-                                                <td :colspan="showProvince ? 3 : 2">Subtotal</td>
-                                                <td>{{ sumNum(group.rows, 'families') }}</td>
-                                                <td>{{ sumNum(group.rows, 'persons') }}</td>
-                                                <td></td>
-                                            </tr>
-                                        </template>
-                                        <tr v-if="mergedPreemptiveEvacuations.length" class="total-row">
-                                            <td :colspan="showProvince ? 3 : 2">TOTAL</td>
-                                            <td>{{ totalPreemptiveFamilies }}</td>
-                                            <td>{{ totalPreemptivePersons }}</td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Section XIX: Gaps/Challenges -->
-                            <div class="section">
-                                <div class="section-title"><span class="section-number">XIX.</span>Gaps/Challenges</div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th v-if="showProvince">Province</th>
-                                            <th>City/Municipality</th>
-                                            <th>Description</th>
-                                            <th>Recommendation</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="!mergedGapsChallenges.length">
-                                            <td :colspan="showProvince ? 4 : 3"><i>None reported</i></td>
-                                        </tr>
-                                        <template v-for="(group, gIdx) in groupedGapsChallenges" :key="gIdx">
-                                            <tr v-for="(row, idx) in group.rows" :key="idx">
-                                                <td v-if="showProvince">{{ isFirstProvince(group.rows, idx) ? row.province : '' }}</td>
-                                                <td>{{ isFirstLgu(group.rows, idx) ? row.lgu : '' }}</td>
-                                                <td>{{ row.description }}</td>
-                                                <td>{{ row.recommendation }}</td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </td>
                 </tr>
@@ -1196,23 +1345,10 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
 /* Header with logos */
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 30px;
     position: relative;
-}
-
-.logo-placeholder {
-    width: 180px;
-    height: 100px;
-    border: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #999;
-    font-size: 14px;
-    padding: 10px;
 }
 
 .center-logo {

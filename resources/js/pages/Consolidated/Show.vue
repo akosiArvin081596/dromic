@@ -63,6 +63,9 @@ useEcho(channel, 'ReportValidated', (e: { report: { incident_id: number } }) => 
 const selectedIndex = ref(props.cutoffs.length > 0 ? props.cutoffs.length - 1 : 0);
 const selectedCutoff = computed(() => props.cutoffs[selectedIndex.value] ?? null);
 
+const isRegional = userRole === 'regional' || userRole === 'regional_director';
+const reportMode = ref<'full' | 'summary'>('full');
+
 function formatDate(date: string): string {
     return new Date(date + 'T00:00:00').toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -108,6 +111,37 @@ function printReport() {
                 >
                     Print Report
                 </button>
+            </div>
+
+            <!-- Report Mode Toggle (Regional users only) -->
+            <div v-if="isRegional && cutoffs.length > 0" class="mb-6 flex items-center gap-2">
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Report Version:</span>
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button
+                        type="button"
+                        class="rounded-l-md border px-4 py-2 text-sm font-medium transition-colors"
+                        :class="
+                            reportMode === 'full'
+                                ? 'border-indigo-600 bg-indigo-600 text-white'
+                                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
+                        "
+                        @click="reportMode = 'full'"
+                    >
+                        Full Report
+                    </button>
+                    <button
+                        type="button"
+                        class="-ml-px rounded-r-md border px-4 py-2 text-sm font-medium transition-colors"
+                        :class="
+                            reportMode === 'summary'
+                                ? 'border-indigo-600 bg-indigo-600 text-white'
+                                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
+                        "
+                        @click="reportMode = 'summary'"
+                    >
+                        Summary Report
+                    </button>
+                </div>
             </div>
 
             <!-- Incident Info -->
@@ -192,9 +226,7 @@ function printReport() {
                                         </div>
                                     </div>
                                     <div class="rounded-lg bg-indigo-50 px-3 py-2.5 text-center dark:bg-indigo-900/20">
-                                        <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">
-                                            LGUs
-                                        </div>
+                                        <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase dark:text-indigo-400">LGUs</div>
                                         <div class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
                                             {{ selectedCutoff.reports.length }}
                                         </div>
@@ -733,6 +765,7 @@ function printReport() {
                     :cutoff-time="selectedCutoff.time"
                     :show-province="showProvince"
                     :dromic-logo-url="dromicLogoUrl"
+                    :mode="isRegional ? reportMode : 'full'"
                 />
             </div>
         </div>
