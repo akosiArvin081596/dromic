@@ -17,17 +17,27 @@ class DisplayBoardController extends Controller
         $user = $request->user();
 
         $incidentsQuery = Incident::query()
-            ->where('status', 'active')
+            ->active()
             ->orderByDesc('created_at');
 
         if ($user->isRegional()) {
-            $incidentsQuery->whereHas('cityMunicipalities', function ($q) use ($user) {
-                $q->whereHas('province', fn ($pq) => $pq->where('region_id', $user->region_id));
+            $incidentsQuery->where(function ($q) use ($user) {
+                $q->whereHas('cityMunicipalities', function ($cm) use ($user) {
+                    $cm->whereHas('province', fn ($pq) => $pq->where('region_id', $user->region_id));
+                })->orWhere(function ($q) use ($user) {
+                    $q->doesntHave('cityMunicipalities')
+                        ->whereHas('creator', fn ($cq) => $cq->where('region_id', $user->region_id));
+                });
             });
         } elseif ($user->isProvincial()) {
-            $incidentsQuery->whereHas('cityMunicipalities', fn ($q) => $q->where('province_id', $user->province_id));
-        } elseif ($user->isLgu()) {
-            $incidentsQuery->forCityMunicipality($user->city_municipality_id);
+            $incidentsQuery->where(function ($q) use ($user) {
+                $q->whereHas('cityMunicipalities', function ($cm) use ($user) {
+                    $cm->where('province_id', $user->province_id);
+                })->orWhere(function ($q) use ($user) {
+                    $q->doesntHave('cityMunicipalities')
+                        ->whereHas('creator', fn ($cq) => $cq->where('region_id', $user->province?->region_id));
+                });
+            });
         }
 
         $incidents = $incidentsQuery->get(['id', 'name', 'display_name']);
