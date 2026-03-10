@@ -224,15 +224,15 @@ function deliveryBadgeClass(percent: number): string {
                                 </span>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-indigo-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-indigo-400 uppercase">Families</div>
+                                <div class="rounded-lg bg-indigo-50 px-3 py-2.5 text-center">
+                                    <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase">Families</div>
                                     <div class="mt-1 text-2xl font-bold text-indigo-900">
                                         {{ dashboardData.impact.affected_families.toLocaleString() }}
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
-                                    <div class="mt-1 text-2xl font-bold text-slate-900">
+                                <div class="rounded-lg bg-indigo-50 px-3 py-2.5 text-center">
+                                    <div class="text-[10px] font-semibold tracking-wide text-indigo-600 uppercase">Persons</div>
+                                    <div class="mt-1 text-2xl font-bold text-indigo-900">
                                         {{ dashboardData.impact.affected_persons.toLocaleString() }}
                                     </div>
                                 </div>
