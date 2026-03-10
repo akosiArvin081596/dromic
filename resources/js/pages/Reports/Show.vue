@@ -76,10 +76,12 @@ function reportTypeLabel(type: string, seq: number): string {
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 print:hidden">
             <div class="mb-6 flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"
+                    <Link
+                        :href="`/incidents/${incident.id}`"
+                        class="text-sm text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
                         >&larr; Back to Incident</Link
                     >
-                    <h1 class="text-2xl font-bold text-slate-900">{{ report.report_number }}</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ report.report_number }}</h1>
                     <span
                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1"
                         :class="{
@@ -106,7 +108,7 @@ function reportTypeLabel(type: string, seq: number): string {
                     <Link
                         v-if="canEdit"
                         :href="`/incidents/${incident.id}/reports/${report.id}/edit`"
-                        class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                        class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                         Edit
                     </Link>
@@ -148,25 +150,25 @@ function reportTypeLabel(type: string, seq: number): string {
 
         <!-- Print Template -->
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 print:max-w-none print:p-0">
-            <div class="border border-slate-200 bg-white p-8 print:border-none print:shadow-none">
+            <div class="border border-slate-200 bg-white p-8 dark:border-slate-700 dark:bg-slate-800 print:border-none print:shadow-none">
                 <PrintTemplate :report="report" :lgu-settings="lguSettings" :dromic-logo-url="dromicLogoUrl" />
             </div>
         </div>
         <!-- Return Modal -->
         <Teleport to="body">
             <div v-if="showReturnModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="showReturnModal = false">
-                <div class="w-full max-w-md bg-white p-6 shadow-xl">
-                    <h3 class="text-lg font-semibold text-slate-900">Return Report</h3>
-                    <p class="mt-1 text-sm text-slate-500">Provide a reason for returning this report to the LGU.</p>
+                <div class="w-full max-w-md bg-white p-6 shadow-xl dark:bg-slate-800">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Return Report</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Provide a reason for returning this report to the LGU.</p>
                     <textarea
                         v-model="returnReason"
                         rows="4"
-                        class="mt-4 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+                        class="mt-4 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
                         placeholder="Reason for returning..."
                     />
                     <div class="mt-4 flex justify-end space-x-3">
                         <button
-                            class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                            class="border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
                             @click="showReturnModal = false"
                         >
                             Cancel

@@ -78,10 +78,12 @@ function reportTypeBadge(type: string, seq: number): string {
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-6 flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"
+                    <Link
+                        :href="`/incidents/${incident.id}`"
+                        class="text-sm text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
                         >&larr; Back to Incident</Link
                     >
-                    <h1 class="text-2xl font-bold text-slate-900">Reports: {{ incident.display_name ?? incident.name }}</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Reports: {{ incident.display_name ?? incident.name }}</h1>
                 </div>
             </div>
 
@@ -89,7 +91,7 @@ function reportTypeBadge(type: string, seq: number): string {
             <div v-if="!isRegional" class="mb-6 flex flex-col gap-4 sm:flex-row">
                 <select
                     v-model="status"
-                    class="block border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    class="block rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
                 >
                     <option value="">All Statuses</option>
                     <option value="draft">Draft</option>
@@ -100,24 +102,36 @@ function reportTypeBadge(type: string, seq: number): string {
             </div>
 
             <!-- Table -->
-            <div class="overflow-hidden border border-slate-200">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead class="bg-slate-50">
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                    <thead class="bg-slate-50/50 dark:bg-slate-900/50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Report #</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Location</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Report #
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Type
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Location
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Date
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200 bg-white">
-                        <tr v-for="report in reports.data" :key="report.id" class="transition-colors hover:bg-slate-50/50">
-                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
+                    <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-700 dark:bg-slate-800">
+                        <tr v-for="report in reports.data" :key="report.id" class="transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50">
+                            <td class="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900 dark:text-slate-100">
                                 <Link
                                     :href="`/incidents/${incident.id}/reports/${report.id}`"
-                                    class="text-indigo-600 transition-colors hover:text-indigo-800"
+                                    class="text-indigo-600 transition-colors hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 >
                                     {{ report.report_number }}
                                 </Link>
@@ -134,13 +148,13 @@ function reportTypeBadge(type: string, seq: number): string {
                                     {{ reportTypeBadge(report.report_type, report.sequence_number) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">
                                 {{ report.city_municipality?.name }}
-                                <span v-if="report.city_municipality?.province" class="text-slate-400"
+                                <span v-if="report.city_municipality?.province" class="text-slate-400 dark:text-slate-500"
                                     >, {{ report.city_municipality.province.name }}</span
                                 >
                             </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">{{ report.report_date }}</td>
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500 dark:text-slate-400">{{ report.report_date }}</td>
                             <td class="px-6 py-4 text-sm whitespace-nowrap">
                                 <span
                                     class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold"
@@ -158,20 +172,20 @@ function reportTypeBadge(type: string, seq: number): string {
                             <td class="px-6 py-4 text-right text-sm whitespace-nowrap">
                                 <Link
                                     :href="`/incidents/${incident.id}/reports/${report.id}`"
-                                    class="mr-3 text-indigo-600 transition-colors hover:text-indigo-800"
+                                    class="mr-3 text-indigo-600 transition-colors hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 >
                                     View
                                 </Link>
                                 <Link
                                     v-if="report.status === 'draft' || report.status === 'returned'"
                                     :href="`/incidents/${incident.id}/reports/${report.id}/edit`"
-                                    class="mr-3 text-indigo-600 transition-colors hover:text-indigo-800"
+                                    class="mr-3 text-indigo-600 transition-colors hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
                                 >
                                     Edit
                                 </Link>
                                 <button
                                     v-if="report.status === 'draft'"
-                                    class="text-rose-600 transition-colors hover:text-rose-800"
+                                    class="text-rose-600 transition-colors hover:text-rose-800 dark:text-rose-400"
                                     @click="deleteReport(report)"
                                 >
                                     Delete
@@ -179,24 +193,31 @@ function reportTypeBadge(type: string, seq: number): string {
                             </td>
                         </tr>
                         <tr v-if="reports.data.length === 0">
-                            <td colspan="6" class="px-6 py-8 text-center text-sm text-slate-500">No reports found.</td>
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-slate-500 dark:text-slate-400">No reports found.</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
 
-            <!-- Pagination -->
-            <div v-if="reports.last_page > 1" class="mt-4 flex justify-center space-x-1">
-                <template v-for="link in reports.links" :key="link.label">
-                    <a
-                        v-if="link.url"
-                        :href="link.url"
-                        class="px-3 py-2 text-sm transition-colors"
-                        :class="link.active ? 'bg-indigo-600 text-white' : 'bg-white text-slate-700 hover:bg-slate-100'"
-                        v-html="link.label"
-                    />
-                    <span v-else class="px-3 py-2 text-sm text-slate-400" v-html="link.label" />
-                </template>
+                <!-- Pagination -->
+                <div v-if="reports.last_page > 1" class="flex items-center justify-between border-t border-slate-200 px-6 py-3 dark:border-slate-700">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Page {{ reports.current_page }} of {{ reports.last_page }}</p>
+                    <div class="flex space-x-1">
+                        <template v-for="link in reports.links" :key="link.label">
+                            <a
+                                v-if="link.url"
+                                :href="link.url"
+                                class="rounded-lg px-3 py-1.5 text-sm transition-colors"
+                                :class="
+                                    link.active
+                                        ? 'bg-indigo-600 text-white shadow-sm'
+                                        : 'bg-white text-slate-700 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300'
+                                "
+                                v-html="link.label"
+                            />
+                            <span v-else class="rounded-lg px-3 py-1.5 text-sm text-slate-300 dark:text-slate-600" v-html="link.label" />
+                        </template>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>

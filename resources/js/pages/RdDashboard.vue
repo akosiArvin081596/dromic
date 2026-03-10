@@ -247,9 +247,8 @@ function deliveryBadgeClass(percent: number): string {
                                 </div>
                             </div>
                             <div class="mt-3">
-                                <div class="flex items-center justify-between text-[11px] text-slate-500">
+                                <div class="text-[11px] text-slate-500">
                                     <span>{{ dashboardData.impact.closed_ec_percent }}% closed</span>
-                                    <span>{{ dashboardData.impact.total_evacuation_centers.toLocaleString() }} total</span>
                                 </div>
                                 <div class="mt-1 h-2 w-full overflow-hidden rounded-full bg-slate-200">
                                     <div

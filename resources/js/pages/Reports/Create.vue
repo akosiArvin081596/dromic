@@ -64,16 +64,18 @@ function reportTypeLabel(type: string, seq: number): string {
         <Head :title="`Create Report - ${incident.display_name ?? incident.name}`" />
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-2 flex items-center space-x-4">
-                <Link :href="`/incidents/${incident.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700"
+                <Link
+                    :href="`/incidents/${incident.id}`"
+                    class="text-sm text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
                     >&larr; Back to Incident</Link
                 >
             </div>
 
             <div class="mb-6">
-                <h1 class="text-2xl font-bold text-slate-900">
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {{ reportTypeLabel(reportType, sequenceNumber) }}
                 </h1>
-                <p class="mt-1 text-sm text-slate-500">
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Incident: <span class="font-medium">{{ incident.display_name ?? incident.name }}</span> &middot; Report #:
                     <span class="font-medium">{{ reportNumber }}</span>
                 </p>

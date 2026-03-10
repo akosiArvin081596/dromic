@@ -53,11 +53,14 @@ const initialData = {
         <Head :title="`Edit ${report.report_number}`" />
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <div class="mb-2 flex items-center space-x-4">
-                <Link :href="`/incidents/${incident.id}/reports/${report.id}`" class="text-sm text-slate-500 transition-colors hover:text-slate-700">
+                <Link
+                    :href="`/incidents/${incident.id}/reports/${report.id}`"
+                    class="text-sm text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                >
                     &larr; Back to Report
                 </Link>
             </div>
-            <h1 class="mb-6 text-2xl font-bold text-slate-900">Edit Report: {{ report.report_number }}</h1>
+            <h1 class="mb-6 text-2xl font-bold text-slate-900 dark:text-slate-100">Edit Report: {{ report.report_number }}</h1>
             <ReportForm
                 :provinces="provinces"
                 :initial-data="initialData"
