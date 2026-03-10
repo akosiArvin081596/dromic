@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { useEcho } from '@laravel/echo-vue';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type { Incident } from '@/types/incident';
 import type { Report } from '@/types/report';
@@ -105,15 +106,25 @@ watch(
     { immediate: true },
 );
 
-// Polling: reload data every 15 seconds
-let pollInterval: ReturnType<typeof setInterval>;
+// Data reload helper
 const lastRefresh = ref(new Date());
+function reloadData(): void {
+    router.reload({ only: ['cutoffs', 'incidents'] });
+    lastRefresh.value = new Date();
+}
+
+// WebSocket listeners for real-time updates
+const page = usePage();
+const channel = `App.Models.User.${page.props.auth.user.id}`;
+useEcho(channel, 'ReportSubmitted', reloadData);
+useEcho(channel, 'ReportValidated', reloadData);
+useEcho(channel, 'IncidentCreated', reloadData);
+
+// Fallback polling: reload data every 60 seconds in case WebSocket drops
+let pollInterval: ReturnType<typeof setInterval>;
 onMounted(() => {
     clockInterval = setInterval(() => (now.value = new Date()), 1000);
-    pollInterval = setInterval(() => {
-        router.reload({ only: ['cutoffs'] });
-        lastRefresh.value = new Date();
-    }, 15000);
+    pollInterval = setInterval(reloadData, 60000);
 });
 onUnmounted(() => {
     clearInterval(pollInterval);
