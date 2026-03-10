@@ -25,6 +25,7 @@ const props = defineProps<{
     filters: {
         search?: string;
         status?: string;
+        type?: string;
     };
     incidentCounts: {
         total: number;
@@ -62,15 +63,29 @@ const locationLabel = computed(() => {
 
 const search = ref(props.filters.search ?? '');
 const status = ref(props.filters.status ?? '');
+const type = ref(props.filters.type ?? '');
 
 let debounceTimer: ReturnType<typeof setTimeout>;
+
+function buildFilterParams() {
+    return {
+        search: search.value || undefined,
+        status: status.value || undefined,
+        type: type.value || undefined,
+    };
+}
 
 watch([search, status], () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-        router.get('/incidents', { search: search.value || undefined, status: status.value || undefined }, { preserveState: true, replace: true });
+        router.get('/incidents', buildFilterParams(), { preserveState: true, replace: true });
     }, 300);
 });
+
+function setType(value: string) {
+    type.value = value;
+    router.get('/incidents', buildFilterParams(), { preserveState: true, replace: true });
+}
 
 function statusBadgeClass(incidentStatus: string): string {
     return incidentStatus === 'active'
@@ -260,19 +275,30 @@ function formatDate(dateString: string): string {
 
             <!-- Incidents Table Card -->
             <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                <!-- Card Header with Filters -->
-                <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <h2 class="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-900 uppercase dark:text-slate-100">
-                            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                                />
-                            </svg>
-                            All Incidents
-                        </h2>
+                <!-- Card Header with Tabs and Filters -->
+                <div class="border-b border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col gap-4 px-6 pt-4 pb-0 sm:flex-row sm:items-center sm:justify-between">
+                        <!-- Type Tabs -->
+                        <div class="flex gap-1">
+                            <button
+                                v-for="tab in [
+                                    { value: '', label: 'All' },
+                                    { value: 'local', label: 'Local' },
+                                    { value: 'massive', label: 'Massive' },
+                                ]"
+                                :key="tab.value"
+                                @click="setType(tab.value)"
+                                class="rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                                :class="
+                                    type === tab.value
+                                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300'
+                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-300'
+                                "
+                            >
+                                {{ tab.label }}
+                            </button>
+                        </div>
+                        <!-- Search & Status Filter -->
                         <div class="flex flex-col gap-3 sm:flex-row">
                             <div class="relative">
                                 <svg
@@ -305,6 +331,7 @@ function formatDate(dateString: string): string {
                             </select>
                         </div>
                     </div>
+                    <div class="h-4"></div>
                 </div>
 
                 <!-- Table -->

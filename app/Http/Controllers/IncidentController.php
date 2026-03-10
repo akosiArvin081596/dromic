@@ -52,6 +52,10 @@ class IncidentController extends Controller
             'total_reports' => (clone $statsQuery)->withCount('reports')->get()->sum('reports_count'),
         ];
 
+        $query->when($request->input('type'), function ($q, $type) {
+            $q->where('type', $type);
+        });
+
         $query->when($request->input('search'), function ($q, $search) {
             $q->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -77,7 +81,7 @@ class IncidentController extends Controller
 
         return Inertia::render('Incidents/Index', [
             'incidents' => $incidents,
-            'filters' => $request->only(['search', 'status']),
+            'filters' => $request->only(['search', 'status', 'type']),
             'incidentCounts' => $incidentCounts,
             'canCreate' => $user->can('create', Incident::class),
             'returnedReports' => $returnedReports,
