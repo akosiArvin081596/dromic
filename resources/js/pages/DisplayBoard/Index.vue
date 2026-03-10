@@ -91,14 +91,48 @@ function handleFullscreenChange(): void {
 
 onMounted(() => document.addEventListener('fullscreenchange', handleFullscreenChange));
 onUnmounted(() => document.removeEventListener('fullscreenchange', handleFullscreenChange));
+
+// Auto-hide header: hidden after 3s of no mouse near top, shows when cursor enters top 48px
+const headerVisible = ref(true);
+let hideTimeout: ReturnType<typeof setTimeout>;
+
+function scheduleHide(): void {
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+        headerVisible.value = false;
+    }, 3000);
+}
+
+function handleMouseMove(e: MouseEvent): void {
+    if (e.clientY <= 48) {
+        clearTimeout(hideTimeout);
+        headerVisible.value = true;
+    } else if (headerVisible.value) {
+        scheduleHide();
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    scheduleHide();
+});
+onUnmounted(() => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    clearTimeout(hideTimeout);
+});
 </script>
 
 <template>
     <Head :title="`Display Board${selectedIncident ? ` - ${selectedIncident.display_name ?? selectedIncident.name}` : ''}`" />
 
-    <div class="flex min-h-screen flex-col bg-slate-900 text-white">
-        <!-- Header Bar -->
-        <header class="flex shrink-0 items-center justify-between border-b border-slate-700 bg-slate-800 px-6 py-3">
+    <div class="flex h-screen flex-col overflow-hidden bg-slate-900 text-white">
+        <!-- Header Bar (auto-hide) -->
+        <header
+            class="absolute top-0 right-0 left-0 z-10 flex items-center justify-between border-b border-slate-700 bg-slate-800 px-6 py-3 transition-transform duration-300"
+            :class="headerVisible ? 'translate-y-0' : '-translate-y-full'"
+            @mouseenter="clearTimeout(hideTimeout); headerVisible = true"
+            @mouseleave="scheduleHide()"
+        >
             <div class="flex items-center gap-4">
                 <h1 class="text-lg font-bold tracking-wide text-white uppercase">DROMIC Display Board</h1>
                 <select
@@ -141,7 +175,7 @@ onUnmounted(() => document.removeEventListener('fullscreenchange', handleFullscr
         </header>
 
         <!-- Cards -->
-        <main class="flex-1 overflow-auto p-6">
+        <main class="flex flex-1 flex-col overflow-auto p-6">
             <template v-if="!selectedIncident">
                 <div class="flex h-full items-center justify-center">
                     <p class="text-lg text-slate-500">Select an incident to display data.</p>
