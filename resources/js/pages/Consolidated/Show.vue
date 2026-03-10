@@ -240,6 +240,34 @@ function printReport() {
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Closed EC progress bar -->
+                                <div v-if="selectedCutoff.totals.inside_ec_count_cum > 0" class="mt-3">
+                                    <div class="mb-1 flex items-center justify-between text-[10px]">
+                                        <span class="font-medium text-slate-400">Closed ECs</span>
+                                        <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                                            {{
+                                                Math.round(
+                                                    ((selectedCutoff.totals.inside_ec_count_cum - selectedCutoff.totals.inside_ec_count_now) /
+                                                        selectedCutoff.totals.inside_ec_count_cum) *
+                                                        100,
+                                                )
+                                            }}%
+                                        </span>
+                                    </div>
+                                    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                                        <div
+                                            class="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                                            :style="{
+                                                width:
+                                                    Math.round(
+                                                        ((selectedCutoff.totals.inside_ec_count_cum - selectedCutoff.totals.inside_ec_count_now) /
+                                                            selectedCutoff.totals.inside_ec_count_cum) *
+                                                            100,
+                                                    ) + '%',
+                                            }"
+                                        ></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

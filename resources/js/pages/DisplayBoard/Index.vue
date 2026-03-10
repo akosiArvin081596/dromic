@@ -189,8 +189,9 @@ onUnmounted(() => {
             </template>
 
             <template v-else>
+                <div class="flex h-full flex-col gap-4">
                 <!-- Row 1: Total Affected + Evacuation Centers -->
-                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                     <!-- Total Affected -->
                     <div class="rounded-xl border border-slate-700 bg-slate-800 p-5">
                         <div class="flex items-center justify-between">
@@ -255,11 +256,39 @@ onUnmounted(() => {
                                 </div>
                             </div>
                         </div>
+                        <!-- Closed EC progress bar -->
+                        <div v-if="latestCutoff.totals.inside_ec_count_cum > 0" class="mt-3">
+                            <div class="mb-1 flex items-center justify-between text-[10px]">
+                                <span class="font-medium text-slate-400">Closed ECs</span>
+                                <span class="font-bold text-emerald-400">
+                                    {{
+                                        Math.round(
+                                            ((latestCutoff.totals.inside_ec_count_cum - latestCutoff.totals.inside_ec_count_now) /
+                                                latestCutoff.totals.inside_ec_count_cum) *
+                                                100,
+                                        )
+                                    }}%
+                                </span>
+                            </div>
+                            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-700">
+                                <div
+                                    class="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                                    :style="{
+                                        width:
+                                            Math.round(
+                                                ((latestCutoff.totals.inside_ec_count_cum - latestCutoff.totals.inside_ec_count_now) /
+                                                    latestCutoff.totals.inside_ec_count_cum) *
+                                                    100,
+                                            ) + '%',
+                                    }"
+                                ></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Row 2: Inside EC + Outside EC -->
-                <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                     <!-- Inside EC -->
                     <div class="rounded-xl border border-slate-700 bg-slate-800 p-5">
                         <div class="flex items-center justify-between">
@@ -367,7 +396,7 @@ onUnmounted(() => {
                 </div>
 
                 <!-- Row 3: Total Displaced + Non-IDPs -->
-                <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                     <!-- Total Displaced Population -->
                     <div class="rounded-xl border border-slate-700 bg-slate-800 p-5">
                         <div class="flex items-center justify-between">
@@ -468,7 +497,7 @@ onUnmounted(() => {
                 </div>
 
                 <!-- Row 4: Damaged Houses + Casualties + Infra/Agri -->
-                <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+                <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-3">
                     <!-- Damaged Houses -->
                     <div class="rounded-xl border border-slate-700 bg-slate-800 p-5">
                         <div class="flex items-center justify-between">
@@ -575,7 +604,7 @@ onUnmounted(() => {
                 <!-- Row 5: Pre-emptive & Stranded (conditional) -->
                 <div
                     v-if="latestCutoff.totals.preemptive_families > 0 || latestCutoff.totals.stranded_passengers > 0"
-                    class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"
+                    class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2"
                 >
                     <div class="rounded-xl border border-slate-700 bg-slate-800 p-5">
                         <div class="flex items-center justify-between">
@@ -627,6 +656,7 @@ onUnmounted(() => {
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </template>
         </main>
