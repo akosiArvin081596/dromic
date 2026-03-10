@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { useEcho } from '@laravel/echo-vue';
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { Incident } from '@/types/incident';
 import { pluralize } from '@/utils/pluralize';
@@ -74,10 +74,27 @@ const props = defineProps<{
 const page = usePage();
 const channel = `App.Models.User.${page.props.auth.user.id}`;
 
-useEcho(channel, 'IncidentCreated', () => router.reload({ only: ['incidents'] }));
-useEcho(channel, 'ReportValidated', () => router.reload({ only: ['dashboardData'] }));
-useEcho(channel, 'RequestLetterApproved', () => router.reload({ only: ['dashboardData'] }));
-useEcho(channel, 'DeliveryRecorded', () => router.reload({ only: ['dashboardData'] }));
+let reloadTimeout: ReturnType<typeof setTimeout> | null = null;
+let pendingProps = new Set<string>();
+
+function debouncedReload(...props: string[]) {
+    props.forEach((p) => pendingProps.add(p));
+    if (reloadTimeout) clearTimeout(reloadTimeout);
+    reloadTimeout = setTimeout(() => {
+        router.reload({ only: [...pendingProps] });
+        pendingProps.clear();
+        reloadTimeout = null;
+    }, 500);
+}
+
+onUnmounted(() => {
+    if (reloadTimeout) clearTimeout(reloadTimeout);
+});
+
+useEcho(channel, 'IncidentCreated', () => debouncedReload('incidents'));
+useEcho(channel, 'ReportValidated', () => debouncedReload('dashboardData'));
+useEcho(channel, 'RequestLetterApproved', () => debouncedReload('dashboardData'));
+useEcho(channel, 'DeliveryRecorded', () => debouncedReload('dashboardData'));
 
 const selectedId = ref(props.selectedIncidentId);
 const expandedProvinces = ref<Set<number>>(new Set());

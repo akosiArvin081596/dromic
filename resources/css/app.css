@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+html {
+    overscroll-behavior-y: contain;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
