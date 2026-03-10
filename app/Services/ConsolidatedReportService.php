@@ -50,7 +50,7 @@ class ConsolidatedReportService
 
         // Determine unique cut-off periods sorted chronologically
         // report_date is cast to Carbon, so use toDateString() for a clean Y-m-d key
-        $cutoffKey = fn (Report $r): string => $r->report_date->toDateString() . '|' . $r->report_time;
+        $cutoffKey = fn (Report $r): string => $r->report_date->toDateString().'|'.$r->report_time;
 
         $cutoffKeys = $allReports
             ->map($cutoffKey)
@@ -70,7 +70,7 @@ class ConsolidatedReportService
         $labels = ['Initial Report'];
         $prCounter = 1;
         foreach ($cutoffKeys->slice(1) as $ignored) {
-            $labels[] = 'Progress Report No. ' . $prCounter++;
+            $labels[] = 'Progress Report No. '.$prCounter++;
         }
 
         /** @var array<int, Report|null> $carryForward latest report per LGU across previous cut-offs */
@@ -150,8 +150,7 @@ class ConsolidatedReportService
     }
 
     /**
-     * @param Collection<int, Report> $reports
-     *
+     * @param  Collection<int, Report>  $reports
      * @return array<string, mixed>
      */
     private function aggregateTotals(Collection $reports): array
@@ -179,6 +178,8 @@ class ConsolidatedReportService
         $totalStrandedPassengers = 0;
         $totalPreemptiveFamilies = 0;
         $totalPreemptivePersons = 0;
+        $totalInsideECCountCum = 0;
+        $totalInsideECCountNow = 0;
 
         foreach ($reports as $report) {
             foreach ($report->affected_areas ?? [] as $area) {
@@ -191,6 +192,10 @@ class ConsolidatedReportService
                 $totalInsideECFamiliesNow += $ec['families_now'] ?? 0;
                 $totalInsideECPersonsCum += $ec['persons_cum'] ?? 0;
                 $totalInsideECPersonsNow += $ec['persons_now'] ?? 0;
+                $totalInsideECCountCum++;
+                if (($ec['families_now'] ?? 0) > 0 || ($ec['persons_now'] ?? 0) > 0) {
+                    $totalInsideECCountNow++;
+                }
             }
 
             foreach ($report->outside_evacuation_centers ?? [] as $ec) {
@@ -257,6 +262,8 @@ class ConsolidatedReportService
             'stranded_passengers' => $totalStrandedPassengers,
             'preemptive_families' => $totalPreemptiveFamilies,
             'preemptive_persons' => $totalPreemptivePersons,
+            'inside_ec_count_cum' => $totalInsideECCountCum,
+            'inside_ec_count_now' => $totalInsideECCountNow,
         ];
     }
 }

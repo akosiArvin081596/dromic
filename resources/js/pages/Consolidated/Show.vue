@@ -31,6 +31,8 @@ type ConsolidatedTotals = {
     stranded_passengers: number;
     preemptive_families: number;
     preemptive_persons: number;
+    inside_ec_count_cum: number;
+    inside_ec_count_now: number;
 };
 
 type CutoffReport = Report & { carried_forward?: boolean };
@@ -215,18 +217,18 @@ function printReport() {
                                 <div class="mt-3 grid grid-cols-2 gap-3">
                                     <div class="rounded-lg bg-emerald-50 px-3 py-2.5 text-center dark:bg-emerald-900/20">
                                         <div class="text-[10px] font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
-                                            Inside EC
+                                            CUM
                                         </div>
                                         <div class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
-                                            {{ selectedCutoff.reports.length }}
+                                            {{ selectedCutoff.totals.inside_ec_count_cum.toLocaleString() }}
                                         </div>
                                     </div>
                                     <div class="rounded-lg bg-emerald-50 px-3 py-2.5 text-center dark:bg-emerald-900/20">
                                         <div class="text-[10px] font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
-                                            LGUs Reporting
+                                            NOW
                                         </div>
                                         <div class="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100">
-                                            {{ selectedCutoff.reports.filter((r: CutoffReport) => !r.carried_forward).length }}
+                                            {{ selectedCutoff.totals.inside_ec_count_now.toLocaleString() }}
                                         </div>
                                     </div>
                                 </div>
