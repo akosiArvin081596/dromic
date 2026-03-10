@@ -12,6 +12,7 @@ enum UserType: string
     case Pswdo = 'pswdo';
     case Drims = 'drims';
     case Rros = 'rros';
+    case DivisionChief = 'division_chief';
 
     public function label(): string
     {
@@ -24,6 +25,7 @@ enum UserType: string
             self::Pswdo => 'PSWDO',
             self::Drims => 'DRIMS',
             self::Rros => 'RROS',
+            self::DivisionChief => 'Division Chief',
         };
     }
 
@@ -33,7 +35,7 @@ enum UserType: string
         return match ($role) {
             UserRole::Lgu => [self::Cmswdo, self::DswdLgu, self::Ldrrmo],
             UserRole::Provincial => [self::ProvincialDswd, self::Pdrrmo, self::Pswdo],
-            UserRole::Regional => [self::Drims, self::Rros],
+            UserRole::Regional => [self::Drims, self::Rros, self::DivisionChief],
             default => [],
         };
     }

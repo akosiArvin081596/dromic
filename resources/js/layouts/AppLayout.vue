@@ -53,6 +53,7 @@ const user = computed(() => page.props.auth.user);
 const viewOnlyTypes: Record<string, string[]> = {
     lgu: ['dswd_lgu', 'ldrrmo'],
     provincial: ['pdrrmo', 'pswdo'],
+    regional: ['division_chief'],
 };
 const isRd = computed(() => user.value.role === 'regional_director');
 const isViewOnly = computed(() => {
