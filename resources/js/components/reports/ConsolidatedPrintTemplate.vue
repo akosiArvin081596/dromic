@@ -161,7 +161,7 @@ const groupedPreemptiveEvacuations = computed(() => groupByProvince<PreemptiveEv
 const groupedGapsChallenges = computed(() => groupByProvince<GapChallenge>('gaps_challenges'));
 
 // --- Province-level summaries for summary mode ---
-type ProvinceSummaryAffected = { province: string; barangay_count: number; families: number; persons: number };
+type ProvinceSummaryAffected = { province: string; lgu_count: number; families: number; persons: number };
 type ProvinceSummaryEC = { province: string; families_cum: number; families_now: number; persons_cum: number; persons_now: number; ec_count: number };
 type ProvinceSummaryNonIdp = { province: string; families_cum: number; persons_cum: number };
 type ProvinceSummaryDamaged = { province: string; totally_damaged: number; partially_damaged: number; estimated_cost: number };
@@ -169,7 +169,7 @@ type ProvinceSummaryDamaged = { province: string; totally_damaged: number; parti
 const provinceSummaryAffectedAreas = computed<ProvinceSummaryAffected[]>(() => {
     return groupedAffectedAreas.value.map((g) => ({
         province: g.province,
-        barangay_count: g.rows.length,
+        lgu_count: new Set(g.rows.map((r) => r.lgu)).size,
         families: sumNum(g.rows, 'families'),
         persons: sumNum(g.rows, 'persons'),
     }));
@@ -346,7 +346,7 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                     <thead>
                                         <tr>
                                             <th rowspan="2">Province</th>
-                                            <th rowspan="2">No. of Barangays</th>
+                                            <th rowspan="2">No. of LGUs</th>
                                             <th colspan="2">Number of Affected</th>
                                         </tr>
                                         <tr>
@@ -360,7 +360,7 @@ function sumAllSectorField(field: keyof AgeGenderBreakdown): number {
                                         </tr>
                                         <tr v-for="(row, idx) in provinceSummaryAffectedAreas" :key="idx">
                                             <td>{{ row.province }}</td>
-                                            <td>{{ row.barangay_count }}</td>
+                                            <td>{{ row.lgu_count }}</td>
                                             <td>{{ row.families.toLocaleString() }}</td>
                                             <td>{{ row.persons.toLocaleString() }}</td>
                                         </tr>
