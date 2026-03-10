@@ -241,8 +241,18 @@ const closedPercent = computed(() => {
             </div>
         </header>
 
+        <!-- Incident Title (always visible) -->
+        <div v-if="selectedIncident" class="relative shrink-0 pt-3 text-center">
+            <h2 class="text-lg font-bold tracking-wider text-white uppercase">
+                {{ selectedIncident.display_name ?? selectedIncident.name }}
+            </h2>
+            <div v-if="latestCutoff" class="text-[10px] tracking-wide text-slate-500">
+                {{ latestCutoff.label }} &middot; {{ formatDate(latestCutoff.date) }}, {{ latestCutoff.time }}
+            </div>
+        </div>
+
         <!-- Cards -->
-        <main class="relative flex flex-1 flex-col overflow-auto p-4">
+        <main class="relative flex flex-1 flex-col overflow-auto p-4 pt-2">
             <template v-if="!selectedIncident">
                 <div class="flex h-full items-center justify-center">
                     <p class="animate-pulse text-sm tracking-wider text-slate-600 uppercase">Select an incident to display data</p>
