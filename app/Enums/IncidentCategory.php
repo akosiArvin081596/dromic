@@ -7,6 +7,7 @@ enum IncidentCategory: string
     case Fire = 'fire';
     case Flood = 'flood';
     case TropicalCyclone = 'tropical_cyclone';
+    case TroughOfLpa = 'trough_of_lpa';
     case Shearline = 'shearline';
     case Earthquake = 'earthquake';
     case Landslide = 'landslide';
@@ -26,6 +27,7 @@ enum IncidentCategory: string
             self::Fire => 'Fire',
             self::Flood => 'Flood',
             self::TropicalCyclone => 'Tropical Cyclone',
+            self::TroughOfLpa => 'Trough of LPA',
             self::Shearline => 'Shearline',
             self::Earthquake => 'Earthquake',
             self::Landslide => 'Landslide',
