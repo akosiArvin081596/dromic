@@ -160,38 +160,109 @@ function printReport() {
                                 {{ pluralize(selectedCutoff.totals.affected_persons, 'person', 'persons') }}
                             </div>
                         </div>
-                        <div class="border border-l-4 border-slate-200 border-l-sky-500 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
-                            <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Inside EC</div>
+                        <div class="border border-l-4 border-slate-200 border-l-purple-500 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                            <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Displaced (Inside + Outside EC)</div>
                             <div class="mt-1 text-sm text-slate-700 dark:text-slate-300">
                                 <span class="font-semibold">CUM:</span>
-                                {{ selectedCutoff.totals.inside_ec_families_cum.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.inside_ec_families_cum, 'family', 'families') }} /
-                                {{ selectedCutoff.totals.inside_ec_persons_cum.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.inside_ec_persons_cum, 'person', 'persons') }}
+                                {{ (selectedCutoff.totals.inside_ec_families_cum + selectedCutoff.totals.outside_ec_families_cum).toLocaleString() }}
+                                {{
+                                    pluralize(
+                                        selectedCutoff.totals.inside_ec_families_cum + selectedCutoff.totals.outside_ec_families_cum,
+                                        'family',
+                                        'families',
+                                    )
+                                }}
+                                /
+                                {{ (selectedCutoff.totals.inside_ec_persons_cum + selectedCutoff.totals.outside_ec_persons_cum).toLocaleString() }}
+                                {{
+                                    pluralize(
+                                        selectedCutoff.totals.inside_ec_persons_cum + selectedCutoff.totals.outside_ec_persons_cum,
+                                        'person',
+                                        'persons',
+                                    )
+                                }}
                             </div>
                             <div class="text-sm text-slate-700 dark:text-slate-300">
                                 <span class="font-semibold">NOW:</span>
-                                {{ selectedCutoff.totals.inside_ec_families_now.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.inside_ec_families_now, 'family', 'families') }} /
-                                {{ selectedCutoff.totals.inside_ec_persons_now.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.inside_ec_persons_now, 'person', 'persons') }}
+                                {{ (selectedCutoff.totals.inside_ec_families_now + selectedCutoff.totals.outside_ec_families_now).toLocaleString() }}
+                                {{
+                                    pluralize(
+                                        selectedCutoff.totals.inside_ec_families_now + selectedCutoff.totals.outside_ec_families_now,
+                                        'family',
+                                        'families',
+                                    )
+                                }}
+                                /
+                                {{ (selectedCutoff.totals.inside_ec_persons_now + selectedCutoff.totals.outside_ec_persons_now).toLocaleString() }}
+                                {{
+                                    pluralize(
+                                        selectedCutoff.totals.inside_ec_persons_now + selectedCutoff.totals.outside_ec_persons_now,
+                                        'person',
+                                        'persons',
+                                    )
+                                }}
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-sky-500 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
-                            <div class="text-xs font-medium text-slate-500 dark:text-slate-400">Outside EC</div>
-                            <div class="mt-1 text-sm text-slate-700 dark:text-slate-300">
-                                <span class="font-semibold">CUM:</span>
-                                {{ selectedCutoff.totals.outside_ec_families_cum.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.outside_ec_families_cum, 'family', 'families') }} /
-                                {{ selectedCutoff.totals.outside_ec_persons_cum.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.outside_ec_persons_cum, 'person', 'persons') }}
+                            <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Inside Evacuation Centers</div>
+                            <div class="mt-3 grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-xs font-semibold text-sky-600 dark:text-sky-400">Families</div>
+                                    <div class="mt-1 grid grid-cols-2 gap-2 text-center">
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.inside_ec_families_cum.toLocaleString() }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Now</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.inside_ec_families_now.toLocaleString() }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Persons</div>
+                                    <div class="mt-1 grid grid-cols-2 gap-2 text-center">
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.inside_ec_persons_cum.toLocaleString() }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Now</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.inside_ec_persons_now.toLocaleString() }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-sm text-slate-700 dark:text-slate-300">
-                                <span class="font-semibold">NOW:</span>
-                                {{ selectedCutoff.totals.outside_ec_families_now.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.outside_ec_families_now, 'family', 'families') }} /
-                                {{ selectedCutoff.totals.outside_ec_persons_now.toLocaleString() }}
-                                {{ pluralize(selectedCutoff.totals.outside_ec_persons_now, 'person', 'persons') }}
+                        </div>
+                        <div class="border border-l-4 border-slate-200 border-l-amber-500 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+                            <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Outside Evacuation Centers</div>
+                            <div class="mt-3 grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-xs font-semibold text-amber-600 dark:text-amber-400">Families</div>
+                                    <div class="mt-1 grid grid-cols-2 gap-2 text-center">
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.outside_ec_families_cum.toLocaleString() }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Now</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.outside_ec_families_now.toLocaleString() }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Persons</div>
+                                    <div class="mt-1 grid grid-cols-2 gap-2 text-center">
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.outside_ec_persons_cum.toLocaleString() }}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] uppercase text-slate-400 dark:text-slate-500">Now</div>
+                                            <div class="text-lg font-bold text-slate-900 dark:text-slate-100">{{ selectedCutoff.totals.outside_ec_persons_now.toLocaleString() }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="border border-l-4 border-slate-200 border-l-amber-500 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
