@@ -300,7 +300,7 @@ const closedPercent = computed(() => {
                         <!-- Evacuation Centers -->
                         <div class="card card-emerald">
                             <div class="card-header">
-                                <span class="card-title text-emerald-400">Evacuation Centers</span>
+                                <span class="card-title text-emerald-400">Number of Evacuation Centers</span>
                                 <svg class="card-icon text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path
                                         stroke-linecap="round"
