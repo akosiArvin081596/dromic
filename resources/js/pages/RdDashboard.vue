@@ -277,44 +277,36 @@ function deliveryBadgeClass(percent: number): string {
                                 </span>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Cumulative</div>
+                                <div class="rounded-lg bg-sky-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-sky-600 uppercase">Families</div>
                                     <div class="mt-2 grid grid-cols-2 gap-2">
                                         <div>
-                                            <div class="text-lg font-bold text-slate-900">
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-sky-900">
                                                 {{ dashboardData.impact.inside_ec_families_cum.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-slate-500">
-                                                {{ pluralize(dashboardData.impact.inside_ec_families_cum, 'family', 'families') }}
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="text-lg font-bold text-slate-900">
-                                                {{ dashboardData.impact.inside_ec_persons_cum.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-slate-500">
-                                                {{ pluralize(dashboardData.impact.inside_ec_persons_cum, 'person', 'persons') }}
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-sky-900">
+                                                {{ dashboardData.impact.inside_ec_families_now.toLocaleString() }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-sky-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-sky-600 uppercase">Now Serving</div>
+                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
                                     <div class="mt-2 grid grid-cols-2 gap-2">
                                         <div>
-                                            <div class="text-lg font-bold text-sky-900">
-                                                {{ dashboardData.impact.inside_ec_families_now.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-sky-600/70">
-                                                {{ pluralize(dashboardData.impact.inside_ec_families_now, 'family', 'families') }}
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{ dashboardData.impact.inside_ec_persons_cum.toLocaleString() }}
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="text-lg font-bold text-sky-900">
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.inside_ec_persons_now.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-sky-600/70">
-                                                {{ pluralize(dashboardData.impact.inside_ec_persons_now, 'person', 'persons') }}
                                             </div>
                                         </div>
                                     </div>
@@ -338,44 +330,36 @@ function deliveryBadgeClass(percent: number): string {
                                 </span>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Cumulative</div>
+                                <div class="rounded-lg bg-amber-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-amber-600 uppercase">Families</div>
                                     <div class="mt-2 grid grid-cols-2 gap-2">
                                         <div>
-                                            <div class="text-lg font-bold text-slate-900">
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-amber-900">
                                                 {{ dashboardData.impact.outside_ec_families_cum.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-slate-500">
-                                                {{ pluralize(dashboardData.impact.outside_ec_families_cum, 'family', 'families') }}
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="text-lg font-bold text-slate-900">
-                                                {{ dashboardData.impact.outside_ec_persons_cum.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-slate-500">
-                                                {{ pluralize(dashboardData.impact.outside_ec_persons_cum, 'person', 'persons') }}
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-amber-900">
+                                                {{ dashboardData.impact.outside_ec_families_now.toLocaleString() }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-amber-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-amber-600 uppercase">Now Serving</div>
+                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
                                     <div class="mt-2 grid grid-cols-2 gap-2">
                                         <div>
-                                            <div class="text-lg font-bold text-amber-900">
-                                                {{ dashboardData.impact.outside_ec_families_now.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-amber-600/70">
-                                                {{ pluralize(dashboardData.impact.outside_ec_families_now, 'family', 'families') }}
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{ dashboardData.impact.outside_ec_persons_cum.toLocaleString() }}
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="text-lg font-bold text-amber-900">
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_persons_now.toLocaleString() }}
-                                            </div>
-                                            <div class="text-[11px] text-amber-600/70">
-                                                {{ pluralize(dashboardData.impact.outside_ec_persons_now, 'person', 'persons') }}
                                             </div>
                                         </div>
                                     </div>
