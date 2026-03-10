@@ -242,17 +242,17 @@ const closedPercent = computed(() => {
         </header>
 
         <!-- Incident Title (always visible) -->
-        <div v-if="selectedIncident" class="relative shrink-0 pt-3 text-center">
-            <h2 class="text-lg font-bold tracking-wider text-white uppercase">
+        <div v-if="selectedIncident" class="relative shrink-0 pt-4 text-center">
+            <h2 class="text-2xl font-bold tracking-wider text-white uppercase lg:text-3xl">
                 {{ selectedIncident.display_name ?? selectedIncident.name }}
             </h2>
-            <div v-if="latestCutoff" class="text-[10px] tracking-wide text-slate-500">
-                {{ latestCutoff.label }} &middot; {{ formatDate(latestCutoff.date) }}, {{ latestCutoff.time }}
+            <div class="text-xs tracking-wide text-slate-500">
+                As of {{ dateDisplay }}, {{ clockDisplay }}
             </div>
         </div>
 
         <!-- Cards -->
-        <main class="relative flex flex-1 flex-col overflow-auto p-4 pt-2">
+        <main class="relative flex flex-1 flex-col overflow-auto p-5 pt-3">
             <template v-if="!selectedIncident">
                 <div class="flex h-full items-center justify-center">
                     <p class="animate-pulse text-sm tracking-wider text-slate-600 uppercase">Select an incident to display data</p>
@@ -266,9 +266,9 @@ const closedPercent = computed(() => {
             </template>
 
             <template v-else>
-                <div class="flex h-full flex-col gap-3">
+                <div class="flex h-full flex-col gap-4">
                     <!-- Row 1: Total Affected + Evacuation Centers -->
-                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                         <!-- Total Affected -->
                         <div class="card card-indigo">
                             <div class="card-header">
@@ -281,7 +281,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-3 gap-2">
+                            <div class="mt-auto grid grid-cols-3 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-indigo-400/80">Families</div>
                                     <div class="metric-value text-indigo-200">
@@ -326,12 +326,12 @@ const closedPercent = computed(() => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="latestCutoff.totals.inside_ec_count_cum > 0" class="mt-2">
-                                    <div class="mb-1 flex items-center justify-between text-[9px] tracking-wider">
+                                <div v-if="latestCutoff.totals.inside_ec_count_cum > 0" class="mt-3">
+                                    <div class="mb-1.5 flex items-center justify-between text-xs tracking-wider">
                                         <span class="text-slate-500 uppercase">Closed</span>
                                         <span class="font-mono text-emerald-400">{{ closedPercent }}%</span>
                                     </div>
-                                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                                    <div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
                                         <div
                                             class="progress-glow h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-1000"
                                             :style="{ width: closedPercent + '%' }"
@@ -343,7 +343,7 @@ const closedPercent = computed(() => {
                     </div>
 
                     <!-- Row 2: Inside EC + Outside EC -->
-                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                         <!-- Inside EC -->
                         <div class="card card-sky">
                             <div class="card-header">
@@ -356,10 +356,10 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-sky-400/80">Families</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-sky-200">
@@ -376,7 +376,7 @@ const closedPercent = computed(() => {
                                 </div>
                                 <div class="metric-cell">
                                     <div class="metric-label text-sky-400/80">Persons</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-sky-200">
@@ -407,10 +407,10 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-amber-400/80">Families</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-amber-200">
@@ -427,7 +427,7 @@ const closedPercent = computed(() => {
                                 </div>
                                 <div class="metric-cell">
                                     <div class="metric-label text-amber-400/80">Persons</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-amber-200">
@@ -447,7 +447,7 @@ const closedPercent = computed(() => {
                     </div>
 
                     <!-- Row 3: Total Displaced + Non-IDPs -->
-                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
                         <!-- Total Displaced Population -->
                         <div class="card card-purple">
                             <div class="card-header">
@@ -460,10 +460,10 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-purple-400/80">Families</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-purple-200">
@@ -488,7 +488,7 @@ const closedPercent = computed(() => {
                                 </div>
                                 <div class="metric-cell">
                                     <div class="metric-label text-purple-400/80">Persons</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-3 text-center">
+                                    <div class="mt-2 grid grid-cols-2 gap-3 text-center">
                                         <div>
                                             <div class="sub-label">Cum</div>
                                             <div class="sub-value text-purple-200">
@@ -526,7 +526,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-violet-400/80">Families</div>
                                     <div class="metric-value text-violet-200">
@@ -544,7 +544,7 @@ const closedPercent = computed(() => {
                     </div>
 
                     <!-- Row 4: Damaged Houses + Casualties + Infra/Agri -->
-                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-3">
+                    <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-3">
                         <!-- Damaged Houses -->
                         <div class="card card-rose">
                             <div class="card-header">
@@ -557,7 +557,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-3 gap-2">
+                            <div class="mt-auto grid grid-cols-3 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-rose-400/80">Totally</div>
                                     <div class="metric-value-sm text-rose-200">{{ d('totally_damaged', latestCutoff.totals.totally_damaged) }}</div>
@@ -587,7 +587,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-3 gap-2">
+                            <div class="mt-auto grid grid-cols-3 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-red-400/80">Injured</div>
                                     <div class="metric-value-sm text-red-200">
@@ -619,7 +619,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-orange-400/80">Infrastructure</div>
                                     <div class="metric-value-xs text-orange-200">{{ formatCurrency(latestCutoff.totals.infrastructure_cost) }}</div>
@@ -635,7 +635,7 @@ const closedPercent = computed(() => {
                     <!-- Row 5: Pre-emptive & Stranded (conditional) -->
                     <div
                         v-if="latestCutoff.totals.preemptive_families > 0 || latestCutoff.totals.stranded_passengers > 0"
-                        class="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2"
+                        class="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-2"
                     >
                         <div class="card card-teal">
                             <div class="card-header">
@@ -648,7 +648,7 @@ const closedPercent = computed(() => {
                                     />
                                 </svg>
                             </div>
-                            <div class="mt-auto grid grid-cols-2 gap-2">
+                            <div class="mt-auto grid grid-cols-2 gap-3">
                                 <div class="metric-cell">
                                     <div class="metric-label text-teal-400/80">Families</div>
                                     <div class="metric-value text-teal-200">
@@ -708,7 +708,7 @@ const closedPercent = computed(() => {
     border: 1px solid rgba(51, 65, 85, 0.5);
     background: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(12px);
-    padding: 1rem;
+    padding: 1.25rem 1.5rem;
     transition:
         border-color 0.3s,
         box-shadow 0.3s;
@@ -789,17 +789,17 @@ const closedPercent = computed(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 .card-title {
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.15em;
 }
 .card-icon {
-    height: 1rem;
-    width: 1rem;
+    height: 1.5rem;
+    width: 1.5rem;
     opacity: 0.5;
 }
 
@@ -807,39 +807,39 @@ const closedPercent = computed(() => {
 .metric-cell {
     border-radius: 0.5rem;
     background: rgba(30, 41, 59, 0.5);
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem;
     text-align: center;
     border: 1px solid rgba(51, 65, 85, 0.3);
 }
 .metric-label {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.15em;
 }
 .metric-value {
     font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 1.5rem;
+    font-size: 2.25rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-top: 0.125rem;
+    margin-top: 0.25rem;
 }
 .metric-value-sm {
     font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 1.125rem;
+    font-size: 1.75rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-top: 0.125rem;
+    margin-top: 0.25rem;
 }
 .metric-value-xs {
     font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     line-height: 1.2;
     margin-top: 0.25rem;
 }
 .sub-label {
-    font-size: 0.55rem;
+    font-size: 0.7rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -847,7 +847,7 @@ const closedPercent = computed(() => {
 }
 .sub-value {
     font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.3;
 }
