@@ -246,9 +246,7 @@ const closedPercent = computed(() => {
             <h2 class="text-2xl font-bold tracking-wider text-white uppercase lg:text-3xl">
                 {{ selectedIncident.display_name ?? selectedIncident.name }}
             </h2>
-            <div class="text-xs tracking-wide text-slate-500">
-                As of {{ dateDisplay }}, {{ clockDisplay }}
-            </div>
+            <div class="text-xs tracking-wide text-slate-500">As of {{ dateDisplay }}, {{ clockDisplay }}</div>
         </div>
 
         <!-- Cards -->
@@ -312,6 +310,18 @@ const closedPercent = computed(() => {
                                 </svg>
                             </div>
                             <div class="mt-auto">
+                                <div v-if="latestCutoff.totals.inside_ec_count_cum > 0" class="mb-3">
+                                    <div class="mb-1.5 flex items-center justify-between text-xs tracking-wider">
+                                        <span class="text-slate-500 uppercase">Closed</span>
+                                        <span class="font-mono text-emerald-400">{{ closedPercent }}%</span>
+                                    </div>
+                                    <div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
+                                        <div
+                                            class="progress-glow h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-1000"
+                                            :style="{ width: closedPercent + '%' }"
+                                        ></div>
+                                    </div>
+                                </div>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div class="metric-cell">
                                         <div class="metric-label text-emerald-400/80">CUM</div>
@@ -324,18 +334,6 @@ const closedPercent = computed(() => {
                                         <div class="metric-value text-emerald-200">
                                             {{ d('inside_ec_count_now', latestCutoff.totals.inside_ec_count_now) }}
                                         </div>
-                                    </div>
-                                </div>
-                                <div v-if="latestCutoff.totals.inside_ec_count_cum > 0" class="mt-3">
-                                    <div class="mb-1.5 flex items-center justify-between text-xs tracking-wider">
-                                        <span class="text-slate-500 uppercase">Closed</span>
-                                        <span class="font-mono text-emerald-400">{{ closedPercent }}%</span>
-                                    </div>
-                                    <div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
-                                        <div
-                                            class="progress-glow h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-1000"
-                                            :style="{ width: closedPercent + '%' }"
-                                        ></div>
                                     </div>
                                 </div>
                             </div>
