@@ -57,12 +57,14 @@ class ReportSubmitted implements ShouldBroadcast
 
         $actorName = $actor->getActorDisplayName();
 
+        $incidentName = $report->incident->display_name ?? $report->incident->name;
+
         if ($isResubmission) {
-            $message = "{$actorName} has re-submitted their DROMIC report for {($report->incident->display_name ?? $report->incident->name)}";
+            $message = "{$actorName} resubmitted a DROMIC report for {$incidentName}";
         } else {
             $article = $report->report_type->value === 'initial' ? 'an' : 'a';
             $typeName = ucfirst($report->report_type->value);
-            $message = "{$actorName} submitted {$article} {$typeName} Report for {($report->incident->display_name ?? $report->incident->name)}";
+            $message = "{$actorName} submitted {$article} {$typeName} Report for {$incidentName}";
         }
 
         return [

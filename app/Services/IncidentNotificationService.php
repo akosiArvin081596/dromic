@@ -35,12 +35,8 @@ class IncidentNotificationService
 
         return User::query()
             ->where('id', '!=', $excludeUserId)
-            ->where(function ($query) use ($cityMunicipalityIds, $provinceIds, $regionIds) {
+            ->where(function ($query) use ($cityMunicipalityIds, $provinceIds) {
                 $query->where('role', UserRole::Admin)
-                    ->orWhere(function ($q) use ($regionIds) {
-                        $q->where('role', UserRole::RegionalDirector)
-                            ->whereIn('region_id', $regionIds);
-                    })
                     ->orWhere(function ($q) use ($provinceIds) {
                         $q->where('role', UserRole::Provincial)
                             ->whereIn('province_id', $provinceIds);
@@ -75,12 +71,8 @@ class IncidentNotificationService
 
         return User::query()
             ->where('id', '!=', $excludeUserId)
-            ->where(function ($query) use ($regionId, $provinceIds, $cityMunicipalityIds) {
+            ->where(function ($query) use ($provinceIds, $cityMunicipalityIds) {
                 $query->where('role', UserRole::Admin)
-                    ->orWhere(function ($q) use ($regionId) {
-                        $q->where('role', UserRole::RegionalDirector)
-                            ->where('region_id', $regionId);
-                    })
                     ->orWhere(function ($q) use ($provinceIds) {
                         $q->where('role', UserRole::Provincial)
                             ->whereIn('province_id', $provinceIds);
@@ -97,7 +89,8 @@ class IncidentNotificationService
     /**
      * Get user IDs that should be notified when a request letter is submitted.
      *
-     * Returns Admin users, Regional Director users in the same region, and Provincial users in the same province.
+     * Returns Admin users and Provincial users in the same province.
+     * Regional users are not notified — they receive notifications only after Provincial endorsement.
      *
      * @return list<int>
      */
@@ -107,18 +100,10 @@ class IncidentNotificationService
             ->where('id', $cityMunicipalityId)
             ->value('province_id');
 
-        $regionId = Province::query()
-            ->where('id', $provinceId)
-            ->value('region_id');
-
         return User::query()
             ->where('id', '!=', $excludeUserId)
-            ->where(function ($query) use ($provinceId, $regionId) {
+            ->where(function ($query) use ($provinceId) {
                 $query->where('role', UserRole::Admin)
-                    ->orWhere(function ($q) use ($regionId) {
-                        $q->where('role', UserRole::RegionalDirector)
-                            ->where('region_id', $regionId);
-                    })
                     ->orWhere(function ($q) use ($provinceId) {
                         $q->where('role', UserRole::Provincial)
                             ->where('province_id', $provinceId);
@@ -131,7 +116,7 @@ class IncidentNotificationService
     /**
      * Get user IDs that should be notified when a request letter is endorsed.
      *
-     * Returns the LGU who submitted, Admin users, and Regional Director users in the same region.
+     * Returns the LGU who submitted, Admin users, and Regional users in the same region.
      *
      * @return list<int>
      */
@@ -151,7 +136,7 @@ class IncidentNotificationService
                 $query->where('id', $requestLetterUserId)
                     ->orWhere('role', UserRole::Admin)
                     ->orWhere(function ($q) use ($regionId) {
-                        $q->where('role', UserRole::RegionalDirector)
+                        $q->where('role', UserRole::Regional)
                             ->where('region_id', $regionId);
                     });
             })
@@ -162,7 +147,7 @@ class IncidentNotificationService
     /**
      * Get user IDs that should be notified when a request letter is approved.
      *
-     * Returns the LGU who submitted, Provincial users in the same province, and Admin users.
+     * Returns the LGU who submitted, Provincial users in the same province, Regional users in the same region, and Admin users.
      *
      * @return list<int>
      */
@@ -182,7 +167,7 @@ class IncidentNotificationService
                 $query->where('id', $requestLetterUserId)
                     ->orWhere('role', UserRole::Admin)
                     ->orWhere(function ($q) use ($regionId) {
-                        $q->where('role', UserRole::RegionalDirector)
+                        $q->where('role', UserRole::Regional)
                             ->where('region_id', $regionId);
                     })
                     ->orWhere(function ($q) use ($provinceId) {
@@ -198,7 +183,7 @@ class IncidentNotificationService
      * Get user IDs that should be notified when a delivery is recorded.
      *
      * Returns the LGU who submitted the request letter, Provincial users in the same province,
-     * Regional Director users in the same region, and Admin users.
+     * Regional users in the same region, and Admin users.
      *
      * @return list<int>
      */
@@ -218,7 +203,7 @@ class IncidentNotificationService
                 $query->where('id', $requestLetterUserId)
                     ->orWhere('role', UserRole::Admin)
                     ->orWhere(function ($q) use ($regionId) {
-                        $q->where('role', UserRole::RegionalDirector)
+                        $q->where('role', UserRole::Regional)
                             ->where('region_id', $regionId);
                     })
                     ->orWhere(function ($q) use ($provinceId) {
@@ -253,7 +238,7 @@ class IncidentNotificationService
                 $query->where('id', $reportUserId)
                     ->orWhere('role', UserRole::Admin)
                     ->orWhere(function ($q) use ($regionId) {
-                        $q->whereIn('role', [UserRole::Regional, UserRole::RegionalDirector])
+                        $q->where('role', UserRole::Regional)
                             ->where('region_id', $regionId);
                     });
             })

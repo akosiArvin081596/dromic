@@ -60,7 +60,7 @@ class DeliveryRecorded implements ShouldBroadcast
             'actor_name' => $actor->getActorDisplayName(),
             'item_count' => count($requestLetter->augmentation_items),
             'action' => 'delivered',
-            'message' => "{$actor->getActorDisplayName()} recorded a delivery for {$requestLetter->cityMunicipality->name}'s request letter ({($requestLetter->incident->display_name ?? $requestLetter->incident->name)})",
+            'message' => "{$actor->getActorDisplayName()} recorded a delivery for the request letter of {$requestLetter->cityMunicipality->name}",
         ];
     }
 }

@@ -54,7 +54,8 @@ class ReportValidated implements ShouldBroadcast
 
         if ($actor) {
             $actor->loadMissing('cityMunicipality', 'province', 'region');
-            $message = $actor->getActorDisplayName()." validated a DROMIC report for {$report->cityMunicipality->name}";
+            $incidentName = $report->incident->display_name ?? $report->incident->name;
+            $message = $actor->getActorDisplayName()." validated the DROMIC report of {$report->cityMunicipality->name} for {$incidentName}";
         } else {
             $message = 'A DROMIC report has been validated';
         }

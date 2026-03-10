@@ -236,7 +236,7 @@ function submit(status: 'draft' | 'for_validation') {
                         v-model="form.situation_overview"
                         rows="3"
                         maxlength="2000"
-                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                        class="mt-1 block w-full border border-slate-300 px-3 py-2 text-justify text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                         placeholder="Brief overview of the situation..."
                     ></textarea>
                     <p class="mt-1 text-xs text-slate-500">{{ form.situation_overview?.length ?? 0 }}/2000 characters</p>

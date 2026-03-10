@@ -8,10 +8,11 @@ import type { ContactableUser, Conversation } from '@/types/messenger';
 
 const props = defineProps<{
     conversations: Conversation[];
+    initialTab?: 'chat' | 'groups' | 'contacts';
 }>();
 
 const emit = defineEmits<{
-    select: [conversation: Conversation];
+    select: [conversation: Conversation, tab: Tab];
 }>();
 
 const page = usePage<{ auth: Auth }>();
@@ -20,7 +21,7 @@ const userId = computed(() => page.props.auth.user.id);
 const { fetchUsers, startDm } = useMessenger();
 
 type Tab = 'chat' | 'groups' | 'contacts';
-const activeTab = ref<Tab>('chat');
+const activeTab = ref<Tab>(props.initialTab ?? 'chat');
 
 // --- Group Chats ---
 const groupConversations = computed(() => props.conversations.filter((c) => c.type === 'group'));
@@ -71,10 +72,10 @@ function getDmForContact(contactId: number): Conversation | undefined {
 async function selectContact(user: ContactableUser): Promise<void> {
     const existingDm = getDmForContact(user.id);
     if (existingDm) {
-        emit('select', existingDm);
+        emit('select', existingDm, activeTab.value);
     } else {
         const conversation = await startDm(user.id);
-        emit('select', conversation);
+        emit('select', conversation, activeTab.value);
     }
 }
 
@@ -207,7 +208,7 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 v-for="conversation in chatHistory"
                 :key="conversation.id"
                 class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
-                @click="emit('select', conversation)"
+                @click="emit('select', conversation, activeTab.value)"
             >
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-400 text-sm font-semibold text-white">
                     {{ conversationName(conversation).charAt(0).toUpperCase() }}
@@ -241,7 +242,7 @@ const totalGroupUnread = computed(() => groupConversations.value.reduce((sum, c)
                 v-for="conversation in groupConversations"
                 :key="conversation.id"
                 class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
-                @click="emit('select', conversation)"
+                @click="emit('select', conversation, activeTab.value)"
             >
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-sm font-semibold text-white">G</div>
                 <div class="min-w-0 flex-1">

@@ -13,11 +13,14 @@ const emit = defineEmits<{
 const { conversations, fetchConversations, openConversation, closeConversation, fetchUnreadCount } = useMessenger();
 
 type View = 'list' | 'chat';
+type Tab = 'chat' | 'groups' | 'contacts';
 const currentView = ref<View>('list');
 const activeConversation = ref<Conversation | null>(null);
+const returnTab = ref<Tab>('chat');
 
-function selectConversation(conversation: Conversation): void {
+function selectConversation(conversation: Conversation, tab: Tab): void {
     activeConversation.value = conversation;
+    returnTab.value = tab;
     openConversation(conversation.id);
     currentView.value = 'chat';
 }
@@ -50,7 +53,7 @@ onMounted(fetchConversations);
 
         <!-- Views -->
         <div class="flex-1 overflow-hidden">
-            <ConversationList v-if="currentView === 'list'" :conversations="conversations" @select="selectConversation" />
+            <ConversationList v-if="currentView === 'list'" :conversations="conversations" :initial-tab="returnTab" @select="selectConversation" />
             <ChatView v-else-if="currentView === 'chat' && activeConversation" :conversation="activeConversation" @back="goBack" />
         </div>
     </div>

@@ -24,23 +24,23 @@ function requestLetterMessage(rl: RequestLetterNotificationData): string {
 
     if (rl.action === 'endorsed') {
         if (role === 'lgu') {
-            return `Your request letter for ${rl.incident_name} has been endorsed`;
+            return `Your request letter for ${rl.incident_name} has been endorsed by ${rl.actor_name}`;
         }
-        return `${rl.actor_name} endorsed a request letter from ${rl.city_municipality_name}`;
+        return `${rl.actor_name} endorsed the request letter of ${rl.city_municipality_name} for ${rl.incident_name}`;
     }
 
     if (rl.action === 'approved') {
         if (role === 'lgu') {
-            return `Your request letter for ${rl.incident_name} has been approved`;
+            return `Your request letter for ${rl.incident_name} has been approved by ${rl.actor_name}`;
         }
-        return `${rl.actor_name} approved a request letter from ${rl.city_municipality_name}`;
+        return `${rl.actor_name} approved the request letter of ${rl.city_municipality_name} for ${rl.incident_name}`;
     }
 
     if (rl.action === 'delivered') {
         if (role === 'lgu') {
-            return `A delivery has been recorded for your request letter (${rl.incident_name})`;
+            return `A delivery has been recorded for your request letter for ${rl.incident_name}`;
         }
-        return `${rl.actor_name} recorded a delivery for ${rl.city_municipality_name}'s request letter`;
+        return `${rl.actor_name} recorded a delivery for the request letter of ${rl.city_municipality_name}`;
     }
 
     return `Request letter update for ${rl.incident_name}`;
@@ -95,37 +95,37 @@ useEcho<{ incident: Incident }>(`App.Models.User.${user.value.id}`, 'IncidentCre
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportSubmitted', (payload) => {
     addReportNotification(payload.report);
-    toast.info(`Report submitted for ${payload.report.incident_name}`);
+    toast.info(`${payload.report.city_municipality_name} submitted a DROMIC report for ${payload.report.incident_name}`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportValidated', (payload) => {
     addReportNotification(payload.report);
-    toast.success(`Report validated for ${payload.report.incident_name}`);
+    toast.success(`DROMIC report of ${payload.report.city_municipality_name} for ${payload.report.incident_name} has been validated`);
 });
 
 useEcho<{ report: ReportNotificationData }>(`App.Models.User.${user.value.id}`, 'ReportReturned', (payload) => {
     addReportNotification(payload.report);
-    toast.error(`Report returned for ${payload.report.incident_name}`);
+    toast.error(`Your DROMIC report for ${payload.report.incident_name} has been returned`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterSubmitted', (payload) => {
     addRequestLetterNotification(payload.request_letter);
-    toast.info(`Request letter submitted for ${payload.request_letter.incident_name}`);
+    toast.info(`${payload.request_letter.city_municipality_name} submitted a request letter for ${payload.request_letter.incident_name}`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterEndorsed', (payload) => {
     addRequestLetterNotification(payload.request_letter);
-    toast.info(`Request letter endorsed for ${payload.request_letter.incident_name}`);
+    toast.info(`Request letter of ${payload.request_letter.city_municipality_name} for ${payload.request_letter.incident_name} has been endorsed`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'RequestLetterApproved', (payload) => {
     addRequestLetterNotification(payload.request_letter);
-    toast.success(`Request letter approved for ${payload.request_letter.incident_name}`);
+    toast.success(`Request letter of ${payload.request_letter.city_municipality_name} for ${payload.request_letter.incident_name} has been approved`);
 });
 
 useEcho<{ request_letter: RequestLetterNotificationData }>(`App.Models.User.${user.value.id}`, 'DeliveryRecorded', (payload) => {
     addRequestLetterNotification(payload.request_letter);
-    toast.success(`Delivery recorded for ${payload.request_letter.incident_name}`);
+    toast.success(`A delivery has been recorded for the request letter of ${payload.request_letter.city_municipality_name}`);
 });
 
 useEcho<{ message: MessageData }>(`App.Models.User.${user.value.id}`, 'MessageSent', (payload) => {
