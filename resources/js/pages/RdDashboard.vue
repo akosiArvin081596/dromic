@@ -296,8 +296,8 @@ function deliveryBadgeClass(percent: number): string {
                         </div>
                     </div>
 
-                    <!-- Inside EC + Outside EC + Non-IDPs + Total Displaced row -->
-                    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <!-- Inside EC + Outside EC row -->
+                    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <!-- Inside EC -->
                         <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                             <div class="flex items-center justify-between">
@@ -315,24 +315,24 @@ function deliveryBadgeClass(percent: number): string {
                             <div class="mt-3 grid grid-cols-2 gap-3">
                                 <div class="rounded-lg bg-sky-50 px-3 py-2.5">
                                     <div class="text-[10px] font-semibold tracking-wide text-sky-600 uppercase">Families</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
-                                            <div class="text-lg font-bold text-sky-900">
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.inside_ec_families_cum.toLocaleString() }}
                                             </div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
-                                            <div class="text-lg font-bold text-sky-900">
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.inside_ec_families_now.toLocaleString() }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="rounded-lg bg-sky-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-sky-600 uppercase">Persons</div>
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
                                             <div class="text-lg font-bold text-slate-900">
@@ -368,24 +368,24 @@ function deliveryBadgeClass(percent: number): string {
                             <div class="mt-3 grid grid-cols-2 gap-3">
                                 <div class="rounded-lg bg-amber-50 px-3 py-2.5">
                                     <div class="text-[10px] font-semibold tracking-wide text-amber-600 uppercase">Families</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
-                                            <div class="text-lg font-bold text-amber-900">
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_families_cum.toLocaleString() }}
                                             </div>
                                         </div>
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
-                                            <div class="text-lg font-bold text-amber-900">
+                                            <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_families_now.toLocaleString() }}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="rounded-lg bg-amber-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-amber-600 uppercase">Persons</div>
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
                                         <div>
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
                                             <div class="text-lg font-bold text-slate-900">
@@ -396,6 +396,77 @@ function deliveryBadgeClass(percent: number): string {
                                             <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
                                             <div class="text-lg font-bold text-slate-900">
                                                 {{ dashboardData.impact.outside_ec_persons_now.toLocaleString() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Displaced + Non-IDPs row -->
+                    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <!-- Total Displaced Population -->
+                        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Total Displaced Population</span>
+                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50">
+                                    <svg class="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="mt-3 grid grid-cols-2 gap-3">
+                                <div class="rounded-lg bg-purple-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-purple-600 uppercase">Families</div>
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
+                                        <div>
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{
+                                                    (
+                                                        dashboardData.impact.inside_ec_families_cum + dashboardData.impact.outside_ec_families_cum
+                                                    ).toLocaleString()
+                                                }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{
+                                                    (
+                                                        dashboardData.impact.inside_ec_families_now + dashboardData.impact.outside_ec_families_now
+                                                    ).toLocaleString()
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rounded-lg bg-purple-50 px-3 py-2.5">
+                                    <div class="text-[10px] font-semibold tracking-wide text-purple-600 uppercase">Persons</div>
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-center">
+                                        <div>
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{
+                                                    (
+                                                        dashboardData.impact.inside_ec_persons_cum + dashboardData.impact.outside_ec_persons_cum
+                                                    ).toLocaleString()
+                                                }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
+                                            <div class="text-lg font-bold text-slate-900">
+                                                {{
+                                                    (
+                                                        dashboardData.impact.inside_ec_persons_now + dashboardData.impact.outside_ec_persons_now
+                                                    ).toLocaleString()
+                                                }}
                                             </div>
                                         </div>
                                     </div>
@@ -418,83 +489,16 @@ function deliveryBadgeClass(percent: number): string {
                                 </span>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-violet-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-violet-400 uppercase">Families</div>
-                                    <div class="mt-1 text-2xl font-bold text-violet-900">
+                                <div class="rounded-lg bg-violet-50 px-3 py-2.5 text-center">
+                                    <div class="text-[10px] font-semibold tracking-wide text-violet-600 uppercase">Families</div>
+                                    <div class="mt-1 text-2xl font-bold text-slate-900">
                                         {{ dashboardData.impact.non_idp_families_cum.toLocaleString() }}
                                     </div>
                                 </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
+                                <div class="rounded-lg bg-violet-50 px-3 py-2.5 text-center">
+                                    <div class="text-[10px] font-semibold tracking-wide text-violet-600 uppercase">Persons</div>
                                     <div class="mt-1 text-2xl font-bold text-slate-900">
                                         {{ dashboardData.impact.non_idp_persons_cum.toLocaleString() }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Total Displaced Population -->
-                        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-medium tracking-wide text-slate-400 uppercase">Total Displaced Population</span>
-                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50">
-                                    <svg class="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
-                                        />
-                                    </svg>
-                                </span>
-                            </div>
-                            <div class="mt-3 grid grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-purple-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-purple-600 uppercase">Families</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
-                                        <div>
-                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
-                                            <div class="text-lg font-bold text-purple-900">
-                                                {{
-                                                    (
-                                                        dashboardData.impact.inside_ec_families_cum + dashboardData.impact.outside_ec_families_cum
-                                                    ).toLocaleString()
-                                                }}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
-                                            <div class="text-lg font-bold text-purple-900">
-                                                {{
-                                                    (
-                                                        dashboardData.impact.inside_ec_families_now + dashboardData.impact.outside_ec_families_now
-                                                    ).toLocaleString()
-                                                }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="rounded-lg bg-slate-50 px-3 py-2.5">
-                                    <div class="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">Persons</div>
-                                    <div class="mt-2 grid grid-cols-2 gap-2">
-                                        <div>
-                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Cum</div>
-                                            <div class="text-lg font-bold text-slate-900">
-                                                {{
-                                                    (
-                                                        dashboardData.impact.inside_ec_persons_cum + dashboardData.impact.outside_ec_persons_cum
-                                                    ).toLocaleString()
-                                                }}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="text-[10px] font-medium text-slate-400 uppercase">Now</div>
-                                            <div class="text-lg font-bold text-slate-900">
-                                                {{
-                                                    (
-                                                        dashboardData.impact.inside_ec_persons_now + dashboardData.impact.outside_ec_persons_now
-                                                    ).toLocaleString()
-                                                }}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
